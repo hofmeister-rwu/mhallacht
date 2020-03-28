@@ -3,9 +3,10 @@ import { HashRouter, Route } from 'react-router-dom';
 import { observer } from "mobx-react";
 import Button from 'react-bootstrap/Button'
 import PlayerCards from "../components/PlayerCards"
+import StackCards from "../components/StackCards"
 import CardStore from "../stores/cardStore"
+import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
-
 
 
 // Require scss files
@@ -24,7 +25,7 @@ class Card {
         this.cards = [];
     }
     createDeck() {
-        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9,10];
         let id =0;
         for (let j = 0; j < values.length; j++) {
           for (let i=0; i < 4; i++){
@@ -60,25 +61,18 @@ class Card {
         d.shuffleDeck();
         for (var i = 0; i < playerNames.length; i++) {
           this.players.push(new Player(playerNames[i]));
+          console.log(d.cards);
           this.players[i].playerCards = d.cards.splice(i*4, 4);
         }
         this.cardsInMiddle=d.cards;
     }
 }
-// function chooseCard(player,playerCard){
-//   for(let i = 0; i < this.gameBoard.players[player].playerCards.length; i++){
-//     if(this.gameBoard.players[player].playerCards[i]==playerCard){
-//       console.log(i);
-//       this.setState({chosenCardIndex:i});
-//     }
-//   }
-// }
 function swapCards(playerIndex,playerCardIndex){
-  console.log(playerCardIndex);
   let playerCard = this.gameBoard.players[playerIndex].playerCards.splice(playerCardIndex,1);
   let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
   this.gameBoard.usedCards.splice(0,0,playerCard[0]);
   this.gameBoard.players[playerIndex].playerCards.splice(playerCardIndex,0,stackCard[0]);
+  CardStore.unselectCard();
   this.setState({chosenCardIndex:undefined});
 }
 function throwCards(){
@@ -87,10 +81,11 @@ function throwCards(){
   this.setState({rerender:true});
 
 }
-function chooseCard(e,playerCard){
+function chooseCard(playerCard){
   for(let j=0; j < this.gameBoard.players.length; j++){
     for(let i = 0; i < this.gameBoard.players[j].playerCards.length; i++){
       if(this.gameBoard.players[j].playerCards[i]==playerCard){
+        console.log("PlayerCard from ChooseCard:");
         console.log(playerCard);
         this.setState({chosenCardIndex:i});
         this.setState({chosenCardPlayerIndex:j})
@@ -98,13 +93,12 @@ function chooseCard(e,playerCard){
     }
   }
 }
-
 // durch die Annotation @observer
 @observer
 export default class Game extends React.Component {
+  @observable gameBoard = new Board();
   constructor(props){
     super(props);
-        this.gameBoard = new Board();
         this.gameBoard.start(props.players);
         this.state = {
           rerender:false,
@@ -114,6 +108,7 @@ export default class Game extends React.Component {
   }
     render() {
      console.log(this.gameBoard);
+      //Load PlayerCards into {items}
       const items = this.gameBoard.players.map((item, key) =>
          <div key={item.playerName}>
           <h2>{item.playerName}</h2>
@@ -125,20 +120,23 @@ export default class Game extends React.Component {
       if(this.state.chosenCardIndex!=undefined){
         swapButton =<Button onClick={swapCards.bind(this,this.state.chosenCardPlayerIndex,this.state.chosenCardIndex)}>Swap</Button>;
       }
-      const chosenCard = CardStore.chosenCard;
+      //Get ChosenCard from CardStore
+      const {chosenCard} = CardStore;
+      console.log("Chosen Card from CardStore");
       console.log(chosenCard);
+      //Make ChooseButton Invisible if no Card is clicked
       let chooseButton;
-      if(chosenCard){
-        chooseButton =<Button onClick={chooseCard.bind(this,0,this.gameBoard.players[0].playerCards[3])}>Choose Card</Button>;
+      if(chosenCard != undefined){
+        chooseButton = <Button onClick={chooseCard.bind(this,chosenCard)}>Choose Card</Button>;
       }
         return (
             <div>
               {items}
               <h2>Kartenstapel</h2>
-              <PlayerCards item={this.gameBoard.cardsInMiddle}/>
+              <StackCards item={this.gameBoard.cardsInMiddle}/>
               <br/><br/>
               <h2>Ablegestapel</h2>
-              <PlayerCards item={this.gameBoard.usedCards}/>
+              <StackCards item={this.gameBoard.usedCards}/>
               <br/><br/>
               {chooseButton}
               {swapButton}

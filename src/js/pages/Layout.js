@@ -13,34 +13,41 @@ require('../../stylesheets/_all.scss');
 // require LESS files
 require('../../stylesheets/initial.less');
 
-// durch die Annotation @observer
-function addPlayerOneName(e){
-  console.log(e.target.value);
-  this.playerOne = e.target.value;
+function changePlayerNumber(value){
+  this.setState({numberofPlayers:value});
+  console.log(this.state.numberofPlayers);
 }
-function addPlayerTwoName(e){
+function addPlayer1Name(e){
+  console.log(e.target.value);
+    this.playerOne = e.target.value;
+}
+function addPlayer2Name(e){
   console.log(e.target.value);
   this.playerTwo = e.target.value;
 }
-function addPlayerThreeName(e){
+function addPlayer3Name(e){
   console.log(e.target.value);
   this.playerThree = e.target.value;
 }
-function addPlayerFourName(e){
+function addPlayer4Name(e){
   console.log(e.target.value);
   this.playerFour = e.target.value;
 }
-function addPlayerFiveName(e){
+function addPlayer5Name(e){
   console.log(e.target.value);
   this.playerFive = e.target.value;
 }
-function addPlayerSixName(e){
+function addPlayer6Name(e){
   console.log(e.target.value);
   this.playerSix= e.target.value;
 }
 function submit(){
-    this.state.players.push('Daisy');
-    this.state.players.push('Peach');
+  if(this.playerOne!=undefined){
+    this.state.players.push(this.playerOne);
+  }
+  if(this.playerTwo!=undefined){
+      this.state.players.push(this.playerTwo);
+    }
   if(this.playerThree!=undefined){
     this.state.players.push(this.playerThree);
   }
@@ -67,6 +74,7 @@ export default class Layout extends React.Component {
     this.playerSix;
     console.log(this.playerSix);
     this.state = {
+      numberofPlayers : 1,
       players : [],
       submit: false
     }
@@ -76,35 +84,52 @@ export default class Layout extends React.Component {
       if (this.state.submit){
         game=<Game players={this.state.players}/>;
       }
-      let form;
-      if (!this.state.submit){
-        form=<Form>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerOneName.bind(this)}/>
-        </Form.Group>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerTwoName.bind(this)}/>
-        </Form.Group>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerThreeName.bind(this)}/>
-        </Form.Group>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerFourName.bind(this)}/>
-        </Form.Group>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerFiveName.bind(this)}/>
-        </Form.Group>
-        <Form.Group controlId="test">
-          <Form.Control type="text" placeholder="Normal text" onChange={addPlayerSixName.bind(this)}/>
-        </Form.Group>
-          <Button variant="primary" type="submit" onClick={submit.bind(this)}>
-            Submit
-          </Button>
-        </Form>;
+      let form = [];
+      if(!this.state.submit){
+        for (var i = 0; i < this.state.numberofPlayers; i++) {
+          var changeFunction;
+          switch (i+1){
+            case 1:
+             changeFunction = addPlayer1Name.bind(this);
+             break;
+            case 2:
+              changeFunction = addPlayer2Name.bind(this);
+              break;
+            case 3:
+              changeFunction = addPlayer3Name.bind(this);
+              break;
+            case 4:
+              changeFunction = addPlayer4Name.bind(this);
+              break;
+            case 5:
+              changeFunction = addPlayer5Name.bind(this);
+              break;
+            case 6:
+              changeFunction = addPlayer6Name.bind(this);
+              break;
+          }
+          form.push(
+          <Form.Group>
+          <Form.Control type="text" placeholder={"Player "+(i+1)} onChange={changeFunction}/>
+          </Form.Group>);
+          console.log(form);
+        }
+        form.push(<Button variant="primary" type="submit" onClick={submit.bind(this)}>
+        Submit
+        </Button>);
       }
 
         return (
           <div>
+          <Form>
+              <div className="mb-3">
+                <Form.Check inline label="2" name="playerNumber" type='radio' id={`inline-radio-2`} onClick={changePlayerNumber.bind(this,2)}/>
+                <Form.Check inline label="3" name="playerNumber" type='radio' id={`inline-radio-3`} onClick={changePlayerNumber.bind(this,3)}/>
+                <Form.Check inline label="4" name="playerNumber" type='radio' id={`inline-radio-4`} onClick={changePlayerNumber.bind(this,4)}/>
+                <Form.Check inline label="5" name="playerNumber" type='radio' id={`inline-radio-5`} onClick={changePlayerNumber.bind(this,5)}/>
+                <Form.Check inline label="6" name="playerNumber" type='radio' id={`inline-radio-6`} onClick={changePlayerNumber.bind(this,6)}/>
+              </div>
+          </Form>
           {form}
           {game}
           </div>
