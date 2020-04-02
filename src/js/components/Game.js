@@ -61,38 +61,74 @@ class Card {
         d.shuffleDeck();
         for (var i = 0; i < playerNames.length; i++) {
           this.players.push(new Player(playerNames[i]));
-          console.log(d.cards);
           this.players[i].playerCards = d.cards.splice(i*4, 4);
         }
         this.cardsInMiddle=d.cards;
     }
 }
-function swapCards(playerIndex,playerCardIndex){
-  let playerCard = this.gameBoard.players[playerIndex].playerCards.splice(playerCardIndex,1);
-  let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
-  this.gameBoard.usedCards.splice(0,0,playerCard[0]);
-  this.gameBoard.players[playerIndex].playerCards.splice(playerCardIndex,0,stackCard[0]);
-  CardStore.unselectCard();
-  this.setState({chosenCardIndex:undefined});
-}
-function throwCards(){
-  let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
-  this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
-  this.setState({rerender:true});
 
+
+
+function swapStackCard(chosenCard){
+    var chosenCardIndex;
+      for(let i = 0; i < this.gameBoard.players[this.state.activePlayerIndex].playerCards.length; i++){
+        if(this.gameBoard.players[this.state.activePlayerIndex].playerCards[i]==chosenCard){
+          chosenCardIndex=i;
+        }
+      }
+    let playerCard = this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,1);
+    let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
+    this.gameBoard.usedCards.splice(0,0,playerCard[0]);
+    this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,0,stackCard[0]);
+    CardStore.unselectCards();
+    this.setState({chosenCardIndex:undefined});
 }
-function chooseCard(playerCard){
-  for(let j=0; j < this.gameBoard.players.length; j++){
-    for(let i = 0; i < this.gameBoard.players[j].playerCards.length; i++){
-      if(this.gameBoard.players[j].playerCards[i]==playerCard){
-        console.log("PlayerCard from ChooseCard:");
-        console.log(playerCard);
-        this.setState({chosenCardIndex:i});
-        this.setState({chosenCardPlayerIndex:j})
+
+
+function swapPlayerCard(chosenCard,enemyCard){
+    var chosenCardIndex;
+      for(let i = 0; i < this.gameBoard.players[this.state.activePlayerIndex].playerCards.length; i++){
+        if(this.gameBoard.players[this.state.activePlayerIndex].playerCards[i]==chosenCard){
+          chosenCardIndex=i;
+        }
+      }
+    var enemyCardIndex;
+    var enemyPlayerIndex;
+    for(let j=0; j < this.gameBoard.players.length; j++){
+      for(let i = 0; i < this.gameBoard.players[j].playerCards.length; i++){
+        if(this.gameBoard.players[j].playerCards[i]==enemyCard){
+          enemyCardIndex=i;
+          enemyPlayerIndex=j;
+        }
       }
     }
-  }
+    let playerCard = this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,1);
+    let otherCard = this.gameBoard.players[enemyPlayerIndex].playerCards.splice(enemyCardIndex,1);
+    this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,0,otherCard[0]);
+    this.gameBoard.players[enemyPlayerIndex].playerCards.splice(enemyCardIndex,0,playerCard[0]);
+    CardStore.unselectCards();
+    this.setState({chosenCardIndex:undefined});
 }
+
+
+function throwCards(){
+    let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
+    this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+    this.setState({rerender:true});
+    CardStore.unselectCards();
+}
+
+function draw(){
+    CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
+}
+
+function show(card){
+    CardStore.selectShowCard(card);
+    console.log(CardStore.showCard);
+    setTimeout(() => {CardStore.unselectCards()}, 2000);
+}
+
+
 // durch die Annotation @observer
 @observer
 export default class Game extends React.Component {
@@ -104,43 +140,62 @@ export default class Game extends React.Component {
           rerender:false,
           chosenCardIndex:undefined,
           chosenCardPlayerIndex:undefined,
+          activePlayerIndex:0,
         }
   }
     render() {
      console.log(this.gameBoard);
       //Load PlayerCards into {items}
-      const items = this.gameBoard.players.map((item, key) =>
-         <div key={item.playerName}>
-          <h2>{item.playerName}</h2>
-          <PlayerCards item={item.playerCards}/>
-         </div>
-       );
-      //Make SwapButton invisible if no Card is chosen
-      let swapButton;
-      if(this.state.chosenCardIndex!=undefined){
-        swapButton =<Button onClick={swapCards.bind(this,this.state.chosenCardPlayerIndex,this.state.chosenCardIndex)}>Swap</Button>;
-      }
-      //Get ChosenCard from CardStore
+      const playerCards = this.gameBoard.players.map((item, key) =>{
+        var cardClick;
+          if(item==this.gameBoard.players[this.state.activePlayerIndex]){
+            cardClick= CardStore.selectCard;
+          }else{
+            cardClick=CardStore.selectEnemyCard;
+          }
+        return(<div key={item.playerName}><h2>{item.playerName}</h2><PlayerCards item={item.playerCards} cardClick={cardClick}/></div>);
+      });
       const {chosenCard} = CardStore;
-      console.log("Chosen Card from CardStore");
-      console.log(chosenCard);
-      //Make ChooseButton Invisible if no Card is clicked
-      let chooseButton;
-      if(chosenCard != undefined){
-        chooseButton = <Button onClick={chooseCard.bind(this,chosenCard)}>Choose Card</Button>;
+      const {enemyCard} = CardStore;
+      const {stackCard} = CardStore;
+      const {showCard} = CardStore;
+      //Make SwapButton invisible if no Card is chosen
+      let swapStackButton;
+      if(chosenCard!=undefined &&enemyCard==undefined){
+        swapStackButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Swap with First Card from Stack</Button>;
+      }
+      let swapPlayerButton;
+      if(chosenCard!=undefined && enemyCard!=undefined){
+        swapPlayerButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Swap with Enemy Card</Button>;
+      }
+      let throwButton;
+      if(stackCard!=undefined){
+        throwButton = <Button onClick={throwCards.bind(this)}>Throw</Button>;
+      }
+      let drawButton;
+      if(stackCard==undefined){
+        drawButton=
+        <Button onClick={draw.bind(this)}>Draw Card</Button>;
+      }
+      let showButton;
+      if(chosenCard!=undefined&&enemyCard==undefined){
+        showButton=
+        <Button onClick={show.bind(this,chosenCard)}>Show Card</Button>;
       }
         return (
             <div>
-              {items}
+              {playerCards}
               <h2>Kartenstapel</h2>
-              <StackCards item={this.gameBoard.cardsInMiddle}/>
+              <StackCards item={this.gameBoard.cardsInMiddle} stack={true}/>
               <br/><br/>
               <h2>Ablegestapel</h2>
-              <StackCards item={this.gameBoard.usedCards}/>
+              <StackCards item={this.gameBoard.usedCards} stack={false}/>
               <br/><br/>
-              {chooseButton}
-              {swapButton}
-              <Button onClick={throwCards.bind(this)}>Throw</Button>
+              {swapStackButton}
+              {swapPlayerButton}
+              {throwButton}
+              {drawButton}
+              {showButton}
             </div>
         );
     }

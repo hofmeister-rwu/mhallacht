@@ -10,11 +10,15 @@ class PlayerCards extends React.Component{
     render() {
       //Get ChosenCard from CardStore
       let {chosenCard} = CardStore;
+      let {stackCard} = CardStore;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
         var cardClass = "bg-warning";
         if(card ==chosenCard){
           cardClass = "bg-danger";
+        }
+        if(card!=stackCard && this.props.stack==true){
+          cardClass+=" card-down";
         }
           return (
             <Card key={card.id} className={cardClass}>

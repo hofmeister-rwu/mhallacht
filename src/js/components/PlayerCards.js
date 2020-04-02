@@ -10,24 +10,30 @@ class PlayerCards extends React.Component{
     render() {
       //Get ChosenCard from CardStore
       let {chosenCard} = CardStore;
+      let {enemyCard} = CardStore;
+      let {showCard} = CardStore;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
+
         var cardClass = "bg-warning";
         if(card ==chosenCard){
+          cardClass = "bg-primary";
+        }
+        if(card ==enemyCard){
           cardClass = "bg-danger";
         }
-          return (
-            <Card key={card.id} className={cardClass} onClick={CardStore.selectCard.bind(this,card)}>
-              <Card.Body>
-                <Card.Title type="dark">{card.value}</Card.Title>
-              </Card.Body>
-            </Card>
-          );
-        });
+        if(card != showCard){
+          cardClass+=" card-down";
+        }
+
         return (
-          <CardDeck>
-          {cards}
-          </CardDeck>
+          <Card key={card.id} className={cardClass} onClick={this.props.cardClick.bind(this,card)}>
+            <Card.Body><Card.Title>{card.value}</Card.Title></Card.Body>
+          </Card>);
+        });
+
+        return (
+          <CardDeck>{cards}</CardDeck>
         );
     }
 }
