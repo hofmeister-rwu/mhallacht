@@ -185,45 +185,65 @@ function show(card){
   }
 }
 
+//After the activePlayer has performed an action his Turn is over
 function endTurn(){
+  //if the EndGame has been defined, we check if the Game is over yet
+    if(this.state.endRound!=""){
+      this.checkEndGame();
+    }
+  //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
     if(this.state.activePlayerIndex+1<this.gameBoard.players.length){
-      console.log(this.state.activePlayerIndex);
       this.setState({activePlayerIndex:this.state.activePlayerIndex+1,});
-      console.log(this.state.activePlayerIndex);
       CardStore.unselectCards();
     }else{
+  //if theres no next player in the array a new Round begins and we start with the first player again
       this.endRound();
     }
 }
 
+//if all Players had their turn a new round beings
 function endRound(){
     this.setState({round:this.state.round+1,});
     this.setState({activePlayerIndex:0});
     CardStore.unselectCards();
 }
 
-function endGame(){
-  for(var i=0; i<this.gameBoard.players.length; i++){
-      this.gameBoard.players[i].playerValue=0;
-        for (var j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
-          if(this.gameBoard.players[i].playerCards[j].value!="show" && this.gameBoard.players[i].playerCards[j].value!="swap"){
-              this.gameBoard.players[i].playerValue += this.gameBoard.players[i].playerCards[j].value;
-          }else{
-            this.gameBoard.players[i].playerValue += 15;
-          }
-        }
+//if a player presses the EndGame Button, the point in time when the Game will end (one Round after the player pressed) is defined
+function setEndGame(){
+  if(this.state.endRound=="" && this.state.endPlayer==""){
+    if(this.state.activePlayerIndex-1>=0){
+      this.setState({endPlayer:this.state.activePlayerIndex-1});
+      this.setState({endRound:this.state.round+1});
+    }else{
+      this.setState({endRound:this.state.round});
+      this.setState({endPlayer:this.gameBoard.players.length-1});
+    }
   }
-  var endPlayers=[...this.gameBoard.players];
-  endPlayers.sort((a, b) => a.playerValue - b.playerValue);
-  let counter = 0;
-  const endList = endPlayers.map((player, key) =>{
-      counter++;
-      return(<div key={player.playerName}><Alert>#{counter}: {player.playerName} with {player.playerValue} </Alert></div>);
-  });
-  console.log(endList);
-  this.setState({endMessage:endList})
 }
 
+//if the defined point when the game ends, has come, the results are posted
+function checkEndGame(){
+  if(this.state.round == this.state.endRound && this.state.activePlayerIndex == this.state.endPlayer){
+    for(var i=0; i<this.gameBoard.players.length; i++){
+        this.gameBoard.players[i].playerValue=0;
+          for (var j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
+            if(this.gameBoard.players[i].playerCards[j].value!="show" && this.gameBoard.players[i].playerCards[j].value!="swap"){
+                this.gameBoard.players[i].playerValue += this.gameBoard.players[i].playerCards[j].value;
+            }else{
+              this.gameBoard.players[i].playerValue += 15;
+            }
+          }
+    }
+    var endPlayers=[...this.gameBoard.players];
+    endPlayers.sort((a, b) => a.playerValue - b.playerValue);
+    let counter = 0;
+    const endList = endPlayers.map((player, key) =>{
+        counter++;
+        return(<div key={player.playerName}><Alert>#{counter}: {player.playerName} with {player.playerValue} </Alert></div>);
+    });
+    this.setState({alert:endList, warningshow:true, end:true})
+  }
+}
 
 //ModalFunction
 function handleModalClose(){
@@ -244,24 +264,30 @@ export default class Game extends React.Component {
           activePlayerIndex:0,
           alert:"",
           warningshow:false,
-          endMessage:"",
+          endRound:"",
+          endPlayer:"",
+          end:false,
         }
     this.endRound=endRound.bind(this);
     this.endTurn=endTurn.bind(this);
+    this.checkEndGame=checkEndGame.bind(this);
   }
     render() {
      console.log(this.gameBoard);
-     console.log("Round " + this.state.round);
-     console.log("Your Turn, "+this.gameBoard.players[this.state.activePlayerIndex].playerName);
-
+     console.log(this.state.endRound);
+     console.log(this.state.endPlayer);
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
           var cardClick;
-            if(item==this.gameBoard.players[this.state.activePlayerIndex]){
-              cardClick= CardStore.selectCard;
-            }else{
-              cardClick=CardStore.selectEnemyCard;
-            }
+          //OnClick of Cards is only defined if Game ins't over yet
+          if(!this.state.end){
+            //onClick stores the card either in chosenCard or enemyCard depending if the Card belongs to the active Player or not
+              if(item==this.gameBoard.players[this.state.activePlayerIndex]){
+                cardClick= CardStore.selectCard;
+              }else{
+                cardClick=CardStore.selectEnemyCard;
+              }
+          }
           return(<div key={item.playerName}><h2>{item.playerName}</h2><PlayerCards item={item.playerCards} cardClick={cardClick}/></div>);
       });
 
@@ -271,20 +297,20 @@ export default class Game extends React.Component {
       const {stackCard} = CardStore;
       const {showCard} = CardStore;
 
-      //Only Show DrawButton if there is no card already drawn
+      //Only Show DrawButton if there is no card already drawn and Game isn't over
       let drawButton;
-      if(stackCard==undefined){
+      if(stackCard==undefined && !this.state.end){
         drawButton=
         <Button onClick={draw.bind(this)}>Draw Card</Button>;
       }
 
-      //Only show Buttons if a Card has been drawn
+      //Only show Buttons if a Card has been drawn and the Game isn't over
       let throwButton;
       let swapStackButton;
       let swapPlayerButton;
       let showButton;
 
-      if(stackCard!=undefined){
+      if(stackCard!=undefined && !this.state.end){
         throwButton = <Button onClick={throwCards.bind(this)}>Throw</Button>;
 
         //Only show SwapStackButton if the Card you've drawn is not an ActionCard
@@ -303,10 +329,14 @@ export default class Game extends React.Component {
           <Button onClick={show.bind(this,chosenCard)}>Show Card</Button>;
         }
       }
+      //Only show EndGameButton if it hasn't already been pressed
+      var endGameButton;
+      if (this.state.endRound==""){
+        endGameButton = <Button onClick={setEndGame.bind(this)}>End Game</Button>;
+      }
 
         return (
             <div>
-            {this.state.endMessage}
             <Alert variant="primary">Runde {this.state.round}</Alert>
             <Alert variant="primary">Your turn, {this.gameBoard.players[this.state.activePlayerIndex].playerName}</Alert>
               <Modal show={this.state.warningshow} onHide={handleModalClose.bind(this)}>
@@ -331,7 +361,7 @@ export default class Game extends React.Component {
               {throwButton}
               {drawButton}
               {showButton}
-              <Button onClick={endGame.bind(this)}>End Game</Button>
+              {endGameButton}
             </div>
         );
     }

@@ -25,9 +25,13 @@ class PlayerCards extends React.Component{
         if(card != showCard){
           cardClass+=" card-down";
         }
+        var cardClick;
+        if(this.props.cardClick!=undefined){
+          cardClick=this.props.cardClick.bind(this,card);
+        }
 
         return (
-          <Card key={card.id} className={cardClass} onClick={this.props.cardClick.bind(this,card)}>
+          <Card key={card.id} className={cardClass} onClick={cardClick}>
             <Card.Body><Card.Title>{card.value}</Card.Title></Card.Body>
           </Card>);
         });
