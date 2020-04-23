@@ -13,6 +13,7 @@ class CardStore {
         this.chosenCard= undefined;
       }
     };
+
     @observable enemyCard;
     @action.bound selectEnemyCard(card) {
       if(this.enemyCard!=card){
@@ -21,14 +22,17 @@ class CardStore {
         this.enemyCard=undefined;
       }
     };
+
     @observable stackCard;
     @action.bound selectStackCard(card) {
         this.stackCard = card;
     };
+
     @observable showCard;
     @action.bound selectShowCard(card) {
         this.showCard = card;
     };
+
     @action.bound unselectCards() {
         this.chosenCard = undefined;
         this.enemyCard=undefined;
@@ -37,9 +41,18 @@ class CardStore {
     };
 
     @observable error = '';
-    @observable playersFromServer;
+    @observable playersFromServer = [];
+    @observable middleFromServer = [];
+    @observable usedFromServer = [];
+
+    @action.bound fetchSavings(){
+      this.fetchPlayers();
+      this.fetchMiddle();
+      this.fetchUsed();
+    }
+
     @action.bound fetchPlayers() {
-        return fetch('http://localhost:3000/players', {
+        return fetch('http://localhost:3000/save/players', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -51,7 +64,33 @@ class CardStore {
                 if (response.status >= 200 && response.status < 300) {
                     response.json().then(json => {
                         this.playersFromServer = json.players;
-                        console.log(this.playersFromServer);
+                    });
+
+                } else {
+                    this.error = "Error on fetching";
+                }
+            })
+            .catch(
+                error => {
+                    this.error = "Error on fetching";
+                    throw error;
+                }
+            );
+    }
+
+    @action.bound fetchMiddle() {
+        return fetch('http://localhost:3000/save/middle', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    response.json().then(json => {
+                        this.middleFromServer = json.cardsInMiddle;
                     });
 
                 } else {
@@ -67,8 +106,37 @@ class CardStore {
     }
 
 
-    @action addNewPlayer(newPlayer) {
-        return fetch('http://localhost:3000/players/new', {
+    @action.bound fetchUsed() {
+        return fetch('http://localhost:3000/save/used', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    response.json().then(json => {
+                        this.usedFromServer = json.usedCards;
+                    });
+
+                } else {
+                    this.error = "Error on fetching";
+                }
+            })
+            .catch(
+                error => {
+                    this.error = "Error on fetching";
+                    throw error;
+                }
+            );
+    }
+
+
+
+    @action.bound addNewPlayer(newPlayer,active) {
+        return fetch('http://localhost:3000/save/new', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -80,31 +148,96 @@ class CardStore {
                 playerCardOne : newPlayer.playerCards[0].value.toString(),
                 playerCardTwo : newPlayer.playerCards[1].value.toString(),
                 playerCardThree : newPlayer.playerCards[2].value.toString(),
-                playerCardFour : newPlayer.playerCards[3].value.toString()
+                playerCardFour : newPlayer.playerCards[3].value.toString(),
+                activePlayer: 0,
             })
-          }).then(response => {
-                if (response.status >= 200 && response.status < 300) {
-                    response.json().then(json => {
-                        console.log(json);
-                        this.fetchPlayers();
-                    });
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("player added");
+                       this.fetchSavings();
+                  });
 
-                } else {
-                    this.error = "Error on fetching";
-                }
-            })
-            .catch(
-                error => {
-                    this.error = "Error on fetching";
-                    throw error;
-                }
-            );
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
     }
 
 
+    @action.bound addMiddleCard(newCard) {
+        return fetch('http://localhost:3000/save/newMiddle', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                value: newCard.value.toString(),
+            })
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("MiddleCard added");
+                       this.fetchSavings();
+                  });
 
-    @action deletePlayer(playerName) {
-        return fetch('http://localhost:3000/players/delete/' + playerName, {
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
+    }
+
+
+    @action.bound addUsedCard(newCard) {
+        return fetch('http://localhost:3000/save/newUsed', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                value: newCard.value.toString(),
+            })
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("UsedCard added");
+                       this.fetchSavings();
+                  });
+
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
+    }
+
+
+    @action.bound deleteAll() {
+        return fetch('http://localhost:3000/save/delete/', {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
@@ -116,8 +249,8 @@ class CardStore {
             .then(response => {
                 if (response.status >= 200 && response.status < 300) {
                     response.json().then(json => {
-                        console.log("player deleted");
-                         this.fetchCats();
+                        console.log("everything deleted");
+                         this.fetchSavings();
                     });
 
                 } else {
@@ -133,7 +266,7 @@ class CardStore {
     }
 
     @action editPlayer(editPlayer) {
-        return fetch('http://localhost:3000/players/edit/' + editPlayer.playerName, {
+        return fetch('http://localhost:3000/save/edit/' + editPlayer.playerName, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -152,7 +285,7 @@ class CardStore {
                 if (response.status >= 200 && response.status < 300) {
                     response.json().then(json => {
                         console.log("Player updated");
-                         this.fetchPlayers();
+                         this.fetchSavings();
                     });
 
                 } else {

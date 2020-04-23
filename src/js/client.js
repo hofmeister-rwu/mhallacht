@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Styles from "../stylesheets/custom.css";
+import Styles from "../stylesheets/custom.less";
 import Layout from "./pages/Layout";
 // Integration von Semantic UI
 //

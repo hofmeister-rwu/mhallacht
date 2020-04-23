@@ -1,0 +1,51 @@
+@cardWidth:140px;
+@cardHeight:200px;
+@cardMargin:20px;
+
+.deck-block{
+  padding:@cardMargin;
+}
+.deckHeading{
+  text-align: center;
+}
+.deck{
+  position:relative;
+  display:flex;
+  text-align:center;
+  justify-content: center;
+}
+.deck.stackCards{
+
+}
+.deck.stackCards .card{
+  margin-left:(@cardWidth*-1+5px);
+}
+.deck.stackCards .card:first-child{
+  margin-left:@cardMargin;
+}
+.deck.playerCards .card{
+  margin: auto @cardMargin;
+}
+.card{
+  height: @cardHeight;
+  width:@cardWidth;
+  position:relative;
+
+}
+.card-down{
+    color:transparent;
+}
+body{
+  //height:100vh;
+  //width:100vw;
+  //position:relative;
+  //overflow:hidden;
+}
+.generate-card-indexes(100);
+
+.generate-card-indexes(@n, @i: 1) when (@i =< @n) {
+  .card-@{i} {
+    z-index: (1000 - @i);
+  }
+  .generate-card-indexes(@n, (@i + 1));
+}

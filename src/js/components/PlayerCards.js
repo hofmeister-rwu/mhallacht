@@ -37,7 +37,10 @@ class PlayerCards extends React.Component{
         });
 
         return (
-          <CardDeck>{cards}</CardDeck>
+          <div class="deck-block">
+            <h2 class="deckHeading">{this.props.heading}</h2>
+            <div class="deck playerCards">{cards}</div>
+          </div>
         );
     }
 }

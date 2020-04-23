@@ -11,6 +11,7 @@ import ModalFooter from 'react-bootstrap/ModalFooter'
 
 import PlayerCards from "../components/PlayerCards"
 import StackCards from "../components/StackCards"
+import SaveModal from "../components/SaveModal"
 import CardStore from "../stores/cardStore"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
@@ -75,7 +76,29 @@ class Card {
         }
         this.cardsInMiddle=d.cards;
     }
+    load(playersDB, middleDB, usedDB) {
+      console.log(playersDB);
+      this.players.length=0;
+      for (var i = 0; i < playersDB.length; i++) {
+          this.players.push(new Player(playersDB[i].playerName));
+          var cardOne =  new Card(playersDB[i].playerCardOne,playersDB[i].playerName+"-Card-One");
+          var cardTwo =  new Card(playersDB[i].playerCardTwo,playersDB[i].playerName+"-Card-Two");
+          var cardThree =  new Card(playersDB[i].playerCardThree,playersDB[i].playerName+"-Card-Three");
+          var cardFour =  new Card(playersDB[i].playerCardFour,playersDB[i].playerName+"-Card-Four");
+          this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour];
+      }
+      this.cardsInMiddle.length =0;
+      for (var i = 0; i < middleDB.length; i++) {
+         this.cardsInMiddle.push(new Card (middleDB[i].value,middleDB[i].idCard));
+      }
+      this.usedCards.length =0;
+      for (var i = 0; i < usedDB.length; i++) {
+         this.usedCards.push(new Card (usedDB[i].value,usedDB[i].idCard));
+      }
+    }
 }
+
+
 
 
 
@@ -170,10 +193,12 @@ class Card {
     //Show one of the activePlayers Cards
     function show(card){
       if(card!=undefined){
+        var warning = "Please look away while " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " looks at their cards";
+        this.setState({alert:warning,warningshow:true});
 
           //if the Card to Show is defined, show the Card Value for 2 seconds
-          CardStore.selectShowCard(card);
-          setTimeout(() => {this.endTurn();}, 2000);
+          setTimeout(() => {CardStore.selectShowCard(card);}, 1000);
+          setTimeout(() => {this.endTurn();}, 6000);
 
           //after the Timer has run out, put the StackCard on the UsedCard Staple
           let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
@@ -245,50 +270,91 @@ class Card {
       }
     }
 
-    function save(playersFromServer){
-      if(playersFromServer==undefined){
+    function save(){
+        CardStore.deleteAll();
         for(let i = 0; i < this.gameBoard.players.length; i++){
-            CardStore.addNewPlayer(this.gameBoard.players[i]);
+          if(this.state.activePlayerIndex==i){
+              CardStore.addNewPlayer(this.gameBoard.players[i],0);
+          }else{
+              CardStore.addNewPlayer(this.gameBoard.players[i],0);
+          }
         }
-      }else{
-        for(let i = 0; i < this.gameBoard.players.length; i++){
-            CardStore.editPlayer(this.gameBoard.players[i]);
+        for(let i = 0; i < this.gameBoard.cardsInMiddle.length; i++){
+            CardStore.addMiddleCard(this.gameBoard.cardsInMiddle[i]);
         }
-      }
-      CardStore.fetchPlayers();
+        for(let i = 0; i < this.gameBoard.usedCards.length; i++){
+            CardStore.addUsedCard(this.gameBoard.usedCards[i]);
+        }
+
+        CardStore.fetchSavings();
+
+        this.setState({saveshow:true});
+
+
     }
 
-    //ModalFunction
-    function handleModalClose(){
-        this.setState({warningshow:false});
+    function roundZero(){
+      var warning = "Please look away while " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " looks at their cards";
+      this.setState({alert:warning,warningshow:true});
+      var leftCard= this.gameBoard.players[this.state.activePlayerIndex].playerCards[0];
+      var rightCard= this.gameBoard.players[this.state.activePlayerIndex].playerCards[3];
+        setTimeout(() => {CardStore.selectShowCard(leftCard)}, 3000);
+        setTimeout(() => {CardStore.selectShowCard(rightCard)}, 6000);
+        setTimeout(() => {this.endTurn()}, 9000);
+
     }
 
 
-// durch die Annotation @observer
 @observer
 export default class Game extends React.Component {
   @observable gameBoard = new Board();
 
   constructor(props){
     super(props);
-        this.gameBoard.start(props.players);
+      switch (props.submit){
+        case "new":
+          this.gameBoard.start(props.players);
+          break;
+        case "load":
+          this.gameBoard.load(props.playerArray, props.middleArray, props.usedArray);
+          break;
+        default:
+          this.gameBoard.start(props.players);
+          break;
+      }
         this.state = {
-          round:1,
-          activePlayerIndex:0,
+          round:this.props.round,
+          activePlayerIndex:this.props.activePlayerIndex,
           alert:"",
           warningshow:false,
+          saveshow:false,
           endRound:"",
           endPlayer:"",
           end:false,
-        }
+        };
     this.endRound=endRound.bind(this);
     this.endTurn=endTurn.bind(this);
     this.checkEndGame=checkEndGame.bind(this);
+    CardStore.fetchSavings();
   }
     render() {
      console.log(this.gameBoard);
-     const {playersFromServer} = CardStore;
-     console.log(playersFromServer);
+     var {playersFromServer} = CardStore;
+     var savedPlayers;
+     if(playersFromServer!=undefined){
+       savedPlayers = [...playersFromServer];
+     }
+     var {middleFromServer} = CardStore;
+     var savedMiddle;
+     if(middleFromServer!=undefined){
+       savedMiddle = [...middleFromServer];
+     }
+     var {usedFromServer} = CardStore;
+     var savedUsed;
+     if(usedFromServer!=undefined){
+       savedUsed = [...usedFromServer];
+     }
+
 
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
@@ -302,7 +368,7 @@ export default class Game extends React.Component {
                 cardClick=CardStore.selectEnemyCard;
               }
           }
-          return(<div key={item.playerName}><h2>{item.playerName}</h2><PlayerCards item={item.playerCards} cardClick={cardClick}/></div>);
+          return(<div key={item.playerName}><PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick}/></div>);
       });
 
       //Load Cards from the CardStore
@@ -311,72 +377,89 @@ export default class Game extends React.Component {
       const {stackCard} = CardStore;
       const {showCard} = CardStore;
 
-      //Only Show DrawButton if there is no card already drawn and Game isn't over
-      let drawButton;
-      if(stackCard==undefined && !this.state.end){
-        drawButton=
-        <Button onClick={draw.bind(this)}>Draw Card</Button>;
-      }
 
+
+
+      //Only Show Info once Game has really started
+      var gameInfo =
+      <Alert variant="primary">Your turn, {this.gameBoard.players[this.state.activePlayerIndex].playerName}</Alert>;
+      var drawButton;
       //Only show Buttons if a Card has been drawn and the Game isn't over
       let throwButton;
       let swapStackButton;
       let swapPlayerButton;
       let showButton;
 
-      if(stackCard!=undefined && !this.state.end){
-        throwButton = <Button onClick={throwCards.bind(this)}>Throw</Button>;
 
-        //Only show SwapStackButton if the Card you've drawn is not an ActionCard
-        if(stackCard.value!="show" &&stackCard.value!="swap"){
-          swapStackButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Swap with First Card from Stack</Button>;
+      if(this.state.round>0){
+        gameInfo=<div>
+        <Alert variant="primary">Runde {this.state.round}</Alert>
+        <Alert variant="primary">Your turn, {this.gameBoard.players[this.state.activePlayerIndex].playerName}</Alert>
+        </div>;
+        //Only Show DrawButton if there is no card already drawn and Game isn't over
+        if(stackCard==undefined && !this.state.end){
+          drawButton=
+          <Button onClick={draw.bind(this)}>Draw Card</Button>;
         }
 
-        //Only show SwapPlayerButton if the Card you've drawn is a Swap Card
-        if(stackCard.value=="swap"){
-          swapPlayerButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Swap with Enemy Card</Button>;
-        }
+        if(stackCard!=undefined && !this.state.end){
+          throwButton = <Button onClick={throwCards.bind(this)}>Throw</Button>;
 
-        //Only Show ShowButton if the card you've drawn is a show Card
-        if(stackCard.value=="show"){
-          showButton=
-          <Button onClick={show.bind(this,chosenCard)}>Show Card</Button>;
+          //Only show SwapStackButton if the Card you've drawn is not an ActionCard
+          if(stackCard.value!="show" &&stackCard.value!="swap"){
+            swapStackButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Swap with First Card from Stack</Button>;
+          }
+
+          //Only show SwapPlayerButton if the Card you've drawn is a Swap Card
+          if(stackCard.value=="swap"){
+            swapPlayerButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Swap with Enemy Card</Button>;
+          }
+
+          //Only Show ShowButton if the card you've drawn is a show Card
+          if(stackCard.value=="show"){
+            showButton=
+            <Button onClick={show.bind(this,chosenCard)}>Show Card</Button>;
+          }
         }
-      }
-      //Only show EndGameButton if it hasn't already been pressed
-      var endGameButton;
-      if (this.state.endRound==""){
-        endGameButton = <Button onClick={setEndGame.bind(this)}>End Game</Button>;
+        //Only show EndGameButton if it hasn't already been pressed
+        var endGameButton;
+        if (this.state.endRound==""){
+          endGameButton = <Button onClick={setEndGame.bind(this)}>End Game</Button>;
+        }
+      }else{
+        showButton=<Button onClick={roundZero.bind(this)}>Show First Cards</Button>;
       }
 
         return (
             <div>
-            <Alert variant="primary">Runde {this.state.round}</Alert>
-            <Alert variant="primary">Your turn, {this.gameBoard.players[this.state.activePlayerIndex].playerName}</Alert>
-              <Modal show={this.state.warningshow} onHide={handleModalClose.bind(this)}>
+            {gameInfo}
+              <Modal show={this.state.warningshow} onHide={()=>this.setState({warningshow:false})}>
                 <Modal.Header closeButton>
                 </Modal.Header>
                 <Modal.Body><Alert variant="warning">{this.state.alert}</Alert></Modal.Body>
                 <Modal.Footer>
-                  <Button variant="secondary" onClick={handleModalClose.bind(this)}>
+                  <Button variant="secondary" onClick={()=>this.setState({warningshow:false})}>
                     Got It
                   </Button>
                 </Modal.Footer>
               </Modal>
+              <Modal show={this.state.saveshow} onHide={()=>this.setState({saveshow:false})}>
+                <SaveModal playerLength={this.gameBoard.players.length} middleLength={this.gameBoard.cardsInMiddle.length} usedLength={this.gameBoard.usedCards.length}/>
+              </Modal>
               {playerCards}
-              <h2>Kartenstapel</h2>
-              <StackCards item={this.gameBoard.cardsInMiddle} stack={true}/>
+              <div class="row">
+                <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true}/>
+                <br/><br/>
+                <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
+              </div>
               <br/><br/>
-              <h2>Ablegestapel</h2>
-              <StackCards item={this.gameBoard.usedCards} stack={false}/>
-              <br/><br/>
+              {drawButton}
+              {throwButton}
               {swapStackButton}
               {swapPlayerButton}
-              {throwButton}
-              {drawButton}
               {showButton}
               {endGameButton}
-              <Button onClick={save.bind(this,playersFromServer)}>Save</Button>
+              <Button onClick={save.bind(this)}>Save</Button>
             </div>
         );
     }

@@ -4,6 +4,8 @@ import { observer } from "mobx-react";
 import Game from "../components/Game"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+import CardStore from "../stores/cardStore"
+import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
@@ -19,75 +21,102 @@ function changePlayerNumber(value){
 }
 function addPlayer1Name(e){
   console.log(e.target.value);
-    this.playerOne = e.target.value;
+    this.setState({playerOne : e.target.value});
 }
 function addPlayer2Name(e){
   console.log(e.target.value);
-  this.playerTwo = e.target.value;
+    this.setState({playerTwo : e.target.value});
 }
 function addPlayer3Name(e){
   console.log(e.target.value);
-  this.playerThree = e.target.value;
+    this.setState({playerThree : e.target.value});
 }
 function addPlayer4Name(e){
   console.log(e.target.value);
-  this.playerFour = e.target.value;
+    this.setState({playerFour : e.target.value});
 }
 function addPlayer5Name(e){
   console.log(e.target.value);
-  this.playerFive = e.target.value;
+    this.setState({playerFive : e.target.value});
 }
 function addPlayer6Name(e){
   console.log(e.target.value);
-  this.playerSix= e.target.value;
+    this.setState({playerSix : e.target.value});
 }
 function submit(){
-  if(this.playerOne!=undefined){
-    this.state.players.push(this.playerOne);
+  if(this.state.playerOne.length>0){
+    this.state.players.push(this.state.playerOne);
   }
-  if(this.playerTwo!=undefined){
-      this.state.players.push(this.playerTwo);
+  if(this.state.playerTwo.length>0){
+      this.state.players.push(this.state.playerTwo);
     }
-  if(this.playerThree!=undefined){
-    this.state.players.push(this.playerThree);
+  if(this.state.playerThree.length>0){
+    this.state.players.push(this.state.playerThree);
   }
-  if(this.playerFour!=undefined){
-    this.state.players.push(this.playerFour);
+  if(this.state.playerFour.length>0){
+    this.state.players.push(this.state.playerFour);
   }
-  if(this.playerFive!=undefined){
-    this.state.players.push(this.playerFive);
+  if(this.state.playerFive.length>0){
+    this.state.players.push(this.state.playerFive);
   }
-  if(this.playerSix!=undefined){
-    this.state.players.push(this.playerSix);
+  if(this.state.playerSix.length>0){
+    this.state.players.push(this.state.playerSix);
   }
-  this.setState({submit:true})
+  this.setState({submit:"new"})
+}
+function load(){
+  this.setState({submit:"load"});
 }
 @observer
 export default class Layout extends React.Component {
   constructor(){
     super();
-    this.playerOne;
-    this.playerTwo;
-    this.playerThree;
-    this.playerFour;
-    this.playerFive;
-    this.playerSix;
     console.log(this.playerSix);
     this.state = {
-      numberofPlayers : 1,
+      numberofPlayers : 2,
       players : [],
-      submit: false
+      submit: false,
+      playerOne: "",
+      playerTwo: "",
+      playerThree: "",
+      playerFour: "",
+      playerFive:"",
+      playerSix:"",
     }
+      CardStore.fetchSavings();
   }
     render() {
+
+      //import saved Game from Store/Database
+      var {playersFromServer} = CardStore;
+      var {middleFromServer} = CardStore;
+      var {usedFromServer} = CardStore;
+      var playerArray;
+      var middleArray;
+      var usedArray;
+      if(playersFromServer!=undefined){
+        playerArray = [...playersFromServer];
+      }
+      if(middleFromServer!=undefined){
+        middleArray = [...middleFromServer];
+      }
+      if(usedFromServer!=undefined){
+        usedArray = [...usedFromServer];
+      }
+      // console.log(playerArray);
+      // console.log(middleArray);
+      // console.log(usedArray);
+
       let game;
-      if (this.state.submit){
-        game=<Game players={this.state.players}/>;
+      if (this.state.submit=="new"){
+        game=<Game players={this.state.players} submit={this.state.submit} round={0} activePlayerIndex={0}/>;
+      }else if(this.state.submit =="load"){
+        game = <Game playerArray={playerArray} middleArray={middleArray} usedArray={usedArray} submit={this.state.submit} round={2} activePlayerIndex={1}/>
       }
       let form = [];
       if(!this.state.submit){
         form.push(
-          <Form>
+          <Form key="PlayerNumber">
             <div className="mb-3">
               <Form.Check inline label="2" name="playerNumber" type='radio' id={`inline-radio-2`} onClick={changePlayerNumber.bind(this,2)}/>
               <Form.Check inline label="3" name="playerNumber" type='radio' id={`inline-radio-3`} onClick={changePlayerNumber.bind(this,3)}/>
@@ -120,14 +149,20 @@ export default class Layout extends React.Component {
               break;
           }
           form.push(
-          <Form.Group>
+          <Form.Group key={"NameofPlayer".concat(i+1)}>
           <Form.Control type="text" placeholder={"Player "+(i+1)} onChange={changeFunction}/>
           </Form.Group>);
-          console.log(form);
         }
-        form.push(<Button variant="primary" type="submit" onClick={submit.bind(this)}>
-        Submit
-        </Button>);
+        if(this.state.playerOne.length > 0 && this.state.playerTwo.length >0){
+          form.push(<Button key="New" variant="primary" type="submit" onClick={submit.bind(this)}>
+          New Game
+          </Button>)
+        }
+        if(playerArray.length>0){
+          form.push(<Button key="load" variant="warning" type="submit" onClick={load.bind(this)}>
+          Load
+          </Button>);
+        }
       }
 
         return (

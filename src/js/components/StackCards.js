@@ -11,15 +11,15 @@ class PlayerCards extends React.Component{
       //Get ChosenCard from CardStore
       let {chosenCard} = CardStore;
       let {stackCard} = CardStore;
+      var counter = 1;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
-        var cardClass = "bg-warning";
-        if(card ==chosenCard){
-          cardClass = "bg-danger";
-        }
+        var cardClass ="bg-warning";
         if(card!=stackCard && this.props.stack==true){
           cardClass+=" card-down";
         }
+        cardClass+=" card-"+counter;
+        counter++;
           return (
             <Card key={card.id} className={cardClass}>
               <Card.Body>
@@ -29,9 +29,10 @@ class PlayerCards extends React.Component{
           );
         });
         return (
-          <CardDeck>
-          {cards}
-          </CardDeck>
+          <div class="deck-block">
+            <h2 class="deckHeading">{this.props.heading}</h2>
+            <div class="stackCards deck">{cards}</div>
+          </div>
         );
     }
 }
