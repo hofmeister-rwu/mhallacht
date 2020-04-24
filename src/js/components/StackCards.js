@@ -29,7 +29,7 @@ class PlayerCards extends React.Component{
           );
         });
         return (
-          <div class="deck-block">
+          <div class="deckContainer">
             <h2 class="deckHeading">{this.props.heading}</h2>
             <div class="stackCards deck">{cards}</div>
           </div>

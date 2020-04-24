@@ -39,6 +39,7 @@ export default class SaveModal extends React.Component {
      console.log("SaveModal: Saved Players")
      console.log(this.props.playerLength);
      console.log(playerArray.length);
+
      var {middleFromServer} = CardStore;
      var middleArray;
      if(middleFromServer!=undefined){
@@ -47,6 +48,7 @@ export default class SaveModal extends React.Component {
      console.log("SaveModal: Saved Middle")
      console.log(this.props.middleLength);
      console.log(middleArray.length);
+
      var {usedFromServer} = CardStore;
      var usedArray;
      if(usedFromServer!=undefined){
@@ -55,8 +57,18 @@ export default class SaveModal extends React.Component {
      console.log("SaveModal: Saved Used")
      console.log(this.props.usedLength);
      console.log(usedArray.length);
+
+     var {round} = CardStore;
+     var roundFromServer;
+     if(round!=undefined){
+       roundFromServer=round.value;
+     }
+     console.log("SaveModal: Saved Round")
+     console.log(this.props.round);
+     console.log(roundFromServer);
+
      var alert = [];
-     if(this.props.playerLength==playerArray.length && this.props.middleLength==middleArray.length && this.props.usedLength==usedArray.length){
+     if(this.props.playerLength==playerArray.length && this.props.middleLength==middleArray.length && this.props.usedLength==usedArray.length && this.props.round==roundFromServer){
        alert.push(<h2 key="Player-Heading"> Saved Players </h2>);
        const savedPlayers = playerArray.map((player, key) =>{
            return(<div key={player.idPlayer}><p>{player.playerName}</p></div>);
@@ -64,6 +76,7 @@ export default class SaveModal extends React.Component {
        alert.push(savedPlayers);
        alert.push(<h2 key="MiddleCards"> Cards in Middle: {middleArray.length}</h2>);
        alert.push(<h2 key="UsedCards"> Used Cards: {usedArray.length}</h2>);
+       alert.push(<h2 key="Round"> Round: {roundFromServer}</h2>);
      }else{
        alert.push("loading...")
      }
@@ -76,7 +89,7 @@ export default class SaveModal extends React.Component {
                 <Modal.Body><Alert variant="warning"></Alert>{alert}</Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" href="/">
-                    Leave
+                    Quit
                   </Button>
                 </Modal.Footer>
             </div>

@@ -253,10 +253,12 @@ class Card {
             this.gameBoard.players[i].playerValue=0;
               for (var j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
                 if(this.gameBoard.players[i].playerCards[j].value!="show" && this.gameBoard.players[i].playerCards[j].value!="swap"){
-                    this.gameBoard.players[i].playerValue += this.gameBoard.players[i].playerCards[j].value;
+                    var integer = parseInt(this.gameBoard.players[i].playerCards[j].value, 10);
+                    this.gameBoard.players[i].playerValue += integer;
                 }else{
                   this.gameBoard.players[i].playerValue += 15;
                 }
+                console.log(this.gameBoard.players[i].playerValue)
               }
         }
         var endPlayers=[...this.gameBoard.players];
@@ -274,9 +276,9 @@ class Card {
         CardStore.deleteAll();
         for(let i = 0; i < this.gameBoard.players.length; i++){
           if(this.state.activePlayerIndex==i){
-              CardStore.addNewPlayer(this.gameBoard.players[i],0);
+              CardStore.addNewPlayer(this.gameBoard.players[i],true);
           }else{
-              CardStore.addNewPlayer(this.gameBoard.players[i],0);
+              CardStore.addNewPlayer(this.gameBoard.players[i],false);
           }
         }
         for(let i = 0; i < this.gameBoard.cardsInMiddle.length; i++){
@@ -285,6 +287,8 @@ class Card {
         for(let i = 0; i < this.gameBoard.usedCards.length; i++){
             CardStore.addUsedCard(this.gameBoard.usedCards[i]);
         }
+        console.log(this.state.round);
+        CardStore.addRound(this.state.round);
 
         CardStore.fetchSavings();
 
@@ -359,16 +363,18 @@ export default class Game extends React.Component {
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
           var cardClick;
+          var deckClass ="deckContainer ";
           //OnClick of Cards is only defined if Game ins't over yet
           if(!this.state.end){
             //onClick stores the card either in chosenCard or enemyCard depending if the Card belongs to the active Player or not
               if(item==this.gameBoard.players[this.state.activePlayerIndex]){
                 cardClick= CardStore.selectCard;
+                deckClass+= "active"
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
           }
-          return(<div key={item.playerName}><PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick}/></div>);
+          return(<div key={item.playerName}><PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass}/></div>);
       });
 
       //Load Cards from the CardStore
@@ -444,13 +450,17 @@ export default class Game extends React.Component {
                 </Modal.Footer>
               </Modal>
               <Modal show={this.state.saveshow} onHide={()=>this.setState({saveshow:false})}>
-                <SaveModal playerLength={this.gameBoard.players.length} middleLength={this.gameBoard.cardsInMiddle.length} usedLength={this.gameBoard.usedCards.length}/>
+                <SaveModal playerLength={this.gameBoard.players.length} middleLength={this.gameBoard.cardsInMiddle.length} usedLength={this.gameBoard.usedCards.length} round={this.state.round}/>
               </Modal>
               {playerCards}
-              <div class="row">
-                <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true}/>
+              <div class="row col-10 mx-auto">
+                <div class="col-6">
+                  <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true}/>
+                </div>
                 <br/><br/>
-                <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
+                <div class="col-6">
+                  <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
+                </div>
               </div>
               <br/><br/>
               {drawButton}

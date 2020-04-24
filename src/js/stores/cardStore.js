@@ -44,11 +44,13 @@ class CardStore {
     @observable playersFromServer = [];
     @observable middleFromServer = [];
     @observable usedFromServer = [];
+    @observable round = {value:undefined};
 
     @action.bound fetchSavings(){
       this.fetchPlayers();
       this.fetchMiddle();
       this.fetchUsed();
+      this.fetchRound();
     }
 
     @action.bound fetchPlayers() {
@@ -133,7 +135,32 @@ class CardStore {
             );
     }
 
+    @action.bound fetchRound() {
+        return fetch('http://localhost:3000/save/round', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    response.json().then(json => {
+                        this.round = json.round[0];
+                    });
 
+                } else {
+                    this.error = "Error on fetching";
+                }
+            })
+            .catch(
+                error => {
+                    this.error = "Error on fetching";
+                    throw error;
+                }
+            );
+    }
 
     @action.bound addNewPlayer(newPlayer,active) {
         return fetch('http://localhost:3000/save/new', {
@@ -149,7 +176,7 @@ class CardStore {
                 playerCardTwo : newPlayer.playerCards[1].value.toString(),
                 playerCardThree : newPlayer.playerCards[2].value.toString(),
                 playerCardFour : newPlayer.playerCards[3].value.toString(),
-                activePlayer: 0,
+                activePlayer: active,
             })
           })
           .then(response => {
@@ -170,7 +197,6 @@ class CardStore {
               }
           );
     }
-
 
     @action.bound addMiddleCard(newCard) {
         return fetch('http://localhost:3000/save/newMiddle', {
@@ -235,6 +261,36 @@ class CardStore {
           );
     }
 
+    @action.bound addRound(round) {
+        return fetch('http://localhost:3000/save/newRound', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                value: round,
+            })
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("Round added");
+                       this.fetchSavings();
+                  });
+
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
+    }
 
     @action.bound deleteAll() {
         return fetch('http://localhost:3000/save/delete/', {

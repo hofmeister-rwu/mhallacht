@@ -91,9 +91,11 @@ export default class Layout extends React.Component {
       var {playersFromServer} = CardStore;
       var {middleFromServer} = CardStore;
       var {usedFromServer} = CardStore;
+      var {round} = CardStore;
       var playerArray;
       var middleArray;
       var usedArray;
+      var roundFromServer;
       if(playersFromServer!=undefined){
         playerArray = [...playersFromServer];
       }
@@ -103,16 +105,23 @@ export default class Layout extends React.Component {
       if(usedFromServer!=undefined){
         usedArray = [...usedFromServer];
       }
-      // console.log(playerArray);
-      // console.log(middleArray);
-      // console.log(usedArray);
+      if(round!=undefined){
+        roundFromServer=round.value;
+      }
 
       let game;
       if (this.state.submit=="new"){
         game=<Game players={this.state.players} submit={this.state.submit} round={0} activePlayerIndex={0}/>;
       }else if(this.state.submit =="load"){
-        game = <Game playerArray={playerArray} middleArray={middleArray} usedArray={usedArray} submit={this.state.submit} round={2} activePlayerIndex={1}/>
+        var activePlayer =0;
+        for (var i = 0; i < playerArray.length; i++) {
+          if(playerArray[i].activePlayer==true){
+            activePlayer=i;
+          }
+        }
+        game = <Game playerArray={playerArray} middleArray={middleArray} usedArray={usedArray} submit={this.state.submit} round={roundFromServer} activePlayerIndex={activePlayer}/>
       }
+
       let form = [];
       if(!this.state.submit){
         form.push(

@@ -2,8 +2,23 @@
 @cardHeight:200px;
 @cardMargin:20px;
 
-.deck-block{
+body{
+  //height:100vh;
+  //width:100vw;
+  //position:relative;
+  //overflow:hidden;
+}
+
+.mx-auto{
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.deckContainer{
   padding:@cardMargin;
+}
+.deckContainer.active{
+  background-color:#CCE5FF;
 }
 .deckHeading{
   text-align: center;
@@ -34,12 +49,6 @@
 }
 .card-down{
     color:transparent;
-}
-body{
-  //height:100vh;
-  //width:100vw;
-  //position:relative;
-  //overflow:hidden;
 }
 .generate-card-indexes(100);
 
