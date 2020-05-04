@@ -32,12 +32,20 @@ class CardStore {
     @action.bound selectShowCard(card) {
         this.showCard = card;
     };
+    @observable doubleCards=[];
+    @action.bound selectDoubleCards(cardOne,cardTwo) {
+      console.log("Do you go here?");
+        this.doubleCards.push(cardOne);
+        this.doubleCards.push(cardTwo);
+        console.log(this.doubleCards);
+    };
 
     @action.bound unselectCards() {
         this.chosenCard = undefined;
         this.enemyCard=undefined;
         this.showCard=undefined;
         this.stackCard=undefined;
+        this.doubleCards=[];
     };
 
     @observable error = '';

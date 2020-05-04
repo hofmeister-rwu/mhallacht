@@ -6,22 +6,32 @@ import CardStore from "../stores/cardStore";
 import Game from "../components/Game"
 
 
-class PlayerCards extends React.Component{
+class StackCards extends React.Component{
     render() {
-      //Get ChosenCard from CardStore
-      let {chosenCard} = CardStore;
-      let {stackCard} = CardStore;
+      let clickFunction;
+
       var counter = 1;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
         var cardClass ="bg-warning";
-        if(card!=stackCard && this.props.stack==true){
+        if(card!=CardStore.stackCard && this.props.stack==true && !CardStore.doubleCards.includes(card)){
           cardClass+=" card-down";
+        }
+        if(CardStore.doubleCards.includes(card)){
+          cardClass+=" double-card";
+          clickFunction = () => {
+            for (var i = 0; i < CardStore.doubleCards.length; i++) {
+              if(CardStore.doubleCards[i]!=card){
+                this.props.deleteFunction(CardStore.doubleCards[i]);
+              }
+            }
+            CardStore.unselectCards();
+            CardStore.selectStackCard(card);};
         }
         cardClass+=" card-"+counter;
         counter++;
           return (
-            <Card key={card.id} className={cardClass}>
+            <Card key={card.id} className={cardClass} onClick={clickFunction}>
               <Card.Body>
                 <Card.Title type="dark">{card.value}</Card.Title>
               </Card.Body>
@@ -36,4 +46,4 @@ class PlayerCards extends React.Component{
         );
     }
 }
-export default PlayerCards;
+export default StackCards;

@@ -116,6 +116,17 @@ class Card {
         this.endTurn();
     }
 
+    function throwCardbyObject(card){
+      var cardIndex = 0;
+      for (let i = 0; i < this.gameBoard.cardsInMiddle.length; i++) {
+        if(this.gameBoard.cardsInMiddle[i]==card){
+          cardIndex = i;
+        }
+      }
+      let thrownCard = this.gameBoard.cardsInMiddle.splice(cardIndex,1);
+      this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+    }
+
     //Swap a Card from the current player with the first Card from the Stack
     function swapStackCard(chosenCard){
         //if a Card has been chosen, swap the first Card in the Stack with the chosenCard
@@ -130,7 +141,11 @@ class Card {
             let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
             this.gameBoard.usedCards.splice(0,0,playerCard[0]);
             this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,0,stackCard[0]);
-            CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+            if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
+              CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+            }else{
+              this.endTurn();
+            }
             //this.endTurn();
 
         //if the chosenCard hasn't been defined yet, give out a warning
@@ -153,7 +168,11 @@ class Card {
             let stackCard = this.gameBoard.usedCards.splice(0,1);
             this.gameBoard.usedCards.splice(0,0,playerCard[0]);
             this.gameBoard.players[this.state.activePlayerIndex].playerCards.splice(chosenCardIndex,0,stackCard[0]);
-            CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+            if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
+              CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+            }else{
+              this.endTurn();
+            }
 
         //if the chosenCard hasn't been defined yet, give out a warning
         }else{
@@ -217,6 +236,11 @@ class Card {
 
     //After the activePlayer has performed an action his Turn is over
     function skipNext(){
+      // put the StackCard on the UsedCard Staple
+      if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
+        let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
+        this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+      }
       //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
         if(this.state.activePlayerIndex+2<this.gameBoard.players.length){
           this.setState({activePlayerIndex:this.state.activePlayerIndex+2,});
@@ -226,30 +250,31 @@ class Card {
           console.log(this.state.activePlayerIndex+2-this.gameBoard.players.length);
           this.endRound(this.state.activePlayerIndex+2-this.gameBoard.players.length);
         }
-        // put the StackCard on the UsedCard Staple and EndTUrn
-        if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
-          let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
-          this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
-        }
+
 
     }
 
     function drawDouble(){
-      console.log("We're gonna do this some Day i guess");
-      this.endTurn();
+      console.log("We're gonna do this TODAY i guess");
+
       if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
       }
+
+        console.log(this.gameBoard.cardsInMiddle[0]);
+        console.log(this.gameBoard.cardsInMiddle[1]);
+        CardStore.selectDoubleCards(this.gameBoard.cardsInMiddle[0],this.gameBoard.cardsInMiddle[1]);
+        //CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
     }
 
 
     function showCardModal(card, secondCard){
         var warning = "Please look away while " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " looks at their cards";
         this.setState({alert:warning,warningshow:true});
-      if(card!=undefined && secondCard !=undefined){
+      if(card!=undefined && secondCard.value !=undefined){
         this.setState({modalClose:() => {this.closeModal(); this.showFirst(card,secondCard);}});
-      }else if(card!=undefined &&secondCard==undefined){
+      }else if(card!=undefined &&secondCard.value==undefined){
         this.setState({modalClose:() => {this.closeModal(); this.show(card);}});
       //if no card is chosen give out a warning
       }else{
@@ -265,6 +290,7 @@ class Card {
           setTimeout(() => {this.endTurn();}, 2000);
           //after the Timer has run out, put the StackCard on the UsedCard Staple
           if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
+            console.log("Do you go here?");
             let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
             this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
           }
@@ -412,7 +438,7 @@ export default class Game extends React.Component {
     CardStore.fetchSavings();
   }
     render() {
-     console.log(this.gameBoard);
+     //console.log(this.gameBoard);
      var {playersFromServer} = CardStore;
      var savedPlayers;
      if(playersFromServer!=undefined){
@@ -454,6 +480,8 @@ export default class Game extends React.Component {
       const {enemyCard} = CardStore;
       const {stackCard} = CardStore;
       const {showCard} = CardStore;
+      let {doubleCards} = CardStore;
+      const doubleCardsfromStore = [...doubleCards];
 
 
 
@@ -541,7 +569,7 @@ export default class Game extends React.Component {
               {playerCards}
               <div class="row col-10 mx-auto">
                 <div class="col-6">
-                  <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true}/>
+                  <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
                 </div>
                 <br/><br/>
                 <div class="col-6">
