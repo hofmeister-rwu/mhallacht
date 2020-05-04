@@ -5,8 +5,7 @@
   "main": "client.js",
   "scripts": {
     "dev": "webpack-dev-server --config webpack.config.debug.js --content-base dev --inline --hot",
-    "build:prod": "webpack -p --progress --config webpack.config.js",
-    "build:dev": "webpack --config webpack.config.debug.js",
+    "build": "webpack -p --progress --config webpack.config.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

@@ -19,49 +19,23 @@ function changePlayerNumber(value){
   this.setState({numberofPlayers:value});
   console.log(this.state.numberofPlayers);
 }
-function addPlayer1Name(e){
-  console.log(e.target.value);
-    this.setState({playerOne : e.target.value});
-}
-function addPlayer2Name(e){
-  console.log(e.target.value);
-    this.setState({playerTwo : e.target.value});
-}
-function addPlayer3Name(e){
-  console.log(e.target.value);
-    this.setState({playerThree : e.target.value});
-}
-function addPlayer4Name(e){
-  console.log(e.target.value);
-    this.setState({playerFour : e.target.value});
-}
-function addPlayer5Name(e){
-  console.log(e.target.value);
-    this.setState({playerFive : e.target.value});
-}
-function addPlayer6Name(e){
-  console.log(e.target.value);
-    this.setState({playerSix : e.target.value});
+function addPlayerName(e){
+  let name = e.target.value;
+  let index = e.target.name;
+  if(this.state.players[index]!=undefined){
+    const newPlayers = [...this.state.players];
+    newPlayers[index] = name;
+    this.setState({ players:newPlayers });
+  }else{
+    this.setState(state => {
+        const players = state.players.concat(name);
+        return {
+          players
+        };
+      });
+  }
 }
 function submit(){
-  if(this.state.playerOne.length>0){
-    this.state.players.push(this.state.playerOne);
-  }
-  if(this.state.playerTwo.length>0){
-      this.state.players.push(this.state.playerTwo);
-    }
-  if(this.state.playerThree.length>0){
-    this.state.players.push(this.state.playerThree);
-  }
-  if(this.state.playerFour.length>0){
-    this.state.players.push(this.state.playerFour);
-  }
-  if(this.state.playerFive.length>0){
-    this.state.players.push(this.state.playerFive);
-  }
-  if(this.state.playerSix.length>0){
-    this.state.players.push(this.state.playerSix);
-  }
   this.setState({submit:"new"})
 }
 function load(){
@@ -75,13 +49,7 @@ export default class Layout extends React.Component {
     this.state = {
       numberofPlayers : 2,
       players : [],
-      submit: false,
-      playerOne: "",
-      playerTwo: "",
-      playerThree: "",
-      playerFour: "",
-      playerFive:"",
-      playerSix:"",
+      submit: false
     }
       CardStore.fetchSavings();
   }
@@ -136,33 +104,13 @@ export default class Layout extends React.Component {
           </Form>
         );
         for (var i = 0; i < this.state.numberofPlayers; i++) {
-          var changeFunction;
-          switch (i+1){
-            case 1:
-             changeFunction = addPlayer1Name.bind(this);
-             break;
-            case 2:
-              changeFunction = addPlayer2Name.bind(this);
-              break;
-            case 3:
-              changeFunction = addPlayer3Name.bind(this);
-              break;
-            case 4:
-              changeFunction = addPlayer4Name.bind(this);
-              break;
-            case 5:
-              changeFunction = addPlayer5Name.bind(this);
-              break;
-            case 6:
-              changeFunction = addPlayer6Name.bind(this);
-              break;
-          }
           form.push(
           <Form.Group key={"NameofPlayer".concat(i+1)}>
-          <Form.Control type="text" placeholder={"Player "+(i+1)} onChange={changeFunction}/>
+          <Form.Control type="text" name={i} placeholder={"Player "+(i+1)} onBlur={addPlayerName.bind(this)}/>
           </Form.Group>);
         }
-        if(this.state.playerOne.length > 0 && this.state.playerTwo.length >0){
+        console.log(this.state.players.length);
+        if(this.state.players.length>1){
           form.push(<Button key="New" variant="primary" type="submit" onClick={submit.bind(this)}>
           New Game
           </Button>)

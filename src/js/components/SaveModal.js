@@ -36,37 +36,24 @@ export default class SaveModal extends React.Component {
      if(playersFromServer!=undefined){
        playerArray = [...playersFromServer];
      }
-     console.log("SaveModal: Saved Players")
-     console.log(this.props.playerLength);
-     console.log(playerArray.length);
 
      var {middleFromServer} = CardStore;
      var middleArray;
      if(middleFromServer!=undefined){
        middleArray = [...middleFromServer];
      }
-     console.log("SaveModal: Saved Middle")
-     console.log(this.props.middleLength);
-     console.log(middleArray.length);
 
      var {usedFromServer} = CardStore;
      var usedArray;
      if(usedFromServer!=undefined){
        usedArray = [...usedFromServer];
      }
-     console.log("SaveModal: Saved Used")
-     console.log(this.props.usedLength);
-     console.log(usedArray.length);
 
      var {round} = CardStore;
      var roundFromServer;
      if(round!=undefined){
        roundFromServer=round.value;
      }
-     console.log("SaveModal: Saved Round")
-     console.log(this.props.round);
-     console.log(roundFromServer);
-
      var alert = [];
      if(this.props.playerLength==playerArray.length && this.props.middleLength==middleArray.length && this.props.usedLength==usedArray.length && this.props.round==roundFromServer){
        alert.push(<h2 key="Player-Heading"> Saved Players </h2>);
@@ -80,10 +67,8 @@ export default class SaveModal extends React.Component {
      }else{
        alert.push("loading...")
      }
-     console.log("Save Alert:")
-     console.log(alert);
         return (
-            <div>
+            <Modal show={this.props.saveshow} onHide={this.props.onHide}>
                 <Modal.Header closeButton>
                 </Modal.Header>
                 <Modal.Body><Alert variant="warning"></Alert>{alert}</Modal.Body>
@@ -92,7 +77,7 @@ export default class SaveModal extends React.Component {
                     Quit
                   </Button>
                 </Modal.Footer>
-            </div>
+            </Modal>
         );
     }
 }
