@@ -1,5 +1,6 @@
 let webpack = require('webpack');
 let path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     context: path.join(__dirname, "src"),
