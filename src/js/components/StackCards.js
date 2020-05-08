@@ -10,13 +10,25 @@ class StackCards extends React.Component{
     render() {
       let clickFunction;
 
-      var counter = 1;
+      let stackClass = "col-6";
+
+      let counter = 1;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
-        var cardClass ="bg-warning";
+        let cardClass ="bg-warning";
+
+        //all up cards
         if(card!=CardStore.stackCard && this.props.stack==true && !CardStore.doubleCards.includes(card)){
           cardClass+=" card-down";
         }
+
+        //StackCard
+        if(card==CardStore.stackCard){
+          cardClass+=" front-card";
+          stackClass+=" z-index-100";
+
+        }
+        //DoubleCards
         if(CardStore.doubleCards.includes(card)){
           cardClass+=" double-card";
           clickFunction = () => {
@@ -28,6 +40,8 @@ class StackCards extends React.Component{
             CardStore.unselectCards();
             CardStore.selectStackCard(card);};
         }
+
+        //Class to make Cards Overlap
         cardClass+=" card-"+counter;
         counter++;
           return (
@@ -39,9 +53,11 @@ class StackCards extends React.Component{
           );
         });
         return (
-          <div class="deckContainer">
-            <h2 class="deckHeading">{this.props.heading}</h2>
-            <div class="stackCards deck">{cards}</div>
+          <div class={stackClass}>
+            <div class="deckContainer">
+              <h2 class="deckHeading">{this.props.heading}</h2>
+              <div class="stackCards deck">{cards}</div>
+            </div>
           </div>
         );
     }

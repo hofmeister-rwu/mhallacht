@@ -455,23 +455,24 @@ export default class Game extends React.Component {
        savedUsed = [...usedFromServer];
      }
 
-
+     var counter = 0;
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
-          var cardClick;
-          var deckClass ="deckContainer ";
+          counter ++;
+          let cardClick;
+          let deckClass ="deckContainer player player-"+counter;
           //OnClick of Cards is only defined if Game ins't over yet
           if(!this.state.end){
             //onClick stores the card either in chosenCard or enemyCard depending if the Card belongs to the active Player or not
               if(item==this.gameBoard.players[this.state.activePlayerIndex]){
                 cardClick= CardStore.selectCard;
-                deckClass+= "active"
+                deckClass+= " active"
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
           }
-          return(<div key={item.playerName}>
-            <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass}/>
+          return(<div key={item.playerName} class="center players">
+            <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass} end={this.state.end}/>
             </div>);
       });
 
@@ -484,8 +485,6 @@ export default class Game extends React.Component {
       const doubleCardsfromStore = [...doubleCards];
 
 
-
-
       //Only Show Info once Game has really started
       let gameInfo = "";
       let drawButton;
@@ -495,7 +494,7 @@ export default class Game extends React.Component {
       let endGameButton;
 
       if(this.state.round>0){
-        gameInfo=<Alert variant="primary">Runde {this.state.round}</Alert>;
+        gameInfo=<Alert variant="primary">Runde {this.state.round} <Button class="save-button" onClick={save.bind(this)}>Save</Button></Alert> ;
         //Only Show DrawButton if there is no card already drawn and Game isn't over
         if(stackCard==undefined && !this.state.end){
           drawButton=
@@ -554,6 +553,7 @@ export default class Game extends React.Component {
         return (
             <div class="container">
             {gameInfo}
+
                 <AlertModal
                   show={this.state.warningshow}
                   onHide={this.state.modalClose}
@@ -566,23 +566,21 @@ export default class Game extends React.Component {
                   middleLength={this.gameBoard.cardsInMiddle.length}
                   usedLength={this.gameBoard.usedCards.length}
                   round={this.state.round}/>
+                  <div class="stacks">
+                    <div class="row col-6 mx-auto">
+                        <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
+                      <br/><br/>
+                        <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
+                    </div>
+                  </div>
               {playerCards}
-              <div class="row col-10 mx-auto">
-                <div class="col-6">
-                  <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
-                </div>
-                <br/><br/>
-                <div class="col-6">
-                  <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
-                </div>
+              <div class="button-row mx-auto">
+                {drawButton}
+                {usedButton}
+                {throwButton}
+                {actionButton}
+                {endGameButton}
               </div>
-              <br/><br/>
-              {drawButton}
-              {usedButton}
-              {throwButton}
-              {actionButton}
-              {endGameButton}
-              <Button onClick={save.bind(this)}>Save</Button>
             </div>
         );
     }

@@ -22,7 +22,7 @@ class PlayerCards extends React.Component{
         if(card ==enemyCard){
           cardClass = "bg-danger";
         }
-        if(card != showCard){
+        if(card != showCard && this.props.end==false){
           cardClass+=" card-down";
         }
         var cardClick;
