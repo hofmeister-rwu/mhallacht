@@ -567,7 +567,7 @@ export default class Game extends React.Component {
                   usedLength={this.gameBoard.usedCards.length}
                   round={this.state.round}/>
                   <div class="stacks">
-                    <div class="row col-6 mx-auto">
+                    <div class="row col-4 mx-auto">
                         <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
                       <br/><br/>
                         <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
