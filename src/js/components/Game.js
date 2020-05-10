@@ -255,8 +255,6 @@ class Card {
     }
 
     function drawDouble(){
-      console.log("We're gonna do this TODAY i guess");
-
       if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
@@ -290,7 +288,6 @@ class Card {
           setTimeout(() => {this.endTurn();}, 2000);
           //after the Timer has run out, put the StackCard on the UsedCard Staple
           if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
-            console.log("Do you go here?");
             let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
             this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
           }
@@ -455,12 +452,20 @@ export default class Game extends React.Component {
        savedUsed = [...usedFromServer];
      }
 
-     var counter = 0;
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
-          counter ++;
+
           let cardClick;
-          let deckClass ="deckContainer player player-"+counter;
+          let counter = 0;
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            if(this.gameBoard.players[i]==item){
+              counter = (i-this.state.activePlayerIndex)+1;
+              if(counter<=0){
+                counter+=this.gameBoard.players.length;
+              }
+            }
+          }
+          let deckClass ="deckContainer player-"+counter;
           //OnClick of Cards is only defined if Game ins't over yet
           if(!this.state.end){
             //onClick stores the card either in chosenCard or enemyCard depending if the Card belongs to the active Player or not
@@ -471,7 +476,7 @@ export default class Game extends React.Component {
                 cardClick=CardStore.selectEnemyCard;
               }
           }
-          return(<div key={item.playerName} class="center players">
+          return(<div key={item.playerName} class="player center">
             <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass} end={this.state.end}/>
             </div>);
       });
@@ -566,14 +571,16 @@ export default class Game extends React.Component {
                   middleLength={this.gameBoard.cardsInMiddle.length}
                   usedLength={this.gameBoard.usedCards.length}
                   round={this.state.round}/>
-                  <div class="stacks">
-                    <div class="row col-4 mx-auto">
-                        <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
-                      <br/><br/>
-                        <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
-                    </div>
-                  </div>
-              {playerCards}
+
+              <div class="stacks">
+                <div class="row col-xl-4 col-6 mx-auto">
+                  <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
+                  <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
+                </div>
+              </div>
+              <div class="center">
+                    {playerCards}
+              </div>
               <div class="button-row mx-auto">
                 {drawButton}
                 {usedButton}

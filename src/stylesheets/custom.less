@@ -1,12 +1,12 @@
-@cardWidth:70px;
-@cardHeight:100px;
-@cardMargin:20px;
+@cardWidth:60px;
+@cardHeight:80px;
+@cardMargin:10px;
 
 body{
-  //height:100vh;
-  //width:100vw;
-  //position:relative;
-  //overflow:hidden;
+  height:100vh;
+  width:100vw;
+  position:relative;
+  overflow:hidden;
 }
 
 //Override
@@ -15,7 +15,13 @@ body{
 }
 
 .z-index-100{
-  z-index:10000;
+  z-index:1001;
+}
+.alert{
+  z-index:1002;
+}
+.modal-backdrop{
+  z-index:1003;
 }
 .center{
   display:flex;
@@ -83,33 +89,101 @@ body{
 .deck.stackCards .card:first-child:not(.front-card), .deck.stackCards .front-card+.card{
   margin-left:@cardMargin;
 }
-.deck.stackCards .card.front-card{
-  //position: absolute;
-  //height: 80vh;
-  //top: 10vh;
-  //width: 50vh;
-  //left: 50vh;
+
+.player:first-child:nth-last-child(2),
+.player:nth-child(2):last-child{
+    //import color definitions
+    .generate-player-position-indexes(2);
 }
 
-.players{
-
-}
-.deckContainer.player{
-    perspective:20em;
-    position:absolute;
-}
-.deck.playerCards{
-  transform:rotateX(50deg);
-}
-.deckContainer.player-1{
-  bottom:50px;
+.player:first-child:nth-last-child(3),
+.player:nth-child(2):nth-last-child(2),
+.player:nth-child(3):last-child{
+    //import color definitions
+    .generate-player-position-indexes(3);
 }
 
-.generate-player-position-indexes(2);
+.player:first-child:nth-last-child(4),
+.player:nth-child(2):nth-last-child(3),
+.player:nth-child(3):nth-last-child(2),
+.player:nth-child(4):last-child{
+    //import color definitions
+    .generate-player-position-indexes(4);
+}
 
-.generate-player-position-indexes(@n, @i: 0) when (@i =< @n) {
+.player:first-child:nth-last-child(5),
+.player:nth-child(2):nth-last-child(4),
+.player:nth-child(3):nth-last-child(3),
+.player:nth-child(4):nth-last-child(2),
+.player:nth-child(5):last-child{
+    //import color definitions
+    .generate-player-position-indexes(5);
+}
+
+.player:first-child:nth-last-child(6),
+.player:nth-child(2):nth-last-child(5),
+.player:nth-child(3):nth-last-child(4),
+.player:nth-child(4):nth-last-child(3),
+.player:nth-child(5):nth-last-child(2),
+.player:nth-child(6):last-child{
+    //import color definitions
+    .generate-player-position-indexes(6);
+}
+
+
+.generate-player-position-indexes(@n, @i: 1) when (@i =< @n) {
   .player-@{i} {
-    transform:rotate(((360/@n)*(@i - 1deg)));
+    position:absolute;
+    transform:rotate((360 / @n)*(@i - 1deg));
+    & when (mod(@n,2)=1) and not (@i = 1){
+      & when (@i = ((@n + 1) / 2 )), (@i = ((@n + 1) / 2 + 1) ){
+        top:25%;
+        & when (@i <= ((@n + 1) / 2 ) ){
+          left:15%;
+        }
+        & when (@i > ((@n + 1) / 2 )){
+          right:15%;
+        }
+      }
+
+      & when not (@i = ((@n + 1) / 2 )) and not (@i = ((@n + 1) / 2 + 1) ){
+        bottom: 25%;
+        & when (@i <= ((@n + 1) / 2 ) ){
+          left:10%;
+        }
+        & when (@i > ((@n + 1) / 2 )){
+          right:10%;
+        }
+      }
+
+    }
+
+    & when (mod(@n,2)=0) and not (@i = 1){
+      & when ((@n / 2) + 1 > @i){
+        left:15%;
+        bottom:60%;
+        & when (@i = 2){
+          bottom: 25%;
+        }
+      }
+      & when ((@n / 2) + 1 < @i){
+        right:15%;
+        bottom:60%;
+        & when (@i = @n){
+          bottom: 25%;
+        }
+      }
+      & when (@n = 4) and not (@i = 3){
+        bottom:40%;
+      }
+    }
+
+    & when (@i = 1) {
+      bottom: 50px;
+      transform:rotate(0deg);
+    }
+    transition-property: top bottom left right rotate;
+    transition: 0.5s ease-out;
   }
   .generate-player-position-indexes(@n, (@i + 1));
 }
@@ -117,6 +191,10 @@ body{
 
 .deck.playerCards .card{
   margin: auto @cardMargin;
+}
+.deckContainer:not(.active) .playerCards .card{
+  width:@cardWidth * 0.5;
+  height: @cardHeight * 0.5;
 }
 .double-card{
   position:absolute;
