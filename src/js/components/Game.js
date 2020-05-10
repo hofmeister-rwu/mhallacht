@@ -36,7 +36,7 @@ class Card {
         this.cards = [];
     }
     createDeck() {
-        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9,10, "show", "swap", "show", "swap", "show", "swap","end","skip","double"];
+        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9, "show", "swap", "show", "swap", "show", "swap","end","skip","double"];
         let id =0;
         for (let j = 0; j < values.length; j++) {
           for (let i=0; i < 4; i++){
@@ -255,6 +255,7 @@ class Card {
     }
 
     function drawDouble(){
+
       if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
@@ -463,6 +464,7 @@ export default class Game extends React.Component {
               if(counter<=0){
                 counter+=this.gameBoard.players.length;
               }
+              console.log("Player-Counter: "+counter)
             }
           }
           let deckClass ="deckContainer player-"+counter;

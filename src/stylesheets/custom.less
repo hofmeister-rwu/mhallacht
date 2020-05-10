@@ -3,9 +3,9 @@
 @cardMargin:10px;
 
 body{
-  height:100vh;
-  width:100vw;
-  position:relative;
+  //height:100vh;
+  //width:100vw;
+  //position:relative;
   overflow:hidden;
 }
 
@@ -181,6 +181,7 @@ body{
     & when (@i = 1) {
       bottom: 50px;
       transform:rotate(0deg);
+      align-self:center;
     }
     transition-property: top bottom left right rotate;
     transition: 0.5s ease-out;
@@ -192,9 +193,124 @@ body{
 .deck.playerCards .card{
   margin: auto @cardMargin;
 }
+
+
+.card {
+  background-color: transparent;
+  border: none;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.card-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.card-down .card-body {
+  transform: rotateY(180deg);
+}
+
+/* Position the front and back side */
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top:0px;
+  left:0px;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  background-size:contain;
+  //background-repeat:no-repeat;
+  border:1px solid #C2F7EA;
+}
+
+.chosenCard .card-front, .chosenCard .card-back{
+  box-shadow:
+        0 0 15px 8px white,  /* inner white */
+        0 0 15px 8px cyan /* middle magenta */;
+}
+
+.enemyCard .card-front, .enemyCard .card-back{
+  box-shadow:
+        0 0 15px 8px white,  /* inner white */
+        0 0 15px 8px red /* middle magenta */;
+}
+
+/* Style the front side (fallback if image is missing) */
+.value-0 .card-front{
+    background-image:url(../js/public/static/value-0.jpg);
+}
+
+.value-1 .card-front{
+    background-image:url(../js/public/static/value-1.jpg);
+}
+
+.value-2 .card-front{
+    background-image:url(../js/public/static/value-2.jpg);
+}
+
+.value-3 .card-front{
+    background-image:url(../js/public/static/value-3.jpg);
+}
+
+.value-4 .card-front{
+    background-image:url(../js/public/static/value-4.jpg);
+}
+
+.value-5 .card-front{
+    background-image:url(../js/public/static/value-5.jpg);
+}
+
+.value-6 .card-front{
+    background-image:url(../js/public/static/value-6.jpg);
+}
+
+.value-7 .card-front{
+    background-image:url(../js/public/static/value-7.jpg);
+}
+
+.value-8 .card-front{
+    background-image:url(../js/public/static/value-8.jpg);
+}
+
+.value-9 .card-front{
+    background-image:url(../js/public/static/value-9.jpg);
+}
+
+.value-double .card-front{
+    background-image:url(../js/public/static/value-double.jpg);
+}
+
+.value-end .card-front{
+    background-image:url(../js/public/static/value-end.jpg);
+}
+
+.value-show .card-front{
+    background-image:url(../js/public/static/value-show.jpg);
+}
+
+.value-skip .card-front{
+    background-image:url(../js/public/static/value-skip.jpg);
+}
+
+.value-swap .card-front{
+    background-image:url(../js/public/static/value-swap.jpg);
+}
+/* Style the back side */
+.card-back {
+  background-image:url(../js/public/static/backcard.jpg);
+  transform: rotateY(180deg);
+}
+
 .deckContainer:not(.active) .playerCards .card{
-  width:@cardWidth * 0.5;
-  height: @cardHeight * 0.5;
+  width:30px;
+  height: 40px;
 }
 .double-card{
   position:absolute;

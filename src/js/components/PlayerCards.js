@@ -15,12 +15,12 @@ class PlayerCards extends React.Component{
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
 
-        var cardClass = "bg-warning";
+        var cardClass = "value-"+card.value;
         if(card ==chosenCard){
-          cardClass = "bg-primary";
+          cardClass += " chosenCard";
         }
         if(card ==enemyCard){
-          cardClass = "bg-danger";
+          cardClass += " enemyCard";
         }
         if(card != showCard && this.props.end==false){
           cardClass+=" card-down";
@@ -32,7 +32,12 @@ class PlayerCards extends React.Component{
 
         return (
           <Card key={card.id} className={cardClass} onClick={cardClick}>
-            <Card.Body><Card.Title>{card.value}</Card.Title></Card.Body>
+            <Card.Body>
+              <div class="card-front">
+              </div>
+              <div class="card-back">
+              </div>
+            </Card.Body>
           </Card>);
         });
 

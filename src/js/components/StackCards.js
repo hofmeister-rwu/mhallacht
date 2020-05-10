@@ -15,7 +15,7 @@ class StackCards extends React.Component{
       let counter = 1;
       //Load Parts of Deck in {cards}
       const cards =this.props.item.map((card, key) => {
-        let cardClass ="bg-warning";
+        let cardClass = "value-"+card.value;
 
         //all up cards
         if(card!=CardStore.stackCard && this.props.stack==true && !CardStore.doubleCards.includes(card)){
@@ -47,7 +47,10 @@ class StackCards extends React.Component{
           return (
             <Card key={card.id} className={cardClass} onClick={clickFunction}>
               <Card.Body>
-                <Card.Title type="dark">{card.value}</Card.Title>
+                <div class="card-front">
+                </div>
+                <div class="card-back">
+                </div>
               </Card.Body>
             </Card>
           );
