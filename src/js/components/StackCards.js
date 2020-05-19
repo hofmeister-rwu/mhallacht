@@ -10,7 +10,7 @@ class StackCards extends React.Component{
     render() {
       let clickFunction;
 
-      let stackClass = "col-6";
+      let stackClass = "col-md-6";
 
       let counter = 1;
       //Load Parts of Deck in {cards}

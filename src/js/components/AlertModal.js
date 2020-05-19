@@ -34,7 +34,7 @@ export default class AlertModal extends React.Component {
           <Modal show={this.props.show} onHide={this.props.onHide}>
             <Modal.Header closeButton>
             </Modal.Header>
-            <Modal.Body><Alert variant="warning">{this.props.alert}</Alert></Modal.Body>
+            <Modal.Body><Alert variant="primary">{this.props.alert}</Alert></Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.props.onHide}>
                 Got It

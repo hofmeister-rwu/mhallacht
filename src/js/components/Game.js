@@ -71,7 +71,7 @@ class Card {
         let d = new Deck();
         d.createDeck();
         d.shuffleDeck();
-        for (var i = 0; i < playerNames.length; i++) {
+        for (let i = 0; i < playerNames.length; i++) {
           this.players.push(new Player(playerNames[i]));
           this.players[i].playerCards = d.cards.splice(i*4, 4);
         }
@@ -80,7 +80,7 @@ class Card {
     load(playersDB, middleDB, usedDB) {
       console.log(playersDB);
       this.players.length=0;
-      for (var i = 0; i < playersDB.length; i++) {
+      for (let i = 0; i < playersDB.length; i++) {
           this.players.push(new Player(playersDB[i].playerName));
           var cardOne =  new Card(playersDB[i].playerCardOne,playersDB[i].playerName+"-Card-One");
           var cardTwo =  new Card(playersDB[i].playerCardTwo,playersDB[i].playerName+"-Card-Two");
@@ -89,11 +89,11 @@ class Card {
           this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour];
       }
       this.cardsInMiddle.length =0;
-      for (var i = 0; i < middleDB.length; i++) {
+      for (let i = 0; i < middleDB.length; i++) {
          this.cardsInMiddle.push(new Card (middleDB[i].value,middleDB[i].idCard));
       }
       this.usedCards.length =0;
-      for (var i = 0; i < usedDB.length; i++) {
+      for (let i = 0; i < usedDB.length; i++) {
          this.usedCards.push(new Card (usedDB[i].value,usedDB[i].idCard));
       }
     }
@@ -260,7 +260,7 @@ class Card {
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
       }
-
+        CardStore.unselectCards();
         console.log(this.gameBoard.cardsInMiddle[0]);
         console.log(this.gameBoard.cardsInMiddle[1]);
         CardStore.selectDoubleCards(this.gameBoard.cardsInMiddle[0],this.gameBoard.cardsInMiddle[1]);
@@ -347,10 +347,10 @@ class Card {
 
     //if the defined point when the game ends has come, the results are posted
     function checkEndGame(){
-      if(this.state.round == this.state.endRound && this.state.activePlayerIndex == this.state.endPlayer){
-        for(var i=0; i<this.gameBoard.players.length; i++){
+      if(this.state.round >= this.state.endRound && this.state.activePlayerIndex >= this.state.endPlayer){
+        for(let i=0; i<this.gameBoard.players.length; i++){
             this.gameBoard.players[i].playerValue=0;
-              for (var j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
+              for (let j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
                 if(!isNaN(parseInt(this.gameBoard.players[i].playerCards[j].value))){
                     var integer = parseInt(this.gameBoard.players[i].playerCards[j].value, 10);
                     this.gameBoard.players[i].playerValue += integer;
@@ -464,7 +464,6 @@ export default class Game extends React.Component {
               if(counter<=0){
                 counter+=this.gameBoard.players.length;
               }
-              console.log("Player-Counter: "+counter)
             }
           }
           let deckClass ="deckContainer player-"+counter;
@@ -493,7 +492,8 @@ export default class Game extends React.Component {
 
 
       //Only Show Info once Game has really started
-      let gameInfo = "";
+      let gameInfo = <Alert variant="primary">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
+      <Button class="save-button" onClick={save.bind(this)}>Save</Button></Alert>;
       let drawButton;
       let usedButton;
       let throwButton;
@@ -551,14 +551,19 @@ export default class Game extends React.Component {
           }
         }
       }else{
+        let disabled = true;
+        if(CardStore.showCard == undefined){
+         disabled = false;
+        }
         actionButton=
-        <Button onClick={showCardModal.bind(this,this.gameBoard.players[this.state.activePlayerIndex].playerCards[0], this.gameBoard.players[this.state.activePlayerIndex].playerCards[3])}>
+        <Button disabled={disabled} onClick={showCardModal.bind(this,this.gameBoard.players[this.state.activePlayerIndex].playerCards[0], this.gameBoard.players[this.state.activePlayerIndex].playerCards[3])}>
           Show First Cards
         </Button>;
       }
+      let endClass = "end-"+this.state.end;
 
         return (
-            <div class="container">
+            <div class={endClass}>
             {gameInfo}
 
                 <AlertModal
@@ -575,7 +580,7 @@ export default class Game extends React.Component {
                   round={this.state.round}/>
 
               <div class="stacks">
-                <div class="row col-xl-4 col-6 mx-auto">
+                <div class="row col-xl-4 col-6 mx-auto position-relative">
                   <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
                   <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
                 </div>

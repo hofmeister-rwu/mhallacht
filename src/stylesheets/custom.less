@@ -139,20 +139,20 @@ body{
       & when (@i = ((@n + 1) / 2 )), (@i = ((@n + 1) / 2 + 1) ){
         top:25%;
         & when (@i <= ((@n + 1) / 2 ) ){
-          left:15%;
+          left:5%;
         }
         & when (@i > ((@n + 1) / 2 )){
-          right:15%;
+          right:5%;
         }
       }
 
       & when not (@i = ((@n + 1) / 2 )) and not (@i = ((@n + 1) / 2 + 1) ){
         bottom: 25%;
         & when (@i <= ((@n + 1) / 2 ) ){
-          left:10%;
+          left:5%;
         }
         & when (@i > ((@n + 1) / 2 )){
-          right:10%;
+          right:5%;
         }
       }
 
@@ -160,14 +160,14 @@ body{
 
     & when (mod(@n,2)=0) and not (@i = 1){
       & when ((@n / 2) + 1 > @i){
-        left:15%;
+        left:5%;
         bottom:60%;
         & when (@i = 2){
           bottom: 25%;
         }
       }
       & when ((@n / 2) + 1 < @i){
-        right:15%;
+        right:5%;
         bottom:60%;
         & when (@i = @n){
           bottom: 25%;
@@ -209,6 +209,7 @@ body{
   text-align: center;
   transition: transform 0.8s;
   transform-style: preserve-3d;
+  padding: 0px;
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
@@ -233,13 +234,13 @@ body{
 .chosenCard .card-front, .chosenCard .card-back{
   box-shadow:
         0 0 15px 8px white,  /* inner white */
-        0 0 15px 8px cyan /* middle magenta */;
+        0 0 15px 8px cyan;
 }
 
 .enemyCard .card-front, .enemyCard .card-back{
   box-shadow:
         0 0 15px 8px white,  /* inner white */
-        0 0 15px 8px red /* middle magenta */;
+        0 0 15px 8px red;
 }
 
 /* Style the front side (fallback if image is missing) */
@@ -308,13 +309,28 @@ body{
   transform: rotateY(180deg);
 }
 
-.deckContainer:not(.active) .playerCards .card{
+.end-false .deckContainer:not(.active) .playerCards .card{
   width:30px;
   height: 40px;
 }
 .double-card{
   position:absolute;
+  height:calc(@cardHeight * 2.5);
+  width :calc(@cardWidth * 2.5);
+  top:calc(@cardHeight / 3 *-1);
+  box-shadow:
+        0 0 50px 20px lightblue;
+
+  z-index:2000 !important;
 }
+
+.double-card:first-of-type{
+  left:0px;
+}
+.double-card:not(:first-of-type){
+  right:0px;
+}
+
 .generate-card-indexes(100);
 
 .generate-card-indexes(@n, @i: 1) when (@i =< @n) {
