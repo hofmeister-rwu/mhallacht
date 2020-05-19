@@ -102,7 +102,6 @@ class Card {
 
 
 
-
     //Draw the first Card of the Stack
     function draw(){
         CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
@@ -150,7 +149,7 @@ class Card {
 
         //if the chosenCard hasn't been defined yet, give out a warning
         }else{
-          this.setState({alert:"Choose One of Your Cards to be Swapped by Clicking on it", warningshow:true})
+          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true})
         }
     }
 
@@ -176,7 +175,7 @@ class Card {
 
         //if the chosenCard hasn't been defined yet, give out a warning
         }else{
-          this.setState({alert:"Choose One of Your Cards to be Swapped by Clicking on it", warningshow:true})
+          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true})
         }
     }
 
@@ -223,13 +222,13 @@ class Card {
       //if one Card isn't chosen yet give out a warning
     }else{
         if(chosenCard==undefined && enemyCard==undefined){
-            this.setState({alert:"Choose One of Your Cards to be Swapped by Clicking on it. Choose One of Your Enemies' Cards to be Swapped by Clicking on it", warningshow:true})
+            this.setState({alert:"Such dir eine deiner Karten und eine Karte eines Gegners aus, um zu tauschen!", warningshow:true})
         }
         if(chosenCard==undefined && enemyCard!=undefined){
-            this.setState({alert:"Choose One of Your Cards to be Swapped by Clicking on it", warningshow:true})
+            this.setState({alert:"Such dir eine deiner Karten aus, um zu tauschen!", warningshow:true})
         }
         if (enemyCard==undefined && chosenCard!=undefined){
-              this.setState({alert:"Choose One of Your Enemies' Cards to be Swapped by Clicking on it", warningshow:true})
+              this.setState({alert:"Such dir eine Karte von einem deiner Gegner aus, um zu tauschen!", warningshow:true})
         }
       }
     }
@@ -269,7 +268,7 @@ class Card {
 
 
     function showCardModal(card, secondCard){
-        var warning = "Please look away while " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " looks at their cards";
+        var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " seine Karten anschaut";
         this.setState({alert:warning,warningshow:true});
       if(card!=undefined && secondCard.value !=undefined){
         this.setState({modalClose:() => {this.closeModal(); this.showFirst(card,secondCard);}});
@@ -277,7 +276,7 @@ class Card {
         this.setState({modalClose:() => {this.closeModal(); this.show(card);}});
       //if no card is chosen give out a warning
       }else{
-        this.setState({alert:"Choose A Card to Show, by Clicking on one of your Cards!", warningshow:true})
+        this.setState({alert:"Such dir ein Karte aus, die angezeigt werden soll", warningshow:true})
       }
     }
 
@@ -493,7 +492,7 @@ export default class Game extends React.Component {
 
       //Only Show Info once Game has really started
       let gameInfo = <Alert variant="primary">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
-      <Button class="save-button" onClick={save.bind(this)}>Save</Button></Alert>;
+      <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>;
       let drawButton;
       let usedButton;
       let throwButton;
@@ -501,53 +500,60 @@ export default class Game extends React.Component {
       let endGameButton;
 
       if(this.state.round>0){
-        gameInfo=<Alert variant="primary">Runde {this.state.round} <Button class="save-button" onClick={save.bind(this)}>Save</Button></Alert> ;
+        gameInfo=<Alert variant="primary">Runde {this.state.round} <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert> ;
+        if(this.state.endPlayer != "" && !this.state.end){
+          var tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
+          if(tilEnd <= 0){
+            tilEnd = this.state.activePlayerIndex + tilEnd;
+          }
+          gameInfo=<Alert variant="primary">Runde {this.state.round}, Noch {tilEnd} Züge  <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>
+        }
         //Only Show DrawButton if there is no card already drawn and Game isn't over
         if(stackCard==undefined && !this.state.end){
           drawButton=
-          <Button onClick={draw.bind(this)}>Draw Card</Button>;
+          <Button onClick={draw.bind(this)}>Ziehen</Button>;
           if(this.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(this.gameBoard.usedCards[0].value,10))){
             usedButton=
-            <Button onClick={swapUsedCard.bind(this,chosenCard)}>Take Used Card</Button>;
+            <Button onClick={swapUsedCard.bind(this,chosenCard)}>Vom Ablegestapel tauschen</Button>;
           }
         }
 
         if(stackCard!=undefined && !this.state.end){
           if(this.gameBoard.cardsInMiddle[0]==stackCard){
-            throwButton = <Button onClick={throwCards.bind(this)}>Throw</Button>;
+            throwButton = <Button onClick={throwCards.bind(this)}>Wegwerfen</Button>;
           }else{
-            throwButton = <Button onClick={endTurn.bind(this)}>End Turn</Button>;
+            throwButton = <Button onClick={endTurn.bind(this)}>Zug beenden</Button>;
           }
 
           //Only show SwapStackButton if the Card you've drawn is not an ActionCard
           if(!isNaN(parseInt(stackCard.value))){
-            actionButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Swap with First Card from Stack</Button>;
+            actionButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Vom Kartenstapel tauschen</Button>;
           }
 
           //Only show SwapPlayerButton if the Card you've drawn is a Swap Card
           if(stackCard.value=="swap"){
-            actionButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Swap with Enemy Card</Button>;
+            actionButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Gegnerkarte tauschen</Button>;
           }
 
           //Only Show ShowButton if the card you've drawn is a show Card
           if(stackCard.value=="show"){
             actionButton=
-            <Button onClick={showCardModal.bind(this,chosenCard)}>Show Card</Button>;
+            <Button onClick={showCardModal.bind(this,chosenCard)}>Karte umdrehen</Button>;
           }
 
 
           if(stackCard.value=="skip"){
             actionButton=
-            <Button onClick={skipNext.bind(this)}>Skip next Player</Button>;
+            <Button onClick={skipNext.bind(this)}>Spieler überspringen</Button>;
           }
 
           if(stackCard.value=="double"){
             actionButton=
-            <Button onClick={drawDouble.bind(this)}>Draw Double</Button>;
+            <Button onClick={drawDouble.bind(this)}>Doppelt ziehen</Button>;
           }
           //Only show EndGameButton if it hasn't already been pressed
           if (this.state.endRound=="" && stackCard.value=="end"){
-            endGameButton = <Button onClick={setEndGame.bind(this)}>End Game</Button>;
+            endGameButton = <Button onClick={setEndGame.bind(this)}>Spiel beenden</Button>;
           }
         }
       }else{
@@ -557,7 +563,7 @@ export default class Game extends React.Component {
         }
         actionButton=
         <Button disabled={disabled} onClick={showCardModal.bind(this,this.gameBoard.players[this.state.activePlayerIndex].playerCards[0], this.gameBoard.players[this.state.activePlayerIndex].playerCards[3])}>
-          Show First Cards
+          Anfangskarten zeigen
         </Button>;
       }
       let endClass = "end-"+this.state.end;

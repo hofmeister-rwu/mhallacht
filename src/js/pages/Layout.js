@@ -106,18 +106,18 @@ export default class Layout extends React.Component {
         for (var i = 0; i < this.state.numberofPlayers; i++) {
           form.push(
           <Form.Group key={"NameofPlayer".concat(i+1)}>
-          <Form.Control type="text" name={i} placeholder={"Player "+(i+1)} onBlur={addPlayerName.bind(this)}/>
+          <Form.Control type="text" name={i} placeholder={"Spieler "+(i+1)} onBlur={addPlayerName.bind(this)}/>
           </Form.Group>);
         }
         console.log(this.state.players.length);
         if(this.state.players.length>1){
           form.push(<Button key="New" variant="primary" type="submit" onClick={submit.bind(this)}>
-          New Game
+          Neues Spiel
           </Button>)
         }
         if(playerArray.length>0){
           form.push(<Button key="load" variant="warning" type="submit" onClick={load.bind(this)}>
-          Load
+          Spiel laden
           </Button>);
         }
       }
