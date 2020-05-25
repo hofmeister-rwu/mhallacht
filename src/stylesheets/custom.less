@@ -67,6 +67,17 @@ body{
   height: @cardHeight;
   width:@cardWidth;
   position:relative;
+}
+
+.roleCard.card{
+  position:absolute;
+  left:100%;
+}
+
+.active .roleCard.card{
+  height:calc(@cardHeight*2);
+  width:calc(@cardHeight*2);
+  top:0px;
 
 }
 .card-down{
@@ -134,7 +145,7 @@ body{
 .generate-player-position-indexes(@n, @i: 1) when (@i =< @n) {
   .player-@{i} {
     position:absolute;
-    transform:rotate((360 / @n)*(@i - 1deg));
+    transform:rotate((360 / @n )*(@i - 1deg));
     & when (mod(@n,2)=1) and not (@i = 1){
       & when (@i = ((@n + 1) / 2 )), (@i = ((@n + 1) / 2 + 1) ){
         top:25%;
@@ -243,7 +254,7 @@ body{
         0 0 15px 8px red;
 }
 
-/* Style the front side (fallback if image is missing) */
+/* Style the front side*/
 .value-0 .card-front{
     background-image:url(../js/public/static/value-0.jpg);
 }
@@ -303,16 +314,68 @@ body{
 .value-swap .card-front{
     background-image:url(../js/public/static/value-swap.jpg);
 }
+
+.roleCard .card-front{
+    background-image:url(../js/public/static/role-back.jpg);
+    background-repeat: no-repeat;
+    border:none;
+}
+.roleCard.value-abenteurer .card-front{
+    background-image:url(../js/public/static/value-abenteurer.jpg);
+}
+
+.roleCard.value-alter-mann .card-front{
+    background-image:url(../js/public/static/value-alter-mann.jpg);
+}
+
+.roleCard.value-buerokrat .card-front{
+    background-image:url(../js/public/static/value-buerokrat.jpg);
+}
+
+.roleCard.value-gottheit .card-front{
+    background-image:url(../js/public/static/value-gottheit.jpg);
+}
+
+.roleCard.value-haendler .card-front{
+    background-image:url(../js/public/static/value-haendler.jpg);
+}
+
+.roleCard.value-kobold .card-front{
+    background-image:url(../js/public/static/value-kobold.jpg);
+}
+
+.roleCard.value-koenig .card-front{
+    background-image:url(../js/public/static/value-koenig.jpg);
+}
+
+.roleCard.value-prediger .card-front{
+    background-image:url(../js/public/static/value-prediger.jpg);
+}
+
+.roleCard.value-wanderer .card-front{
+    background-image:url(../js/public/static/value-wanderer.jpg);
+}
+
 /* Style the back side */
 .card-back {
   background-image:url(../js/public/static/backcard.jpg);
   transform: rotateY(180deg);
 }
+.roleCard.card-back {
+  background-image:url(../js/public/static/role-back.jpg);
+  transform: rotateY(180deg);
+}
 
 .end-false .deckContainer:not(.active) .playerCards .card{
-  width:30px;
-  height: 40px;
+  width:calc(@cardWidth/2);
+  height: calc(@cardHeight/2);
+
+  &.roleCard{
+    height:calc(@cardHeight/2);
+    width:calc(@cardHeight/2);
+  }
 }
+
 .double-card{
   position:absolute;
   height:calc(@cardHeight * 2.5);

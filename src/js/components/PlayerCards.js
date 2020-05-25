@@ -3,7 +3,8 @@ import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
 import CardColumns from 'react-bootstrap/CardColumns';
 import CardStore from "../stores/cardStore";
-import Game from "../components/Game"
+import Game from "../components/Game";
+import RoleCard from "../components/RoleCard"
 
 
 class PlayerCards extends React.Component{
@@ -44,7 +45,7 @@ class PlayerCards extends React.Component{
         return (
           <div class={this.props.deckClass}>
             <h2 class="deckHeading">{this.props.heading}</h2>
-            <div class="deck playerCards">{cards}</div>
+            <div class="deck playerCards">{cards} <RoleCard role={this.props.role}/></div>
           </div>
         );
     }

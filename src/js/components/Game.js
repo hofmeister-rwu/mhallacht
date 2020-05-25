@@ -34,6 +34,7 @@ class Card {
 }class Deck {
     constructor() {
         this.cards = [];
+        this.roleCards = [];
     }
     createDeck() {
         let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9, "show", "swap", "show", "swap", "show", "swap","end","skip","double"];
@@ -44,22 +45,35 @@ class Card {
               id++;
           }
         }
+        let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig"];
+        for (let i = 0; i < roles.length; i++) {
+              this.roleCards.push(roles[i]);
+        }
     }
+
     shuffleDeck() {
        let location1, location2, tmp;
-       for (let i = 0; i < 1000; i++) {
+       for (let i = 0; i < 2000; i++) {
            location1 = Math.floor((Math.random() * this.cards.length));
            location2 = Math.floor((Math.random() * this.cards.length));
            tmp = this.cards[location1];
            this.cards[location1] = this.cards[location2];
            this.cards[location2] = tmp;
+
+
+           location1 = Math.floor((Math.random() * this.roleCards.length));
+           location2 = Math.floor((Math.random() * this.roleCards.length));
+           tmp = this.roleCards[location1];
+           this.roleCards[location1] = this.roleCards[location2];
+           this.roleCards[location2] = tmp;
         }
     }
 }class Player {
-    constructor(name) {
+    constructor(name, role) {
         this.playerName = name;
         this.playerCards = [];
         this.playerValue;
+        this.playerRole = role;
     }
 }class Board {
     constructor() {
@@ -72,7 +86,8 @@ class Card {
         d.createDeck();
         d.shuffleDeck();
         for (let i = 0; i < playerNames.length; i++) {
-          this.players.push(new Player(playerNames[i]));
+          let role = d.roleCards.splice(0,1)
+          this.players.push(new Player(playerNames[i],role[0]));
           this.players[i].playerCards = d.cards.splice(i*4, 4);
         }
         this.cardsInMiddle=d.cards;
@@ -87,6 +102,7 @@ class Card {
           var cardThree =  new Card(playersDB[i].playerCardThree,playersDB[i].playerName+"-Card-Three");
           var cardFour =  new Card(playersDB[i].playerCardFour,playersDB[i].playerName+"-Card-Four");
           this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour];
+          this.players[i].playerRole = playersDB[i].playerRole;
       }
       this.cardsInMiddle.length =0;
       for (let i = 0; i < middleDB.length; i++) {
@@ -435,7 +451,7 @@ export default class Game extends React.Component {
     CardStore.fetchSavings();
   }
     render() {
-     //console.log(this.gameBoard);
+     console.log(this.gameBoard);
      var {playersFromServer} = CardStore;
      var savedPlayers;
      if(playersFromServer!=undefined){
@@ -477,7 +493,7 @@ export default class Game extends React.Component {
               }
           }
           return(<div key={item.playerName} class="player center">
-            <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass} end={this.state.end}/>
+            <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass} end={this.state.end} role={item.playerRole}/>
             </div>);
       });
 

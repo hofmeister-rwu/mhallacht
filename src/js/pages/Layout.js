@@ -5,6 +5,7 @@ import Game from "../components/Game"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import CardStore from "../stores/cardStore"
+import AlertModal from "../components/AlertModal"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -36,10 +37,28 @@ function addPlayerName(e){
   }
 }
 function submit(){
-  this.setState({submit:"new"})
+  let noDoubles = true;
+  for (let i = 0; i < this.state.players.length; i++) {
+    for (let j = 0; j < this.state.players.length; j++) {
+      let str1 = this.state.players[i];
+      let str2 = this.state.players[j];
+      if(str1==str2 && i!=j){
+        noDoubles = false;
+      }
+    }
+  }
+  console.log(noDoubles);
+  if(noDoubles==true){
+    this.setState({submit:"new"});
+  }else{
+    this.setState({warningshow:true});
+  }
 }
 function load(){
   this.setState({submit:"load"});
+}
+function closeModal(){
+  this.setState({warningshow:false});
 }
 @observer
 export default class Layout extends React.Component {
@@ -49,12 +68,13 @@ export default class Layout extends React.Component {
     this.state = {
       numberofPlayers : 2,
       players : [],
-      submit: false
+      submit: false,
+      warningshow:false
     }
       CardStore.fetchSavings();
   }
     render() {
-
+      console.log(this.state.players);
       //import saved Game from Store/Database
       var {playersFromServer} = CardStore;
       var {middleFromServer} = CardStore;
@@ -124,6 +144,11 @@ export default class Layout extends React.Component {
 
         return (
           <div>
+          <AlertModal
+            show={this.state.warningshow}
+            onHide={closeModal.bind(this)}
+            alert="Jeder Name darf nur einmal vorkommen"
+          />
 
           {form}
           {game}

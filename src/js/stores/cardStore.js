@@ -184,6 +184,7 @@ class CardStore {
                 playerCardTwo : newPlayer.playerCards[1].value.toString(),
                 playerCardThree : newPlayer.playerCards[2].value.toString(),
                 playerCardFour : newPlayer.playerCards[3].value.toString(),
+                playerRole : newPlayer.playerRole,
                 activePlayer: active,
             })
           })
