@@ -74,6 +74,7 @@ class Card {
         this.playerCards = [];
         this.playerValue;
         this.playerRole = role;
+        this.roleActive = true;
     }
 }class Board {
     constructor() {
@@ -292,7 +293,7 @@ class Card {
         this.setState({modalClose:() => {this.closeModal(); this.show(card);}});
       //if no card is chosen give out a warning
       }else{
-        this.setState({alert:"Such dir ein Karte aus, die angezeigt werden soll", warningshow:true})
+        this.setState({alert:"Such dir eine Karte aus, die angezeigt werden soll", warningshow:true})
       }
     }
 
@@ -414,6 +415,18 @@ class Card {
     }
 
 
+
+    ///roles
+
+    function deactivateRole(playerRole){
+      for (let i = 0; i < this.gameboard.players.length; i++) {
+        if(this.gameboard.players[i].playerRole == playerRole){
+          this.gameboard.players[i].roleActive = false;
+        }
+      }
+    }
+
+
 @observer
 export default class Game extends React.Component {
   @observable gameBoard = new Board();
@@ -493,7 +506,13 @@ export default class Game extends React.Component {
               }
           }
           return(<div key={item.playerName} class="player center">
-            <PlayerCards item={item.playerCards} heading={item.playerName} cardClick={cardClick} deckClass={deckClass} end={this.state.end} role={item.playerRole}/>
+            <PlayerCards
+                player={item}
+                cardClick={cardClick}
+                deckClass={deckClass}
+                end={this.state.end}
+
+                />
             </div>);
       });
 

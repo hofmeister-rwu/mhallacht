@@ -14,7 +14,7 @@ class PlayerCards extends React.Component{
       let {enemyCard} = CardStore;
       let {showCard} = CardStore;
       //Load Parts of Deck in {cards}
-      const cards =this.props.item.map((card, key) => {
+      const cards =this.props.player.playerCards.map((card, key) => {
 
         var cardClass = "value-"+card.value;
         if(card ==chosenCard){
@@ -44,8 +44,8 @@ class PlayerCards extends React.Component{
 
         return (
           <div class={this.props.deckClass}>
-            <h2 class="deckHeading">{this.props.heading}</h2>
-            <div class="deck playerCards">{cards} <RoleCard role={this.props.role}/></div>
+            <h2 class="deckHeading">{this.props.player.playerName}</h2>
+            <div class="deck playerCards">{cards} <RoleCard player={this.props.player}/></div>
           </div>
         );
     }

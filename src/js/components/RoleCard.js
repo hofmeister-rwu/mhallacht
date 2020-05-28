@@ -8,7 +8,7 @@ import Game from "../components/Game"
 function useRole(role){
     switch(role){
       case "abenteurer":
-        console.log("Abenteuer");
+        Game.deactivateRole(role);
         break;
       case "alter-mann":
         console.log("Alter Mann");
@@ -44,10 +44,13 @@ function useRole(role){
 class RoleCard extends React.Component{
     render() {
       //Get ChosenCard from CardStore
-      let roleClass= "roleCard value-"+this.props.role;
+      let roleClass= "roleCard value-"+this.props.player.playerRole;
+      if(this.props.player.roleActive == false){
+        roleClass += " card-down";
+      }
 
         return (
-            <Card className={roleClass} onClick={useRole.bind(this,this.props.role)}>
+            <Card className={roleClass} onClick={useRole.bind(this,this.props.player.playerRole)}>
               <Card.Body>
                 <div class="card-front">
                 </div>
