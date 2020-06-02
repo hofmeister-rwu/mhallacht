@@ -805,6 +805,7 @@ export default class Game extends React.Component {
       const playerCards = this.gameBoard.players.map((item, key) =>{
 
           let cardClick;
+          let roleFunction;
           let counter = 0;
           for (let i = 0; i < this.gameBoard.players.length; i++) {
             if(this.gameBoard.players[i]==item){
@@ -821,6 +822,7 @@ export default class Game extends React.Component {
               if(item==this.gameBoard.players[this.state.activePlayerIndex]){
                 cardClick= CardStore.selectCard;
                 deckClass+= " active"
+                roleFunction = useRole.bind(this,item.playerRole);
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
@@ -829,7 +831,6 @@ export default class Game extends React.Component {
               }
           }
           if(this.state.playerCardClick!=""){
-            console.log("why do you go here");
             cardClick=this.state.playerCardClick;
           }
 
@@ -839,7 +840,7 @@ export default class Game extends React.Component {
           }
 
           return(<div key={item.playerName} class="player center" onClick={playerClick}>
-            <PlayerCards player={item} cardClick={cardClick} deckClass={deckClass} end={this.state.end} roleCard={true} roleFunction={useRole.bind(this,item.playerRole)}/>
+            <PlayerCards player={item} cardClick={cardClick} deckClass={deckClass} end={this.state.end} roleCard={true} roleFunction={roleFunction}/>
             </div>);
       });
 
