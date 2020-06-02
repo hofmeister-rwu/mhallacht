@@ -345,7 +345,7 @@ class Card {
 
     //After the activePlayer has performed an action his Turn is over
     function endTurn(){
-      this.setState({actionDrawn:false});
+      this.setState({actionDrawn:false, predigerused:false});
       if(this.state.koboldEndIndex!=""){
         this.checkKoboldEnd();
       }
