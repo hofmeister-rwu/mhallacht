@@ -32,20 +32,60 @@ class CardStore {
     @action.bound selectShowCard(card) {
         this.showCard = card;
     };
+    @observable circleUsedCard;
+    @action.bound selectCircleUsedCard(card) {
+        this.circleUsedCard = card;
+    };
     @observable doubleCards=[];
     @action.bound selectDoubleCards(cardOne,cardTwo) {
-      console.log("Do you go here?");
         this.doubleCards.push(cardOne);
         this.doubleCards.push(cardTwo);
         console.log(this.doubleCards);
     };
+    @observable wanderCards={};
+    @action.bound selectWanderCard(card,player) {
+        let tmp = Object.assign({}, this.wanderCards);
+        tmp[player.playerName]=card;
+        this.wanderCards=tmp;
+    };
+
+    @observable koboldVictim={};
+    @action.bound selectKoboldVictim(player){
+      this.koboldVictim = player;
+      console.log(this.koboldVictim);
+    }
+    @action.bound unselectKoboldVictim(){
+      this.koboldVictim = {};
+    }
+
+    @observable predigerVictim={};
+    @action.bound predigerSelect(player){
+      if(this.predigerVictim !=player && this.predigerVictim != {}){
+        this.predigerCards=[];
+      }
+      this.predigerVictim = player;
+    }
+    @observable predigerCards=[];
+    @action.bound predigerCardSelect(card){
+      if(this.predigerCards.length < 2){
+        this.predigerCards.push(card);
+      }else{
+        this.predigerCards[1]=this.predigerCards[0];
+        this.predigerCards[0]=card;
+      }
+    }
 
     @action.bound unselectCards() {
         this.chosenCard = undefined;
         this.enemyCard=undefined;
         this.showCard=undefined;
         this.stackCard=undefined;
+        this.circleUsedCard=undefined;
         this.doubleCards=[];
+        this.wanderCards={};
+        this.predigerVictim = {};
+        this.predigerCards=[];
+
     };
 
     @observable error = '';
@@ -184,6 +224,44 @@ class CardStore {
                 playerCardTwo : newPlayer.playerCards[1].value.toString(),
                 playerCardThree : newPlayer.playerCards[2].value.toString(),
                 playerCardFour : newPlayer.playerCards[3].value.toString(),
+                playerRole : newPlayer.playerRole,
+                activePlayer: active,
+            })
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("player added");
+                       this.fetchSavings();
+                  });
+
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
+    }
+
+    @action.bound addNewAbenteurer(newPlayer,active) {
+        return fetch('http://localhost:3000/save/new', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                playerName : newPlayer.playerName,
+                playerCardOne : newPlayer.playerCards[0].value.toString(),
+                playerCardTwo : newPlayer.playerCards[1].value.toString(),
+                playerCardThree : newPlayer.playerCards[2].value.toString(),
+                playerCardFour : newPlayer.playerCards[3].value.toString(),
+                playerCardFive : newPlayer.playerCards[4].value.toString(),
                 playerRole : newPlayer.playerRole,
                 activePlayer: active,
             })

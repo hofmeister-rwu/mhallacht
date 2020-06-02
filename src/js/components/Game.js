@@ -10,6 +10,7 @@ import ModalBody from 'react-bootstrap/ModalBody'
 import ModalFooter from 'react-bootstrap/ModalFooter'
 
 import PlayerCards from "../components/PlayerCards"
+import PredigerModal from "../components/PredigerModal"
 import StackCards from "../components/StackCards"
 import SaveModal from "../components/SaveModal"
 import AlertModal from "../components/AlertModal"
@@ -46,6 +47,7 @@ class Card {
           }
         }
         let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig"];
+        //let roles =["kobold","kobold","kobold","kobold","kobold","kobold","kobold"];
         for (let i = 0; i < roles.length; i++) {
               this.roleCards.push(roles[i]);
         }
@@ -89,7 +91,11 @@ class Card {
         for (let i = 0; i < playerNames.length; i++) {
           let role = d.roleCards.splice(0,1)
           this.players.push(new Player(playerNames[i],role[0]));
-          this.players[i].playerCards = d.cards.splice(i*4, 4);
+          if(role[0]=="abenteurer"){
+              this.players[i].playerCards = d.cards.splice(0, 5);
+          }else{
+            this.players[i].playerCards = d.cards.splice(0, 4);
+          }
         }
         this.cardsInMiddle=d.cards;
     }
@@ -102,7 +108,12 @@ class Card {
           var cardTwo =  new Card(playersDB[i].playerCardTwo,playersDB[i].playerName+"-Card-Two");
           var cardThree =  new Card(playersDB[i].playerCardThree,playersDB[i].playerName+"-Card-Three");
           var cardFour =  new Card(playersDB[i].playerCardFour,playersDB[i].playerName+"-Card-Four");
-          this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour];
+          if(playersDB[i].playerCardFive != ""){
+            var cardFive =  new Card(playersDB[i].playerCardFive,playersDB[i].playerName+"-Card-Five");
+            this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour,cardFive];
+          }else{
+            this.players[i].playerCards=[cardOne,cardTwo,cardThree,cardFour];
+          }
           this.players[i].playerRole = playersDB[i].playerRole;
       }
       this.cardsInMiddle.length =0;
@@ -122,6 +133,7 @@ class Card {
     //Draw the first Card of the Stack
     function draw(){
         CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
+        this.setState({drawn:this.state.drawn+1});
     }
 
     //Throw a Card that the Player doesnt want on the used Cards Stack
@@ -129,7 +141,8 @@ class Card {
       //if you dont want to use the StackCard throw it on the usedCards Stack
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
-        this.endTurn();
+        CardStore.unselectCards();
+        //this.endTurn();
     }
 
     function throwCardbyObject(card){
@@ -160,19 +173,21 @@ class Card {
             if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
               CardStore.selectStackCard(this.gameBoard.usedCards[0]);
             }else{
-              this.endTurn();
+              //this.endTurn();
+
+              CardStore.unselectCards();
             }
-            //this.endTurn();
 
         //if the chosenCard hasn't been defined yet, give out a warning
         }else{
-          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true})
+          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true, modalClose:this.closeModal.bind(this)})
         }
     }
 
     //Swap a Card from the current player with the first Card from the Used Stack
     function swapUsedCard(chosenCard){
         //if a Card has been chosen, swap the first Card in the Stack with the chosenCard
+        setState({drawn:this.state.drawn+1});
         if(chosenCard!=undefined){
             var chosenCardIndex;
               for(let i = 0; i < this.gameBoard.players[this.state.activePlayerIndex].playerCards.length; i++){
@@ -187,17 +202,20 @@ class Card {
             if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
               CardStore.selectStackCard(this.gameBoard.usedCards[0]);
             }else{
-              this.endTurn();
+              //this.endTurn();
+
+              CardStore.unselectCards();
             }
 
         //if the chosenCard hasn't been defined yet, give out a warning
         }else{
-          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true})
+          this.setState({alert:"Such dir eine deiner Karten aus, die getauscht werden soll", warningshow:true, modalClose:this.closeModal})
         }
     }
 
     //Swap a Card from the active Player with a Card from another player
     function swapPlayerCard(chosenCard,enemyCard){
+      this.setState({actionDrawn:true});
       //if chosenCard and enemyCard are both defined
       if(chosenCard!=undefined&&enemyCard!=undefined){
 
@@ -234,24 +252,27 @@ class Card {
           let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
           this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
         }
-        this.endTurn();
+        //this.endTurn();
+
+        CardStore.unselectCards();
 
       //if one Card isn't chosen yet give out a warning
     }else{
         if(chosenCard==undefined && enemyCard==undefined){
-            this.setState({alert:"Such dir eine deiner Karten und eine Karte eines Gegners aus, um zu tauschen!", warningshow:true})
+            this.setState({alert:"Such dir eine deiner Karten und eine Karte eines Gegners aus, um zu tauschen!", warningshow:true, modalClose:this.closeModal})
         }
         if(chosenCard==undefined && enemyCard!=undefined){
-            this.setState({alert:"Such dir eine deiner Karten aus, um zu tauschen!", warningshow:true})
+            this.setState({alert:"Such dir eine deiner Karten aus, um zu tauschen!", warningshow:true, modalClose:this.closeModal})
         }
         if (enemyCard==undefined && chosenCard!=undefined){
-              this.setState({alert:"Such dir eine Karte von einem deiner Gegner aus, um zu tauschen!", warningshow:true})
+              this.setState({alert:"Such dir eine Karte von einem deiner Gegner aus, um zu tauschen!", warningshow:true, modalClose:this.closeModal})
         }
       }
     }
 
     //After the activePlayer has performed an action his Turn is over
     function skipNext(){
+      this.setState({actionDrawn:true});
       // put the StackCard on the UsedCard Staple
       if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
@@ -271,7 +292,7 @@ class Card {
     }
 
     function drawDouble(){
-
+        this.setState({actionDrawn:true});
       if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
@@ -285,25 +306,28 @@ class Card {
 
 
     function showCardModal(card, secondCard){
+
+        this.setState({actionDrawn:true});
         var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.state.activePlayerIndex].playerName + " seine Karten anschaut";
-        this.setState({alert:warning,warningshow:true});
+        this.setState({alert:warning,warningshow:true, modalClose:this.closeModal.bind(this)});
       if(card!=undefined && secondCard.value !=undefined){
         this.setState({modalClose:() => {this.closeModal(); this.showFirst(card,secondCard);}});
       }else if(card!=undefined &&secondCard.value==undefined){
         this.setState({modalClose:() => {this.closeModal(); this.show(card);}});
       //if no card is chosen give out a warning
       }else{
-        this.setState({alert:"Such dir eine Karte aus, die angezeigt werden soll", warningshow:true})
+        this.setState({alert:"Such dir ein Karte aus, die angezeigt werden soll", warningshow:true, modalClose:this.closeModal})
       }
     }
 
     //Show one of the activePlayers Cards
     function show(card){
+        this.setState({actionDrawn:true});
       if(card!=undefined){
           //if the Card to Show is defined, show the Card Value for 2 seconds
           CardStore.selectShowCard(card);
-          setTimeout(() => {this.endTurn();}, 2000);
-          //after the Timer has run out, put the StackCard on the UsedCard Staple
+          setTimeout(() => {CardStore.unselectCards();}, 2000);
+          //setTimeout(() => {this.endTurn();}, 2000);
           if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
             let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
             this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
@@ -321,17 +345,40 @@ class Card {
 
     //After the activePlayer has performed an action his Turn is over
     function endTurn(){
+      this.setState({actionDrawn:false});
+      if(this.state.koboldEndIndex!=""){
+        this.checkKoboldEnd();
+      }
+
+        if(this.state.gottheitRound!=""){
+          this.checkGottheit();
+        }
+      this.setState({drawn:0});
       //if the EndGame has been defined, we check if the Game is over yet
         if(this.state.endRound!=""){
           this.checkEndGame();
         }
-      //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
-        if(this.state.activePlayerIndex+1<this.gameBoard.players.length){
-          this.setState({activePlayerIndex:this.state.activePlayerIndex+1,});
-          CardStore.unselectCards();
-        }else{
-      //if theres no next player in the array a new Round begins and we start with the first player again
-          this.endRound(0);
+        switch (this.state.direction){
+          case "left":
+          //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
+            if(this.state.activePlayerIndex+1<this.gameBoard.players.length){
+              this.setState({activePlayerIndex:this.state.activePlayerIndex+1,});
+              CardStore.unselectCards();
+            }else{
+          //if theres no next player in the array a new Round begins and we start with the first player again
+              this.endRound(0);
+            }
+            break;
+          case "right":
+          //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
+            if(this.state.activePlayerIndex-1>=0){
+              this.setState({activePlayerIndex:this.state.activePlayerIndex-1,});
+              CardStore.unselectCards();
+            }else{
+          //if theres no next player in the array a new Round begins and we start with the first player again
+              this.endRound(this.gameBoard.players.length-1);
+            }
+            break;
         }
     }
 
@@ -357,7 +404,7 @@ class Card {
         let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
         this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
       }
-      this.endTurn();
+      //this.endTurn();
     }
 
 
@@ -383,7 +430,7 @@ class Card {
             counter++;
             return(<div key={player.playerName}><Alert>#{counter}: {player.playerName} with {player.playerValue} </Alert></div>);
         });
-        this.setState({alert:endList, warningshow:true, end:true})
+        this.setState({alert:endList, warningshow:true, end:true, modalClose:this.closeModal})
       }
     }
 
@@ -392,9 +439,18 @@ class Card {
         CardStore.deleteAll();
         for(let i = 0; i < this.gameBoard.players.length; i++){
           if(this.state.activePlayerIndex==i){
-              CardStore.addNewPlayer(this.gameBoard.players[i],true);
+            if(this.gameBoard.players[i].playerRole=="abenteurer"){
+                CardStore.addNewAbenteurer(this.gameBoard.players[i],true);
+            }else{
+                CardStore.addNewPlayer(this.gameBoard.players[i],true);
+            }
           }else{
-              CardStore.addNewPlayer(this.gameBoard.players[i],false);
+
+            if(this.gameBoard.players[i].playerRole=="abenteurer"){
+                CardStore.addNewAbenteurer(this.gameBoard.players[i],false);
+            }else{
+                CardStore.addNewPlayer(this.gameBoard.players[i],false);
+            }
           }
         }
         for(let i = 0; i < this.gameBoard.cardsInMiddle.length; i++){
@@ -417,14 +473,241 @@ class Card {
 
 
     ///roles
+    function useRole(role){
 
-    function deactivateRole(playerRole){
-      for (let i = 0; i < this.gameboard.players.length; i++) {
-        if(this.gameboard.players[i].playerRole == playerRole){
-          this.gameboard.players[i].roleActive = false;
+        switch(role){
+          case "abenteurer":
+            this.deactivateRole(role);
+            break;
+          case "alter-mann":
+          if(this.state.drawn==0){
+              this.alterMann();
+          }else{
+            this.setState({alert:"Deine Rolle kann nur genutzt werden, wenn du noch nicht gezogen hast!", warningshow:true,modalClose:closeModal.bind(this)});
+          }
+            break;
+          case "buerokrat":
+            this.buerokrat();
+            break;
+          case "gottheit":
+            this.gottheit();
+            break;
+          case "haendler":
+            this.haendler();
+            break;
+          case "kobold":
+          this.kobold();
+            break;
+          case "koenig":
+          this.koenig();
+            break;
+          case "prediger":
+          this.prediger();
+            break;
+          case "wanderer":
+            this.wanderer();
+            break;
+          default:
+            this.setState({alert:"Du hast im Moment keine Rolle", warningshow:true, modalClose:this.closeModal.bind(this)});
+            break;
         }
-      }
     }
+
+      //DEACTIVATE ROLE // ABENTEURER
+
+        function deactivateRole(playerRole){
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            if(this.gameBoard.players[i].playerRole == playerRole){
+              if(playerRole == "abenteurer"){
+                if(CardStore.chosenCard!=undefined){
+                    var chosenCardIndex;
+                      for(let j = 0; j < this.gameBoard.players[i].playerCards.length; j++){
+                        if(this.gameBoard.players[i].playerCards[j]==CardStore.chosenCard){
+                          chosenCardIndex=j;
+                        }
+                      }
+                    let playerCard = this.gameBoard.players[i].playerCards.splice(chosenCardIndex,1);
+                    this.gameBoard.usedCards.splice(0,0,playerCard[0]);
+                        this.gameBoard.players[i].playerRole = " ";
+                }else{
+                  this.setState({alert:"Such dir eine deiner Karten aus, die abgelegt werden soll, um die Rolle abzulegen.", warningshow:true, modalClose:this.closeModal})
+                }
+              }else{
+                  this.gameBoard.players[i].playerRole = " ";
+              }
+              CardStore.unselectCards();
+            }
+          }
+        }
+
+        //HAENDLER
+
+        function haendler(){
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            if(this.gameBoard.players[i].playerRole == "haendler"){
+
+                var c=0;
+                for(let j = this.gameBoard.players[i].playerCards.length-1; j >= 0 ; j--){
+
+                   setTimeout(() => {
+                   console.log("Block 1, Karte " + j);
+                   let playerCard = this.gameBoard.players[i].playerCards.splice(j,1);
+                   this.gameBoard.usedCards.splice(0,0,playerCard[0]);
+                   CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
+                 }, 500+c*2000);
+
+                  setTimeout(() => {
+
+                    console.log("Block 2, Karte " + j)
+
+                  let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
+                  this.gameBoard.players[i].playerCards.splice(0,0,stackCard[0]);
+                  CardStore.selectShowCard(this.gameBoard.players[i].playerCards[0]);
+                }, (c+1)*2000);
+
+                CardStore.unselectCards();
+                  c++;
+                }
+                setTimeout(()=>{
+                CardStore.unselectCards();
+                this.deactivateRole("haendler")},
+                (c+1)*2000);
+
+            }
+          }
+        }
+
+        //ALTER MANN
+
+        function alterMann(){
+          this.deactivateRole("alter-mann");
+          this.setState({drawn:this.state.drawn+1});
+          CardStore.selectCircleUsedCard(this.gameBoard.usedCards[0]);
+          CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+        }
+
+        function circleBack(){
+          let thrownCard = this.gameBoard.usedCards.splice(0,1);
+          this.gameBoard.usedCards.splice(this.gameBoard.usedCards.length,0,thrownCard[0]);
+          CardStore.unselectCards();
+          this.alterMann();
+        }
+
+        //WANDERER
+
+        function wanderer(){
+          CardStore.unselectCards();
+          this.setState({alert:"Sucht alle eine Karte aus, die nach links weitergegeben werden soll.", warningshow:true, playerCardClick:CardStore.selectWanderCard, modalClose:closeModal.bind(this)});
+        }
+
+        function cardsToLeft(){
+          let indices = {};
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            for (let j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {
+              if(Object.values(CardStore.wanderCards).includes(this.gameBoard.players[i].playerCards[j])){
+                indices[i]=j;
+              }
+            }
+          }
+
+          let tmp = this.gameBoard.players[0].playerCards.splice(indices[0],1);
+          let target;
+          for (let s = 1; s < this.gameBoard.players.length; s++) {
+            target = this.gameBoard.players[s].playerCards.splice(indices[s],1);
+            this.gameBoard.players[s].playerCards.splice(indices[s],0,tmp[0]);
+            tmp = target;
+          }
+          this.gameBoard.players[0].playerCards.splice(indices[0],0,tmp[0]);
+
+          this.setState({playerCardClick:""});
+          this.deactivateRole("wanderer");
+        }
+
+
+        //KOBOLD
+
+        function kobold(){
+          this.setState({playerClick:(player) => {this.setState({koboldSelect:player})}, alert:"Such dein Opfer aus", warningshow:true, modalClose:this.closeModal,});
+        }
+
+        function setKoboldVictim(player){
+          CardStore.selectKoboldVictim(player);
+          let playerIndex;
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            if(this.gameBoard.players[i].playerRole == "kobold"){
+              playerIndex = i-1;
+              if(playerIndex < 0){
+                playerIndex= this.gameBoard.players.length-1;
+              }
+            }
+          }
+          this.setState({koboldEndIndex:playerIndex,koboldEndRound:this.state.round+1, koboldSelect:{}, playerClick:""});
+          this.deactivateRole("kobold");
+        }
+
+        function checkKoboldEnd(){
+          if(this.state.round>=this.state.koboldEndRound && this.state.activePlayerIndex >= this.state.koboldEndIndex){
+            CardStore.unselectKoboldVictim();
+          }
+        }
+
+        //GOTTTHEIT
+
+        function gottheit(){
+          this.setState({alert:"In einer Runde werden alle Karten nach rechts weitergegeben.", warningshow:true, modalClose:this.closeModal, gottheitRound:this.state.round+1});
+        }
+
+        function checkGottheit(){
+          if(this.state.round == this.state.gottheitRound && this.gameBoard.players[this.state.activePlayerIndex+1].playerRole == "gottheit"){
+            this.setState({alert:"Karten werden nach rechts weitergegeben", warningshow:true, modalClose:this.closeModal, gottheitRound:""});
+            let last = this.gameBoard.players[this.gameBoard.players.length-1].playerCards;
+            for (let i = 0; i < this.gameBoard.players.length-1 ; i++) {
+                let tmp = this.gameBoard.players[i].playerCards;
+                if (i-1 < 0) {
+                  this.gameBoard.players[this.gameBoard.players.length-1].playerCards = tmp;
+                }else{
+                  this.gameBoard.players[i-1].playerCards = tmp;
+                }
+            }
+            this.gameBoard.players[this.gameBoard.players.length-2].playerCards=last;
+            this.deactivateRole("gottheit");
+          }
+        }
+
+        //BÜROKRAT
+
+        function buerokrat(){
+          if(this.state.round > 3 && !this.state.actionDrawn){
+            this.setState({endRound:this.state.round, endPlayer:this.state.activePlayerIndex});
+              this.setState({alert:"Die Runde wird nach deinem Zug beendet", warningshow:true, modalClose:this.closeModal});
+          }else{
+            this.setState({alert:"Du darfst die Runde erst nach Runde 3 beenden und keine Aktionskarte einsetzen", warningshow:true, modalClose:this.closeModal});
+          }
+        }
+
+        //KÖNIG
+
+        function koenig(){
+          this.setState({drawn:0, direction:"right"});
+          this.deactivateRole("koenig");
+        }
+
+        //PREDIGER
+
+        function prediger(){
+          this.setState({alert:"Such dir nun einen Gegner und zwei seiner Karten aus, die du richtig benennen kannst", warningshow:true, modalClose:this.closeModal.bind(this), playerCardClick:CardStore.predigerCardSelect, playerClick:CardStore.predigerSelect});
+
+        }
+
+        function predigerCheck(userAnswer,rightAnswer){
+          let same = true;
+          for (let i = 0; i < rightAnswer.length; i++) {
+            if(rightAnswer[i]!=userAnswer[i]){
+              same=false;
+            }
+          }
+          this.setState({predigershow:false});
+        }
 
 
 @observer
@@ -454,6 +737,17 @@ export default class Game extends React.Component {
           endRound:"",
           endPlayer:"",
           end:false,
+          rerender:false,
+          drawn:0,
+          actionDrawn:false,
+          playerCardClick:"",
+          playerClick:() => {},
+          koboldEndIndex:"",
+          koboldEndRound:"",
+          koboldSelect:{},
+          gottheitRound:"",
+          direction:"left",
+          predigershow:false,
         };
     this.endRound=endRound.bind(this);
     this.endTurn=endTurn.bind(this);
@@ -461,6 +755,19 @@ export default class Game extends React.Component {
     this.closeModal=closeModal.bind(this);
     this.show=show.bind(this);
     this.showFirst=showFirst.bind(this);
+    this.deactivateRole=deactivateRole.bind(this);
+    this.haendler=haendler.bind(this);
+    this.alterMann=alterMann.bind(this);
+    this.wanderer=wanderer.bind(this);
+    this.kobold=kobold.bind(this);
+    this.setKoboldVictim=setKoboldVictim.bind(this);
+    this.checkKoboldEnd=checkKoboldEnd.bind(this);
+    this.gottheit = gottheit.bind(this);
+    this.checkGottheit=checkGottheit.bind(this);
+    this.buerokrat=buerokrat.bind(this);
+    this.koenig=koenig.bind(this);
+    this.prediger = prediger.bind(this);
+
     CardStore.fetchSavings();
   }
     render() {
@@ -481,6 +788,19 @@ export default class Game extends React.Component {
        savedUsed = [...usedFromServer];
      }
 
+     //Load Cards from the CardStore
+     const {chosenCard} = CardStore;
+     const {enemyCard} = CardStore;
+     const {stackCard} = CardStore;
+     const {showCard} = CardStore;
+     const {circleUsedCard} = CardStore;
+     let {doubleCards} = CardStore;
+     let {wanderCards} = CardStore;
+     const doubleCardsfromStore = [...doubleCards];
+     const {koboldVictim} = CardStore;
+     let {predigerCards} = CardStore;
+     const predigerCardsFromStore = [...predigerCards];
+     const {predigerVictim} = CardStore;
      //Load PlayerCards into {items}
       const playerCards = this.gameBoard.players.map((item, key) =>{
 
@@ -504,26 +824,24 @@ export default class Game extends React.Component {
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
+              if(item == this.state.koboldSelect){
+                deckClass += " bg-danger";
+              }
           }
-          return(<div key={item.playerName} class="player center">
-            <PlayerCards
-                player={item}
-                cardClick={cardClick}
-                deckClass={deckClass}
-                end={this.state.end}
+          if(this.state.playerCardClick!=""){
+            console.log("why do you go here");
+            cardClick=this.state.playerCardClick;
+          }
 
-                />
+          let playerClick ="";
+          if(this.state.playerClick!=""){
+            playerClick =this.state.playerClick.bind(this,item);
+          }
+
+          return(<div key={item.playerName} class="player center" onClick={playerClick}>
+            <PlayerCards player={item} cardClick={cardClick} deckClass={deckClass} end={this.state.end} roleCard={true} roleFunction={useRole.bind(this,item.playerRole)}/>
             </div>);
       });
-
-      //Load Cards from the CardStore
-      const {chosenCard} = CardStore;
-      const {enemyCard} = CardStore;
-      const {stackCard} = CardStore;
-      const {showCard} = CardStore;
-      let {doubleCards} = CardStore;
-      const doubleCardsfromStore = [...doubleCards];
-
 
       //Only Show Info once Game has really started
       let gameInfo = <Alert variant="primary">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
@@ -533,29 +851,63 @@ export default class Game extends React.Component {
       let throwButton;
       let actionButton;
       let endGameButton;
+      let useRoleButton;
+
+      if(this.state.playerCardClick == CardStore.selectWanderCard){
+        let disabl = true;
+        if(Object.values(CardStore.wanderCards).length == this.gameBoard.players.length){
+          disabl=false;
+        }
+        useRoleButton = <Button disabled={disabl} onClick={cardsToLeft.bind(this)}>Karten nach links geben</Button>;
+      }
+
+      if(this.state.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
+        useRoleButton = <Button onClick={setKoboldVictim.bind(this, this.state.koboldSelect)}>Opfer auswählen</Button>;
+      }
+
+      console.log(CardStore.predigerVictim);
+      console.log(CardStore.predigerCards);
+
+      if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2){
+        useRoleButton = <Button onClick={() => {this.setState({predigershow:true})}}>Spieler und Karten auswählen</Button>;
+      }
+
 
       if(this.state.round>0){
+
         gameInfo=<Alert variant="primary">Runde {this.state.round} <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert> ;
+
         if(this.state.endPlayer != "" && !this.state.end){
-          var tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
-          if(tilEnd <= 0){
-            tilEnd = this.state.activePlayerIndex + tilEnd;
-          }
-          gameInfo=<Alert variant="primary">Runde {this.state.round}, Noch {tilEnd} Züge  <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>
+            var tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
+            if(tilEnd <= 0){
+                tilEnd = this.state.activePlayerIndex + tilEnd;
+            }
+            gameInfo=<Alert variant="primary">Runde {this.state.round}, Noch {tilEnd} Züge  <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>
         }
+
         //Only Show DrawButton if there is no card already drawn and Game isn't over
-        if(stackCard==undefined && !this.state.end){
-          drawButton=
-          <Button onClick={draw.bind(this)}>Ziehen</Button>;
+
+        if(stackCard==undefined && !this.state.end && this.state.drawn==0){
+
+          drawButton= <Button onClick={draw.bind(this)}>Ziehen</Button>;
+
           if(this.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(this.gameBoard.usedCards[0].value,10))){
             usedButton=
             <Button onClick={swapUsedCard.bind(this,chosenCard)}>Vom Ablegestapel tauschen</Button>;
           }
+
+        }else if(stackCard == undefined && this.state.drawn < 2 && this.gameBoard.players[this.state.activePlayerIndex].playerRole=="abenteurer"){
+            drawButton= <Button onClick={draw.bind(this)}>Ziehen</Button>;
+
+        }else{
+          throwButton = <Button onClick={endTurn.bind(this)}>Zug beenden</Button>;
         }
 
         if(stackCard!=undefined && !this.state.end){
           if(this.gameBoard.cardsInMiddle[0]==stackCard){
             throwButton = <Button onClick={throwCards.bind(this)}>Wegwerfen</Button>;
+          }else if(this.gameBoard.usedCards[0]==stackCard && this.gameBoard.usedCards[0]==circleUsedCard){
+              throwButton = <Button onClick={circleBack.bind(this)}>Wegwerfen</Button>;
           }else{
             throwButton = <Button onClick={endTurn.bind(this)}>Zug beenden</Button>;
           }
@@ -590,6 +942,7 @@ export default class Game extends React.Component {
           if (this.state.endRound=="" && stackCard.value=="end"){
             endGameButton = <Button onClick={setEndGame.bind(this)}>Spiel beenden</Button>;
           }
+
         }
       }else{
         let disabled = true;
@@ -620,6 +973,12 @@ export default class Game extends React.Component {
                   usedLength={this.gameBoard.usedCards.length}
                   round={this.state.round}/>
 
+                  <PredigerModal
+                  show={this.state.predigershow}
+                  onHide={()=>this.setState({predigershow:false})}
+                  compare={predigerCheck.bind(this)}
+                  />
+
               <div class="stacks">
                 <div class="row col-xl-4 col-6 mx-auto position-relative">
                   <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
@@ -635,6 +994,7 @@ export default class Game extends React.Component {
                 {throwButton}
                 {actionButton}
                 {endGameButton}
+                {useRoleButton}
               </div>
             </div>
         );

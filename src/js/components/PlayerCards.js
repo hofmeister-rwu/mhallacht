@@ -5,6 +5,7 @@ import CardColumns from 'react-bootstrap/CardColumns';
 import CardStore from "../stores/cardStore";
 import Game from "../components/Game";
 import RoleCard from "../components/RoleCard"
+import Button from 'react-bootstrap/Button'
 
 
 class PlayerCards extends React.Component{
@@ -23,12 +24,20 @@ class PlayerCards extends React.Component{
         if(card ==enemyCard){
           cardClass += " enemyCard";
         }
-        if(card != showCard && this.props.end==false){
+        if(card != showCard && this.props.end==false && this.props.player != CardStore.koboldVictim){
           cardClass+=" card-down";
+        }
+        //console.log(Object.values(CardStore.wanderCards));
+        if(Object.values(CardStore.wanderCards).includes(card)){
+          cardClass+=" chosenCard";
+        }
+
+        if(CardStore.predigerCards.includes(card)){
+          cardClass+=" chosenCard";
         }
         var cardClick;
         if(this.props.cardClick!=undefined){
-          cardClick=this.props.cardClick.bind(this,card);
+          cardClick=this.props.cardClick.bind(this,card,this.props.player);
         }
 
         return (
@@ -41,11 +50,14 @@ class PlayerCards extends React.Component{
             </Card.Body>
           </Card>);
         });
-
+        let roleCard;
+        if(this.props.roleCard){
+          roleCard= <RoleCard player={this.props.player} roleFunction={this.props.roleFunction}/>;
+        }
         return (
           <div class={this.props.deckClass}>
             <h2 class="deckHeading">{this.props.player.playerName}</h2>
-            <div class="deck playerCards">{cards} <RoleCard player={this.props.player}/></div>
+            <div class="deck playerCards">{cards} {roleCard}</div>
           </div>
         );
     }

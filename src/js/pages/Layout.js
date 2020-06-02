@@ -64,7 +64,6 @@ function closeModal(){
 export default class Layout extends React.Component {
   constructor(){
     super();
-    console.log(this.playerSix);
     this.state = {
       numberofPlayers : 2,
       players : [],
@@ -74,7 +73,7 @@ export default class Layout extends React.Component {
       CardStore.fetchSavings();
   }
     render() {
-      console.log(this.state.players);
+      //console.log(this.state.players);
       //import saved Game from Store/Database
       var {playersFromServer} = CardStore;
       var {middleFromServer} = CardStore;
