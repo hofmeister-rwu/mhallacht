@@ -40,7 +40,7 @@ function changeUserAnswer(index,value){
 
 
 @observer
-export default class AlertModal extends React.Component {
+export default class PredigerModal extends React.Component {
 
   constructor(props){
     super(props);
@@ -49,18 +49,26 @@ export default class AlertModal extends React.Component {
     };
   }
     render() {
-      let rightAnswer;
-      for (let i = 0; i < CardStore.predigerVictim.length; i++) {
-        if(CardStore.predigerCards.includes(CardStore.predigerVictim.playerCards[i])){
-          rightAnswer.push(CardStore.predigerVictim.playerCards[i].value.toString);
+      var rightAnswer;
+      if(CardStore.predigerVictim.playerCards !=undefined){
+        rightAnswer=[];
+        for (let i = 0; i < CardStore.predigerVictim.playerCards.length; i++) {
+          if(CardStore.predigerCards.includes(CardStore.predigerVictim.playerCards[i])){
+            rightAnswer.push(CardStore.predigerVictim.playerCards[i].value.toString());
+          }
         }
       }
+      let cards;
+      if(CardStore.predigerVictim.playerCards != undefined){
+        cards= <PlayerCards player={CardStore.predigerVictim} cardClick={()=>{}} end={false} roleCard={false} roleFunction={()=>{}}/>;
+      }
+      let userAnswer = [...this.state.userAnswer];
         return (
-          <Modal show={this.props.show} onHide={this.props.onHide}> 
+          <Modal show={this.props.show} onHide={this.props.onHide}>
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
-              <PlayerCards player={CardStore.predigerVictim} cardClick={()=>{}} end={false} roleCard={false} roleFunction={()=>{}}/>
+            {cards}
               <p> Erste Karte </p>
                 <Form key="card-one">
                   <div className="mb-3">
@@ -103,7 +111,7 @@ export default class AlertModal extends React.Component {
                   </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={this.props.compare.bind(this.state.userAnswer,rightAnswer)}>
+              <Button variant="secondary" onClick={()=>{this.props.compare(rightAnswer,userAnswer);}}>
                 Fertig
               </Button>
             </Modal.Footer>

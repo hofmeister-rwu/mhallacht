@@ -502,7 +502,11 @@ class Card {
           this.koenig();
             break;
           case "prediger":
-          this.prediger();
+          if(!this.state.predigerused){
+            this.prediger();
+          }else{
+            this.setState({alert:"Deine Rolle kann nur einmal im Zug verwendet werden", warningshow:true,modalClose:closeModal.bind(this)});
+          }
             break;
           case "wanderer":
             this.wanderer();
@@ -695,18 +699,27 @@ class Card {
         //PREDIGER
 
         function prediger(){
+          this.setState({predigerused:true});
           this.setState({alert:"Such dir nun einen Gegner und zwei seiner Karten aus, die du richtig benennen kannst", warningshow:true, modalClose:this.closeModal.bind(this), playerCardClick:CardStore.predigerCardSelect, playerClick:CardStore.predigerSelect});
-
+          CardStore.unselectCards;
         }
 
-        function predigerCheck(userAnswer,rightAnswer){
+        function predigerCheck(rightAnswer,userAnswer){
+          console.log(userAnswer);
+          console.log(rightAnswer);
           let same = true;
           for (let i = 0; i < rightAnswer.length; i++) {
             if(rightAnswer[i]!=userAnswer[i]){
               same=false;
             }
           }
-          this.setState({predigershow:false});
+            let stackCard = new Card("swap","util");
+            CardStore.selectStackCard(stackCard);
+          if(same){
+            this.setState({predigershow:false, alert:"Dein Tipp war richtig! Du darfst nun eine der beiden Karten mit deinen eigenen tauschen", warningshow:true, playerClick:"", playerCardClick:""});
+          }else{
+            this.setState({predigershow:false, alert:"Dein Tipp war falsch. Lass deinen Gegner auswählen welche Karten getauscht werden", warningshow:true, playerClick:"", playerCardClick:""});
+          }
         }
 
 
@@ -748,6 +761,7 @@ export default class Game extends React.Component {
           gottheitRound:"",
           direction:"left",
           predigershow:false,
+          predigerused:false,
         };
     this.endRound=endRound.bind(this);
     this.endTurn=endTurn.bind(this);
@@ -826,8 +840,8 @@ export default class Game extends React.Component {
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
-              if(item == this.state.koboldSelect){
-                deckClass += " bg-danger";
+              if(item == this.state.koboldSelect || item == CardStore.predigerVictim){
+                deckClass += " bg-primary";
               }
           }
           if(this.state.playerCardClick!=""){
@@ -839,8 +853,17 @@ export default class Game extends React.Component {
             playerClick =this.state.playerClick.bind(this,item);
           }
 
+          let predigerSwap = false;
+          if(CardStore.predigerVictim.playerCards != undefined && this.state.playerCardClick == "" && item != this.gameBoard.players[this.state.activePlayerIndex]){
+            cardClick=()=>{};
+            if(CardStore.predigerVictim == item){
+              cardClick = cardClick=CardStore.selectEnemyCard;
+            }
+            predigerSwap=true;
+          }
+
           return(<div key={item.playerName} class="player center" onClick={playerClick}>
-            <PlayerCards player={item} cardClick={cardClick} deckClass={deckClass} end={this.state.end} roleCard={true} roleFunction={roleFunction}/>
+            <PlayerCards player={item} cardClick={cardClick} deckClass={deckClass} end={this.state.end} roleCard={true} roleFunction={roleFunction} predigerSwap={predigerSwap}/>
             </div>);
       });
 
@@ -866,10 +889,7 @@ export default class Game extends React.Component {
         useRoleButton = <Button onClick={setKoboldVictim.bind(this, this.state.koboldSelect)}>Opfer auswählen</Button>;
       }
 
-      console.log(CardStore.predigerVictim);
-      console.log(CardStore.predigerCards);
-
-      if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2){
+      if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && this.state.playerClick!=""){
         useRoleButton = <Button onClick={() => {this.setState({predigershow:true})}}>Spieler und Karten auswählen</Button>;
       }
 
@@ -956,6 +976,7 @@ export default class Game extends React.Component {
         </Button>;
       }
       let endClass = "end-"+this.state.end;
+
 
         return (
             <div class={endClass}>

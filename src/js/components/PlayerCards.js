@@ -17,6 +17,11 @@ class PlayerCards extends React.Component{
       //Load Parts of Deck in {cards}
       const cards =this.props.player.playerCards.map((card, key) => {
 
+        var cardClick;
+        if(this.props.cardClick!=undefined){
+          cardClick=this.props.cardClick.bind(this,card,this.props.player);
+        }
+
         var cardClass = "value-"+card.value;
         if(card ==chosenCard){
           cardClass += " chosenCard";
@@ -35,9 +40,12 @@ class PlayerCards extends React.Component{
         if(CardStore.predigerCards.includes(card)){
           cardClass+=" chosenCard";
         }
-        var cardClick;
-        if(this.props.cardClick!=undefined){
-          cardClick=this.props.cardClick.bind(this,card,this.props.player);
+
+        if(CardStore.predigerVictim.playerCards!=undefined && this.props.predigerSwap){
+          cardClick=()=>{};
+          if(CardStore.predigerCards.includes(card)){
+            cardClick = this.props.cardClick.bind(this,card,this.props.player);
+          }
         }
 
         return (
