@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import CardStore from "../stores/cardStore"
 import AlertModal from "../components/AlertModal"
+import RuleModal from "../components/RuleModal"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -68,7 +69,8 @@ export default class Layout extends React.Component {
       numberofPlayers : 2,
       players : [],
       submit: false,
-      warningshow:false
+      warningshow:false,
+      ruleshow:false,
     }
       CardStore.fetchSavings();
   }
@@ -139,6 +141,7 @@ export default class Layout extends React.Component {
           Spiel laden
           </Button>);
         }
+        form.push(<Button className="z-index-100" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>);
       }
 
         return (
@@ -148,7 +151,10 @@ export default class Layout extends React.Component {
             onHide={closeModal.bind(this)}
             alert="Jeder Name darf nur einmal vorkommen"
           />
-
+          <RuleModal
+            show={this.state.ruleshow}
+            onHide={()=>{this.setState({ruleshow:false})}}
+          />
           {form}
           {game}
           </div>

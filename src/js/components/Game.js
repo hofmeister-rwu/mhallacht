@@ -11,6 +11,7 @@ import ModalFooter from 'react-bootstrap/ModalFooter'
 
 import PlayerCards from "../components/PlayerCards"
 import PredigerModal from "../components/PredigerModal"
+import RuleModal from "../components/RuleModal"
 import StackCards from "../components/StackCards"
 import SaveModal from "../components/SaveModal"
 import AlertModal from "../components/AlertModal"
@@ -46,7 +47,7 @@ class Card {
               id++;
           }
         }
-        let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig"];
+        let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "fremdling", "jaeger", "oberhaupt"];
         //let roles =["kobold","kobold","kobold","kobold","kobold","kobold","kobold"];
         for (let i = 0; i < roles.length; i++) {
               this.roleCards.push(roles[i]);
@@ -187,7 +188,7 @@ class Card {
     //Swap a Card from the current player with the first Card from the Used Stack
     function swapUsedCard(chosenCard){
         //if a Card has been chosen, swap the first Card in the Stack with the chosenCard
-        setState({drawn:this.state.drawn+1});
+        this.setState({drawn:this.state.drawn+1});
         if(chosenCard!=undefined){
             var chosenCardIndex;
               for(let i = 0; i < this.gameBoard.players[this.state.activePlayerIndex].playerCards.length; i++){
@@ -345,7 +346,7 @@ class Card {
 
     //After the activePlayer has performed an action his Turn is over
     function endTurn(){
-      this.setState({actionDrawn:false, predigerused:false});
+      this.setState({actionDrawn:false, predigerused:false, playerCardClick:"", playerClick:()=>{}});
       if(this.state.koboldEndIndex!=""){
         this.checkKoboldEnd();
       }
@@ -420,11 +421,24 @@ class Card {
                 }else{
                   this.gameBoard.players[i].playerValue += 15;
                 }
-                console.log(this.gameBoard.players[i].playerValue)
+                console.log(this.gameBoard.players[i].playerName + ": " + this.gameBoard.players[i].playerValue)
               }
         }
         var endPlayers=[...this.gameBoard.players];
         endPlayers.sort((a, b) => a.playerValue - b.playerValue);
+        if(endPlayers[this.gameBoard.players.length-1].playerRole == "fremdling"){
+          for(let s = 0; s < endPlayers.length; s++){
+            if(endPlayers[s].playerRole == "fremdling"){
+              endPlayers[s].playerValue *= 0.5;
+              console.log("Fremdling Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
+            }else{
+              endPlayers[s].playerValue *= 2;
+              console.log("Non Fremdling Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
+            }
+          }
+          this.deactivateRole("fremdling");
+          endPlayers.sort((a, b) => a.playerValue - b.playerValue);
+        }
         let counter = 0;
         const endList = endPlayers.map((player, key) =>{
             counter++;
@@ -467,7 +481,7 @@ class Card {
     }
 
     function closeModal(){
-      this.setState({warningshow:false});
+      this.setState({warningshow:false, dismiss:""});
     }
 
 
@@ -487,30 +501,65 @@ class Card {
           }
             break;
           case "buerokrat":
-            this.buerokrat();
+            if(this.state.drawn==1){
+                this.buerokrat();
+            }else{
+              this.setState({alert:"Du kannst diese Rolle erst nach deinem Zug einsetzen.", warningshow:true, modalClose:closeModal.bind(this)});
+            }
             break;
           case "gottheit":
             this.gottheit();
             break;
           case "haendler":
-            this.haendler();
+            if(this.state.drawn==1){
+              this.haendler();
+            }else{
+              this.setState({alert:"Du kannst diese Rolle erst nach deinem Zug einsetzen.", warningshow:true, modalClose:closeModal.bind(this)});
+            }
             break;
           case "kobold":
-          this.kobold();
+            if(this.state.drawn==1){
+              this.kobold();
+            }else{
+              this.setState({alert:"Du kannst diese Rolle erst nach deinem Zug einsetzen.", warningshow:true, modalClose:closeModal.bind(this)});
+            }
             break;
           case "koenig":
-          this.koenig();
+            if(this.state.drawn==1){
+              this.koenig();
+            }else{
+              this.setState({alert:"Du kannst diese Rolle erst nach deinem Zug einsetzen.", warningshow:true, modalClose:closeModal.bind(this)});
+            }
             break;
           case "prediger":
-          if(!this.state.predigerused){
+          if(!this.state.predigerused && CardStore.stackCard == undefined){
             this.prediger();
-          }else{
+          }else if(this.state.predigerused){
             this.setState({alert:"Deine Rolle kann nur einmal im Zug verwendet werden", warningshow:true,modalClose:closeModal.bind(this)});
+          }else{
+            this.setState({alert:"Beende zuerst deinen Zug, bevor du diese Rolle einsetzt", warningshow:true,modalClose:closeModal.bind(this)});
           }
             break;
           case "wanderer":
-            this.wanderer();
+            if(this.state.drawn==1){
+              this.wanderer();
+            }else{
+              this.setState({alert:"Du kannst diese Rolle erst nach deinem Zug einsetzen.", warningshow:true, modalClose:closeModal.bind(this)});
+            }
             break;
+
+          case "fremdling":
+            this.setState({alert:"Du kannst diese Rolle nicht vor der Wertung einsetzen. Möchtest du diese Rolle jetzt ablegen?", warningshow:true, modalClose: ()=>{this.closeModal(); this.deactivateRole(role);}, dismiss:this.closeModal})
+            break;
+
+          case "jaeger":
+            console.log("jaeger");
+            break;
+
+          case "oberhaupt":
+            console.log("oberhaupt");
+            break;
+
           default:
             this.setState({alert:"Du hast im Moment keine Rolle", warningshow:true, modalClose:this.closeModal.bind(this)});
             break;
@@ -762,6 +811,8 @@ export default class Game extends React.Component {
           direction:"left",
           predigershow:false,
           predigerused:false,
+          ruleshow: false,
+          dismiss: "",
         };
     this.endRound=endRound.bind(this);
     this.endTurn=endTurn.bind(this);
@@ -869,7 +920,11 @@ export default class Game extends React.Component {
 
       //Only Show Info once Game has really started
       let gameInfo = <Alert variant="primary">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
-      <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>;
+                      <div class="top-buttons">
+                        <Button onClick={save.bind(this)}>Speichern</Button>
+                        <Button onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
+                      </div>
+                    </Alert>;
       let drawButton;
       let usedButton;
       let throwButton;
@@ -895,21 +950,44 @@ export default class Game extends React.Component {
 
 
       if(this.state.round>0){
-
-        gameInfo=<Alert variant="primary">Runde {this.state.round} <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert> ;
-
+        let endAlert="";
+        let gottheitAlert="";
         if(this.state.endPlayer != "" && !this.state.end){
-            var tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
+            let tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
             if(tilEnd <= 0){
                 tilEnd = this.state.activePlayerIndex + tilEnd;
             }
-            gameInfo=<Alert variant="primary">Runde {this.state.round}, Noch {tilEnd} Züge  <Button class="save-button" onClick={save.bind(this)}>Speichern</Button></Alert>
+            endAlert = " Noch " + tilEnd + " Züge bis zur Wertung";
         }
+
+        if(this.state.gottheitRound !=""){
+          let gottheitIndex;
+          for (let i = 0; i < this.gameBoard.players.length; i++) {
+            if(this.gameBoard.players[i].playerRole=="gottheit"){
+              gottheitIndex=i;
+            }
+          }
+          if(gottheitIndex != this.state.activePlayerIndex){
+            let tilGottheit = gottheitIndex - this.state.activePlayerIndex;
+            if(tilGottheit <= 0){
+                tilGottheit = this.state.activePlayerIndex + tilGottheit;
+            }
+            gottheitAlert = " Noch " + tilGottheit + " Züge bis zum Kartentausch";
+          }
+        }
+
+
+        gameInfo=<Alert variant="primary">Runde {this.state.round}
+                    {endAlert} {gottheitAlert}
+                    <div class="top-buttons">
+                      <Button class="save-button" onClick={save.bind(this)}>Speichern</Button>
+                      <Button class="save-button" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
+                    </div>
+                  </Alert>
 
         //Only Show DrawButton if there is no card already drawn and Game isn't over
 
-        if(stackCard==undefined && !this.state.end && this.state.drawn==0){
-
+        if(stackCard==undefined && !this.state.end && this.state.drawn==0 && this.state.playerCardClick==""){
           drawButton= <Button onClick={draw.bind(this)}>Ziehen</Button>;
 
           if(this.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(this.gameBoard.usedCards[0].value,10))){
@@ -982,10 +1060,15 @@ export default class Game extends React.Component {
             <div class={endClass}>
             {gameInfo}
 
+                <RuleModal
+                  show={this.state.ruleshow}
+                  onHide={()=>{this.setState({ruleshow:false})}}
+                />
                 <AlertModal
                   show={this.state.warningshow}
                   onHide={this.state.modalClose}
                   alert={this.state.alert}
+                  dismiss = {this.state.dismiss}
                 />
                 <SaveModal
                   saveshow={this.state.saveshow}
