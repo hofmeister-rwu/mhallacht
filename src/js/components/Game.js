@@ -1090,7 +1090,7 @@ export default class Game extends React.Component {
                   <StackCards heading={"Ablegestapel"} item={this.gameBoard.usedCards} stack={false}/>
                 </div>
               </div>
-              <div class="center">
+              <div class="players">
                     {playerCards}
               </div>
               </div>
