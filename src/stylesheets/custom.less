@@ -3,11 +3,11 @@
 @cardMargin:0.5em;
 
 body{
-  height:100vh;
+  min-height:100vh;
+  min-width:767px;
   //width:100vw;
-  //position:relative;
+  position:relative;
   //overflow:hidden;
-  height:fit-content;
 }
 .playerCards div.card, .double-card{
     cursor:pointer;
@@ -158,16 +158,22 @@ body{
         top:25%;
         & when (@i <= ((@n + 1) / 2 ) ){
           left:5%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             left:0%;
             transform:rotate(90deg);
+          }
+          @media(min-width:1200px){
+            left:15%;
           }
         }
         & when (@i > ((@n + 1) / 2 )){
           right:5%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             right:0%;
             transform:rotate(270deg);
+          }
+          @media(min-width:1200px){
+            right:15%;
           }
         }
       }
@@ -176,16 +182,22 @@ body{
         bottom: 25%;
         & when (@i <= ((@n + 1) / 2 ) ){
           left:5%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             left:0%;
             transform:rotate(90deg);
+          }
+          @media(min-width:1200px){
+            left:15%;
           }
         }
         & when (@i > ((@n + 1) / 2 )){
           right:5%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             right:0%;
             transform:rotate(270deg);
+          }
+          @media(min-width:1200px){
+            right:15%;
           }
         }
       }
@@ -196,15 +208,18 @@ body{
       & when ((@n / 2) + 1 > @i){
         left:5%;
         bottom:60%;
-        @media(max-width:920px){
+        @media(max-width:991px){
           left:0%;
           bottom:55%;
           transform:rotate(90deg);
 
         }
+        @media(min-width:1200px){
+          left:15%;
+        }
         & when (@i = 2){
           bottom: 25%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             bottom:15%
           }
         }
@@ -212,14 +227,17 @@ body{
       & when ((@n / 2) + 1 < @i){
         right:5%;
         bottom:60%;
-        @media(max-width:920px){
+        @media(max-width:991px){
           right:0%;
           bottom:55;
           transform:rotate(270deg);
         }
+        @media(min-width:1200px){
+          right:15%;
+        }
         & when (@i = @n){
           bottom: 25%;
-          @media(max-width:920px){
+          @media(max-width:991px){
             bottom:15%
           }
         }
