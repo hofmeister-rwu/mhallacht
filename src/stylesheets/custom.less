@@ -6,9 +6,12 @@ body{
   min-height:100vh;
   min-width:767px;
   //width:100vw;
-  position:relative;
+  //position:relative;
   //overflow:hidden;
+  background-color:darkblue;
+  color:white;
 }
+
 .playerCards div.card, .double-card{
     cursor:pointer;
     &:hover{
@@ -34,6 +37,7 @@ body{
 .center{
   display:flex;
   justify-content: center;
+  height:100%;
 }
 
 .button-row{
@@ -65,7 +69,7 @@ body{
   padding:@cardMargin;
 }
 .deckContainer.active{
-  background-color:#CCE5FF;
+  background-color:rgba(204, 229, 255,0.5);
 }
 .deckHeading{
   text-align: center;
@@ -210,7 +214,7 @@ body{
         bottom:60%;
         @media(max-width:991px){
           left:0%;
-          bottom:55%;
+          bottom:65%;
           transform:rotate(90deg);
 
         }
@@ -220,7 +224,7 @@ body{
         & when (@i = 2){
           bottom: 25%;
           @media(max-width:991px){
-            bottom:15%
+            bottom:20%
           }
         }
       }
@@ -229,7 +233,7 @@ body{
         bottom:60%;
         @media(max-width:991px){
           right:0%;
-          bottom:55;
+          bottom:55%;
           transform:rotate(270deg);
         }
         @media(min-width:1200px){
@@ -238,19 +242,25 @@ body{
         & when (@i = @n){
           bottom: 25%;
           @media(max-width:991px){
-            bottom:15%
+            bottom:10%
           }
         }
       }
       & when (@n = 4) and not (@i = 3){
         bottom:40%;
+        @media(max-width:991px){
+          bottom:40%
+        }
       }
     }
 
     & when (@i = 1) {
       bottom: 50px;
       transform:rotate(0deg);
-      align-self:center;
+      //align-self:center;
+    }
+    & when (@i = 1), (@i = 3) and (@n=4),  (@i = 4) and (@n=6){
+      left:auto;
     }
     transition-property: top bottom left right rotate;
     transition: 0.5s ease-out;
@@ -375,53 +385,53 @@ body{
 }
 
 .roleCard .card-front{
-    background-image:url(../js/public/static/role-back.jpg);
+    background-image:url(../js/public/static/role-back.png);
     background-repeat: no-repeat;
     border:none;
 }
 .roleCard.value-abenteurer .card-front{
-    background-image:url(../js/public/static/value-abenteurer.jpg);
+    background-image:url(../js/public/static/value-abenteurer.png);
 }
 
 .roleCard.value-alter-mann .card-front{
-    background-image:url(../js/public/static/value-alter-mann.jpg);
+    background-image:url(../js/public/static/value-alter-mann.png);
 }
 
 .roleCard.value-buerokrat .card-front{
-    background-image:url(../js/public/static/value-buerokrat.jpg);
+    background-image:url(../js/public/static/value-buerokrat.png);
 }
 
 .roleCard.value-gottheit .card-front{
-    background-image:url(../js/public/static/value-gottheit.jpg);
+    background-image:url(../js/public/static/value-gottheit.png);
 }
 
 .roleCard.value-haendler .card-front{
-    background-image:url(../js/public/static/value-haendler.jpg);
+    background-image:url(../js/public/static/value-haendler.png);
 }
 
 .roleCard.value-kobold .card-front{
-    background-image:url(../js/public/static/value-kobold.jpg);
+    background-image:url(../js/public/static/value-kobold.png);
 }
 
 .roleCard.value-koenig .card-front{
-    background-image:url(../js/public/static/value-koenig.jpg);
+    background-image:url(../js/public/static/value-koenig.png);
 }
 
 .roleCard.value-prediger .card-front{
-    background-image:url(../js/public/static/value-prediger.jpg);
+    background-image:url(../js/public/static/value-prediger.png);
 }
 
 .roleCard.value-wanderer .card-front{
-    background-image:url(../js/public/static/value-wanderer.jpg);
+    background-image:url(../js/public/static/value-wanderer.png);
 }
 .roleCard.value-fremdling .card-front{
-    background-image:url(../js/public/static/value-fremdling.jpg);
+    background-image:url(../js/public/static/value-fremdling.png);
 }
 .roleCard.value-jaeger .card-front{
-    background-image:url(../js/public/static/value-jaeger.jpg);
+    background-image:url(../js/public/static/value-jaeger.png);
 }
 .roleCard.value-oberhaupt .card-front{
-    background-image:url(../js/public/static/value-oberhaupt.jpg);
+    background-image:url(../js/public/static/value-oberhaupt.png);
 }
 /* Style the back side */
 .card-back {
@@ -429,7 +439,7 @@ body{
   transform: rotateY(180deg);
 }
 .roleCard .card-back {
-  background-image:url(../js/public/static/role-back.jpg);
+  background-image:url(../js/public/static/role-back.png);
   border:none;
   transform: rotateY(180deg);
 }

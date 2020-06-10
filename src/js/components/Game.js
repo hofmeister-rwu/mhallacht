@@ -1083,7 +1083,7 @@ export default class Game extends React.Component {
                   onHide={()=>this.setState({predigershow:false})}
                   compare={predigerCheck.bind(this)}
                   />
-
+              <div class="test">
               <div class="stacks">
                 <div class="row col-xl-4 col-6 mx-auto position-relative">
                   <StackCards heading={"Kartenstapel"} item={this.gameBoard.cardsInMiddle} stack={true} deleteFunction={throwCardbyObject.bind(this)}/>
@@ -1092,6 +1092,7 @@ export default class Game extends React.Component {
               </div>
               <div class="center">
                     {playerCards}
+              </div>
               </div>
               <div class="button-row mx-auto">
                 {drawButton}

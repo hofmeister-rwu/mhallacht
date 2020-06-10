@@ -150,6 +150,7 @@ export default class Layout extends React.Component {
             show={this.state.warningshow}
             onHide={closeModal.bind(this)}
             alert="Jeder Name darf nur einmal vorkommen"
+            dismiss=""
           />
           <RuleModal
             show={this.state.ruleshow}
