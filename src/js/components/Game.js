@@ -836,7 +836,7 @@ export default class Game extends React.Component {
     CardStore.fetchSavings();
   }
     render() {
-     console.log(this.gameBoard);
+     //console.log(this.gameBoard);
      var {playersFromServer} = CardStore;
      var savedPlayers;
      if(playersFromServer!=undefined){
@@ -874,6 +874,7 @@ export default class Game extends React.Component {
           let counter = 0;
           for (let i = 0; i < this.gameBoard.players.length; i++) {
             if(this.gameBoard.players[i]==item){
+              //counter = i+1;
               counter = (i-this.state.activePlayerIndex)+1;
               if(counter<=0){
                 counter+=this.gameBoard.players.length;
@@ -919,12 +920,12 @@ export default class Game extends React.Component {
       });
 
       //Only Show Info once Game has really started
-      let gameInfo = <Alert variant="primary">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
+      let gameInfo = <div class="game-info">Schau deine Karten an, {this.gameBoard.players[this.state.activePlayerIndex].playerName}
                       <div class="top-buttons">
-                        <Button onClick={save.bind(this)}>Speichern</Button>
-                        <Button onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
+                        <Button variant="purple" onClick={save.bind(this)}>Speichern</Button>
+                        <Button variant="purple" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
                       </div>
-                    </Alert>;
+                    </div>;
       let drawButton;
       let usedButton;
       let throwButton;
@@ -937,26 +938,30 @@ export default class Game extends React.Component {
         if(Object.values(CardStore.wanderCards).length == this.gameBoard.players.length){
           disabl=false;
         }
-        useRoleButton = <Button disabled={disabl} onClick={cardsToLeft.bind(this)}>Karten nach links geben</Button>;
+        useRoleButton = <Button variant="purple" disabled={disabl} onClick={cardsToLeft.bind(this)}>Karten nach links geben</Button>;
       }
 
       if(this.state.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
-        useRoleButton = <Button onClick={setKoboldVictim.bind(this, this.state.koboldSelect)}>Opfer auswählen</Button>;
+        useRoleButton = <Button variant="purple" onClick={setKoboldVictim.bind(this, this.state.koboldSelect)}>Opfer auswählen</Button>;
       }
 
       if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && this.state.playerClick!=""){
-        useRoleButton = <Button onClick={() => {this.setState({predigershow:true})}}>Spieler und Karten auswählen</Button>;
+        useRoleButton = <Button variant="purple" onClick={() => {this.setState({predigershow:true})}}>Spieler und Karten auswählen</Button>;
       }
 
 
-      if(this.state.round>0){
+      if(this.state.round>0 && !this.state.end){
         let endAlert="";
         let gottheitAlert="";
-        if(this.state.endPlayer != "" && !this.state.end){
+        if(this.state.endPlayer != ""){
             let tilEnd = this.state.endPlayer - this.state.activePlayerIndex +1;
+            console.log("EndPlayerIndex: " + this.state.endPlayer);
+            console.log("Endplayer-ActivePlayer:" +tilEnd);
+            console.log("ActivePlayr: " + this.state.activePlayerIndex);
             if(tilEnd <= 0){
-                tilEnd = this.state.activePlayerIndex + tilEnd;
+                tilEnd = this.state.activePlayerIndex + tilEnd +1;
             }
+            console.log("ActivePlayer+TilEnd: " + tilEnd);
             endAlert = " Noch " + tilEnd + " Züge bis zur Wertung";
         }
 
@@ -976,80 +981,79 @@ export default class Game extends React.Component {
           }
         }
 
-
-        gameInfo=<Alert variant="primary">Runde {this.state.round}
+        gameInfo=<div class="game-info">Runde {this.state.round}
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
-                      <Button class="save-button" onClick={save.bind(this)}>Speichern</Button>
-                      <Button class="save-button" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
+                      <Button variant="purple" class="save-button" onClick={save.bind(this)}>Speichern</Button>
+                      <Button variant="purple" class="save-button" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>
                     </div>
-                  </Alert>
+                  </div>
 
         //Only Show DrawButton if there is no card already drawn and Game isn't over
 
         if(stackCard==undefined && !this.state.end && this.state.drawn==0 && this.state.playerCardClick==""){
-          drawButton= <Button onClick={draw.bind(this)}>Ziehen</Button>;
+          drawButton= <Button variant="purple" onClick={draw.bind(this)}>Ziehen</Button>;
 
           if(this.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(this.gameBoard.usedCards[0].value,10))){
             usedButton=
-            <Button onClick={swapUsedCard.bind(this,chosenCard)}>Vom Ablegestapel tauschen</Button>;
+            <Button variant="purple" onClick={swapUsedCard.bind(this,chosenCard)}>Vom Ablegestapel tauschen</Button>;
           }
 
         }else if(stackCard == undefined && this.state.drawn < 2 && this.gameBoard.players[this.state.activePlayerIndex].playerRole=="abenteurer"){
-            drawButton= <Button onClick={draw.bind(this)}>Ziehen</Button>;
+            drawButton= <Button variant="purple" onClick={draw.bind(this)}>Ziehen</Button>;
 
         }else{
-          throwButton = <Button onClick={endTurn.bind(this)}>Zug beenden</Button>;
+          throwButton = <Button variant="purple" onClick={endTurn.bind(this)}>Zug beenden</Button>;
         }
 
         if(stackCard!=undefined && !this.state.end){
           if(this.gameBoard.cardsInMiddle[0]==stackCard){
-            throwButton = <Button onClick={throwCards.bind(this)}>Wegwerfen</Button>;
+            throwButton = <Button variant="purple" onClick={throwCards.bind(this)}>Wegwerfen</Button>;
           }else if(this.gameBoard.usedCards[0]==stackCard && this.gameBoard.usedCards[0]==circleUsedCard){
-              throwButton = <Button onClick={circleBack.bind(this)}>Wegwerfen</Button>;
+              throwButton = <Button variant="purple" onClick={circleBack.bind(this)}>Wegwerfen</Button>;
           }else{
-            throwButton = <Button onClick={endTurn.bind(this)}>Zug beenden</Button>;
+            throwButton = <Button variant="purple" onClick={endTurn.bind(this)}>Zug beenden</Button>;
           }
 
           //Only show SwapStackButton if the Card you've drawn is not an ActionCard
           if(!isNaN(parseInt(stackCard.value))){
-            actionButton =<Button onClick={swapStackCard.bind(this,chosenCard)}>Vom Kartenstapel tauschen</Button>;
+            actionButton =<Button variant="purple" onClick={swapStackCard.bind(this,chosenCard)}>Vom Kartenstapel tauschen</Button>;
           }
 
           //Only show SwapPlayerButton if the Card you've drawn is a Swap Card
           if(stackCard.value=="swap"){
-            actionButton =<Button onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Gegnerkarte tauschen</Button>;
+            actionButton =<Button variant="purple" onClick={swapPlayerCard.bind(this,chosenCard,enemyCard)}>Gegnerkarte tauschen</Button>;
           }
 
           //Only Show ShowButton if the card you've drawn is a show Card
           if(stackCard.value=="show"){
             actionButton=
-            <Button onClick={showCardModal.bind(this,chosenCard)}>Karte umdrehen</Button>;
+            <Button variant="purple" onClick={showCardModal.bind(this,chosenCard)}>Karte umdrehen</Button>;
           }
 
 
           if(stackCard.value=="skip"){
             actionButton=
-            <Button onClick={skipNext.bind(this)}>Spieler überspringen</Button>;
+            <Button variant="purple" onClick={skipNext.bind(this)}>Spieler überspringen</Button>;
           }
 
           if(stackCard.value=="double"){
             actionButton=
-            <Button onClick={drawDouble.bind(this)}>Doppelt ziehen</Button>;
+            <Button variant="purple" onClick={drawDouble.bind(this)}>Doppelt ziehen</Button>;
           }
           //Only show EndGameButton if it hasn't already been pressed
           if (this.state.endRound=="" && stackCard.value=="end"){
-            endGameButton = <Button onClick={setEndGame.bind(this)}>Spiel beenden</Button>;
+            endGameButton = <Button variant="purple" onClick={setEndGame.bind(this)}>Spiel beenden</Button>;
           }
 
         }
-      }else{
+      }else if(!this.state.end){
         let disabled = true;
         if(CardStore.showCard == undefined){
          disabled = false;
         }
         actionButton=
-        <Button disabled={disabled} onClick={showCardModal.bind(this,this.gameBoard.players[this.state.activePlayerIndex].playerCards[0], this.gameBoard.players[this.state.activePlayerIndex].playerCards[3])}>
+        <Button variant="purple" disabled={disabled} onClick={showCardModal.bind(this,this.gameBoard.players[this.state.activePlayerIndex].playerCards[0], this.gameBoard.players[this.state.activePlayerIndex].playerCards[3])}>
           Anfangskarten zeigen
         </Button>;
       }

@@ -71,7 +71,7 @@ export default class SaveModal extends React.Component {
             <Modal show={this.props.saveshow} onHide={this.props.onHide}>
                 <Modal.Header closeButton>
                 </Modal.Header>
-                <Modal.Body><Alert variant="warning"></Alert>{alert}</Modal.Body>
+                <Modal.Body>{alert}</Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" href="/">
                     Quit

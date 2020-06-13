@@ -8,18 +8,43 @@ body{
   width:100vw;
   position:relative;
   //overflow:hidden;
-  //background-color:darkblue;
-  //color:white;
+  background-color:#363555;
+  color:white;
 }
 
-.modal-content{
+.fade.modal.show{
+  display:flex!important;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content, .modal-header, .modal-footer{
   color:black;
+  background-color:transparent;
+  border:none;
+  justify-content: center;
+  font-size:1.5em;
+  text-align: center;
+}
+.modal-backdrop.show{
+  opacity:1;
+  background-image:radial-gradient(circle, #fff 20%, transparent 200%);
+  background-color:transparent;
+}
+
+.game-info{
+  z-index: 1002;
+  position: absolute;
+  padding: 1rem 1.8rem;
+  border-bottom-right-radius: 50px ;
+  background-color:rgba(41, 4, 45,0.5);
+  font-size:1.25rem;
+  max-width:33%;
 }
 
 .playerCards div.card, .double-card{
     cursor:pointer;
     &:hover{
-      bottom:3px;
+      margin-top:-3px;
     }
 }
 
@@ -31,9 +56,6 @@ body{
 
 .z-index-100{
   z-index:1001;
-}
-.alert{
-  z-index:1002;
 }
 .modal-backdrop{
   z-index:1003;
@@ -50,29 +72,49 @@ body{
   bottom:0px;
   width:100%;
   left:0px;
+  overflow:hidden;
 }
 
 .button-row button:not(:first-child){
   margin-left:10px;
 }
 
-.top-buttons{
-  position: absolute;
-    height: 100%;
-    top: 0px;
-    right: 0px;
+.top-buttons .btn{
+  margin:5px;
+  margin-left:0px;
+}
+.btn-purple{
+    height: 4em;
+    width:4em;
+    border-radius:50%;
+  background-color:#29042D;
+  border-color:#29042D;
+  color:white;
+}
+.btn-purple:hover, .btn-purple:focus{
+  background-color:lighten(#29042D, 5%);
+  border-color:lighten(#29042D,5%);
+  color:white;
+}
+.btn-purple:active:focus,.btn-purple:visited, .btn-purple:link, .btn-purple:target, .btn-purple:disabled{
+    background-color:darken(#29042D, 5%);
+    border-color:darken(#29042D,5%);
+    color:white;
 }
 
-.top-buttons .btn{
-  height:100%;
-  margin-left:5px;
+.btn-purple:disabled{
+    background-color:lighten(#29042D, 25%);
+    border-color:lighten(#29042D,25%);
+    color:grey;
 }
 
 .deckContainer{
   padding:@cardMargin;
 }
 .deckContainer.active{
-  background-color:rgba(204, 229, 255,0.5);
+  background-color:rgba(41, 4, 45,0.69);
+  border-radius:50px;
+  padding:2%;
 }
 .deckHeading{
   text-align: center;
@@ -94,10 +136,10 @@ body{
   left:100%;
 }
 
-.active .roleCard.card, .end .roleCard.card{
+.active .roleCard.card, .end-true .roleCard.card{
   height:calc(@cardHeight*2);
   width:calc(@cardHeight*2);
-  top:0px;
+  top:10%;
 
 }
 .card-down{
@@ -109,7 +151,7 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: calc(100%-10em);
   width: 100%;
   top: 0px;
   left: 0px;
@@ -217,7 +259,7 @@ body{
         bottom:60%;
         @media(max-width:991px){
           left:0%;
-          bottom:65%;
+          bottom:55%;
           transform:rotate(90deg);
 
         }
@@ -256,16 +298,14 @@ body{
         }
       }
     }
-
+    & when (@i= @n/2+1) and (mod(@n,2)=0){
+      top:5em;
+    }
     & when (@i = 1) {
-      bottom: 50px;
+      bottom: 5em;
       transform:rotate(0deg);
       //align-self:center;
     }
-    & when (@i = 1), (@i = 3) and (@n=4),  (@i = 4) and (@n=6){
-      left:auto;
-    }
-    transition-property: top bottom left right rotate;
     transition: 0.5s ease-out;
   }
   .generate-player-position-indexes(@n, (@i + 1));
@@ -444,6 +484,7 @@ body{
 .roleCard .card-back {
   background-image:url(../js/public/static/role-back.png);
   border:none;
+  background-repeat:no-repeat;
   transform: rotateY(180deg);
 }
 

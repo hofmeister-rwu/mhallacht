@@ -30,11 +30,10 @@ export default class AlertModal extends React.Component {
     super(props);
   }
     render() {
-      console.log(this.props.dismiss);
       let dismiss;
       if(this.props.dismiss!=""){
         dismiss =
-          <Button variant="danger" onClick={this.props.dismiss}>
+          <Button variant="purple" onClick={this.props.dismiss}>
             Lieber nicht
           </Button>
       }
@@ -42,10 +41,10 @@ export default class AlertModal extends React.Component {
           <Modal show={this.props.show} onHide={this.props.onHide}>
             <Modal.Header closeButton>
             </Modal.Header>
-            <Modal.Body><Alert variant="primary">{this.props.alert}</Alert></Modal.Body>
+            <Modal.Body>{this.props.alert}</Modal.Body>
             <Modal.Footer>
             {dismiss}
-              <Button variant="secondary" onClick={this.props.onHide}>
+              <Button variant="purple" onClick={this.props.onHide}>
                 Alright
               </Button>
             </Modal.Footer>
