@@ -116,11 +116,12 @@ export default class Layout extends React.Component {
         form.push(
           <Form key="PlayerNumber">
             <div className="mb-3">
-              <Form.Check inline label="2" name="playerNumber" type='radio' id={`inline-radio-2`} onClick={changePlayerNumber.bind(this,2)}/>
-              <Form.Check inline label="3" name="playerNumber" type='radio' id={`inline-radio-3`} onClick={changePlayerNumber.bind(this,3)}/>
-              <Form.Check inline label="4" name="playerNumber" type='radio' id={`inline-radio-4`} onClick={changePlayerNumber.bind(this,4)}/>
-              <Form.Check inline label="5" name="playerNumber" type='radio' id={`inline-radio-5`} onClick={changePlayerNumber.bind(this,5)}/>
-              <Form.Check inline label="6" name="playerNumber" type='radio' id={`inline-radio-6`} onClick={changePlayerNumber.bind(this,6)}/>
+              <label class="mr-3">Spieleranzahl:  </label>
+              <Form.Check custom inline label="2" name="playerNumber" type='radio' id={`inline-radio-2`} onClick={changePlayerNumber.bind(this,2)}/>
+              <Form.Check custom inline label="3" name="playerNumber" type='radio' id={`inline-radio-3`} onClick={changePlayerNumber.bind(this,3)}/>
+              <Form.Check custom inline label="4" name="playerNumber" type='radio' id={`inline-radio-4`} onClick={changePlayerNumber.bind(this,4)}/>
+              <Form.Check custom inline label="5" name="playerNumber" type='radio' id={`inline-radio-5`} onClick={changePlayerNumber.bind(this,5)}/>
+              <Form.Check custom inline label="6" name="playerNumber" type='radio' id={`inline-radio-6`} onClick={changePlayerNumber.bind(this,6)}/>
             </div>
           </Form>
         );
@@ -132,16 +133,16 @@ export default class Layout extends React.Component {
         }
         console.log(this.state.players.length);
         if(this.state.players.length>1){
-          form.push(<Button key="New" variant="primary" type="submit" onClick={submit.bind(this)}>
+          form.push(<Button key="New" variant="purple" type="submit" onClick={submit.bind(this)}>
           Neues Spiel
           </Button>)
         }
         if(playerArray.length>0){
-          form.push(<Button key="load" variant="warning" type="submit" onClick={load.bind(this)}>
+          form.push(<Button key="load" variant="purple" type="submit" onClick={load.bind(this)}>
           Spiel laden
           </Button>);
         }
-        form.push(<Button className="z-index-100" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>);
+        form.push(<Button variant="purple" className="z-index-100" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>);
       }
 
         return (
@@ -156,7 +157,11 @@ export default class Layout extends React.Component {
             show={this.state.ruleshow}
             onHide={()=>{this.setState({ruleshow:false})}}
           />
-          {form}
+          <div class="form-class">
+            <div>
+            {form}
+            </div>
+          </div>
           {game}
           </div>
         );

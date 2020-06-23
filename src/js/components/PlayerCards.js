@@ -52,8 +52,10 @@ class PlayerCards extends React.Component{
           <Card key={card.id} className={cardClass} onClick={cardClick}>
             <Card.Body>
               <div class="card-front">
+               <p> {card.value}</p>
               </div>
               <div class="card-back">
+              <p> Back </p>
               </div>
             </Card.Body>
           </Card>);

@@ -12,6 +12,11 @@ body{
   color:white;
 }
 
+img{
+  width:100%;
+  height:auto;
+}
+
 .fade.modal.show{
   display:flex!important;
   justify-content: center;
@@ -30,6 +35,39 @@ body{
   background-image:radial-gradient(circle, #fff 20%, transparent 200%);
   background-color:transparent;
 }
+.ruleModal.fade.modal.show, .ruleModal .modal-content{
+  text-align:justify;
+  align-items: flex-start;
+}
+.ruleModal .modal-dialog{
+  max-width:800px;
+}
+.form-class{
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  text-align: center;
+  height: 100vh;
+    margin-left: 20%;
+    margin-right: 20%;
+    width: 60%;
+  & .form-control{
+    border-color:#C9FFEF;
+    &:focus{
+      box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
+    }
+  }
+  & .custom-control-input{
+    &:checked~.custom-control-label::before {
+      border-color: #29042d;
+      background-color: #29042d;
+    }
+    &:focus~.custom-control-label::before {
+      box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
+    }
+  }
+  }
 
 .game-info{
   z-index: 1002;
@@ -73,33 +111,32 @@ body{
   width:100%;
   left:0px;
   overflow:hidden;
+  padding-top:1em;
 }
-
-.button-row button:not(:first-child){
-  margin-left:10px;
-}
-
 .top-buttons .btn{
   margin:5px;
   margin-left:0px;
 }
 .btn-purple{
-    height: 4em;
-    width:4em;
-    border-radius:50%;
+  height: 4em;
+  width:4em;
+  border-radius:50%;
   background-color:#29042D;
   border-color:#29042D;
   color:white;
+  margin-right:0.5em;
 }
 .btn-purple:hover, .btn-purple:focus{
   background-color:lighten(#29042D, 5%);
   border-color:lighten(#29042D,5%);
   color:white;
+    box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
 }
 .btn-purple:active:focus,.btn-purple:visited, .btn-purple:link, .btn-purple:target, .btn-purple:disabled{
     background-color:darken(#29042D, 5%);
     border-color:darken(#29042D,5%);
     color:white;
+      box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
 }
 
 .btn-purple:disabled{
@@ -352,6 +389,13 @@ body{
   background-size:contain;
   //background-repeat:no-repeat;
   border:1px solid #C2F7EA;
+  & p{
+    position: relative;
+    z-index:-1;
+    overflow:hidden;
+    height:100%;
+    width:100%;
+  }
 }
 
 .chosenCard .card-front, .chosenCard .card-back{
