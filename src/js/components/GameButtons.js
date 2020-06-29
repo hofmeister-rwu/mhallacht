@@ -57,48 +57,52 @@ export default class GameButtons extends React.Component {
       let actionButton;
       let endGameButton;
       let useRoleButton;
-      if(this.props.round > 0){
+      if(GameStore.round > 0){
 
-        if(this.props.playerCardClick == CardStore.selectWanderCard){
+        if(GameStore.playerCardClick == CardStore.selectWanderCard){
           let disabl = true;
-          if(Object.values(CardStore.wanderCards).length == this.props.gameBoard.players.length){
+          if(Object.values(CardStore.wanderCards).length == GameStore.gameBoard.players.length){
             disabl=false;
           }
-          useRoleButton = <TooltipButton clickFunction ={GameStore.cardsToLeft} text="Karten nach Links geben" icon="swap"/>
+          useRoleButton = <TooltipButton jumping={!disabl} clickFunction ={GameStore.cardsToLeft} text="Karten nach Links geben" icon="swap"/>
         }
 
-        if(this.props.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
-          useRoleButton = <TooltipButton clickFunction ={GameStore.setKoboldVictim.bind(this,this.props.koboldSelect)} text="Karten des ausgewählten Spielers umdrehen" icon="new"/>
+        if(GameStore.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
+          useRoleButton = <TooltipButton jumping={true} clickFunction ={GameStore.setKoboldVictim.bind(this,GameStore.koboldSelect)} text="Karten des ausgewählten Spielers umdrehen" icon="new"/>
         }
 
-        if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && this.state.playerClick!=""){
-          useRoleButton = <TooltipButton clickFunction ={() => {this.props.bindThis.setState({predigershow:true})}} text="Spieler und Karten auswählen" icon="new"/>
+        if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && GameStore.playerClick!=""){
+          useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{GameStore.setPredigerShow(true)}} text="Spieler und Karten auswählen" icon="new"/>
         }
 
           //Only Show DrawButton if there is no card already drawn and Game isn't over
-
-          if(stackCard==undefined && !this.props.end && this.props.drawn==0 && this.props.playerCardClick==""){
-            //drawButton= <Button variant="purple" onClick={draw}>Ziehen</Button>;
-            drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
-
-            if(this.props.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(this.props.gameBoard.usedCards[0].value,10))){
-
-              usedButton =<TooltipButton clickFunction ={GameStore.swapUsedCard.bind(this,chosenCard)} text="Tausche mit der ersten Karte vom Ablagestapel" icon="used"/>
-            }
-
-          }else if(stackCard == undefined && this.props.drawn < 2 && this.props.gameBoard.players[this.props.activePlayerIndex].playerRole=="abenteurer"){
-
+          if(!GameStore.end){
+            if(stackCard==undefined && GameStore.drawn==0 && GameStore.playerCardClick==""){
+              //drawButton= <Button variant="purple" onClick={draw}>Ziehen</Button>;
               drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
 
-          }else{
+              if(GameStore.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value,10))){
+                let jumping = false;
+                if(chosenCard!=undefined && GameStore.round <= 3){
+                  jumping = true;
+                }
+                usedButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.swapUsedCard.bind(this,chosenCard)} text="Tausche mit der ersten Karte vom Ablagestapel" icon="used"/>
+              }
 
-            throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
+            }else if(stackCard == undefined && GameStore.drawn < 2 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole=="abenteurer"){
+
+                drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
+
+            }else{
+
+              throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
+            }
           }
 
-          if(stackCard!=undefined && !this.props.end){
-            if(this.props.gameBoard.cardsInMiddle[0]==stackCard){
+          if(stackCard!=undefined && !GameStore.end){
+            if(GameStore.gameBoard.cardsInMiddle[0]==stackCard){
               throwButton =<TooltipButton clickFunction ={GameStore.throwCards} text="Gezogene Karte wegwerfen" icon="throw"/>
-            }else if(this.props.gameBoard.usedCards[0]==stackCard && this.props.gameBoard.usedCards[0]==circleUsedCard){
+            }else if(GameStore.gameBoard.usedCards[0]==stackCard && GameStore.gameBoard.usedCards[0]==circleUsedCard){
               throwButton =<TooltipButton clickFunction ={GameStore.circleBack} text="Gezogene Karte wegwerfen" icon="throw"/>
             }else{
               throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
@@ -106,17 +110,29 @@ export default class GameButtons extends React.Component {
 
             //Only show SwapStackButton if the Card you've drawn is not an ActionCard
             if(!isNaN(parseInt(stackCard.value))){
-              actionButton =<TooltipButton clickFunction ={GameStore.swapStackCard.bind(this,chosenCard)} text="Tausch mit der ersten Karte vom Stapel" icon="swap"/>
+              let jumping = false;
+              if(chosenCard!=undefined && GameStore.round <= 3 ){
+                jumping = true;
+              }
+              actionButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.swapStackCard.bind(this,chosenCard)} text="Tausch mit der ersten Karte vom Stapel" icon="swap"/>
             }
 
             //Only show SwapPlayerButton if the Card you've drawn is a Swap Card
             if(stackCard.value=="swap"){
-                actionButton =<TooltipButton clickFunction ={GameStore.swapPlayerCard.bind(this,chosenCard,enemyCard)} text="Tausch mit der Karte deines Gegners" icon="swap"/>
+              let jumping = false;
+              if(chosenCard!=undefined && enemyCard !=undefined && GameStore.round <= 3){
+                jumping = true;
+              }
+                actionButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.swapPlayerCard.bind(this,chosenCard,enemyCard)} text="Tausch mit der Karte deines Gegners" icon="swap"/>
             }
 
             //Only Show ShowButton if the card you've drawn is a show Card
             if(stackCard.value=="show"){
-              actionButton =<TooltipButton clickFunction ={GameStore.showCardModal.bind(this,CardStore.chosenCard)} text="Decke eine deiner Karten auf" icon="show"/>
+              let jumping = false;
+              if(chosenCard!=undefined && CardStore.showCard==undefined && GameStore.round <= 3){
+                jumping = true;
+              }
+              actionButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.showCardModal.bind(this,CardStore.chosenCard)} text="Decke eine deiner Karten auf" icon="show"/>
             }
 
 
@@ -128,19 +144,19 @@ export default class GameButtons extends React.Component {
               actionButton =<TooltipButton clickFunction ={GameStore.drawDouble} text="Doppelt ziehen" icon="double"/>
             }
             //Only show EndGameButton if it hasn't already been pressed
-            if (this.props.endRound=="" && stackCard.value=="end"){
+            if (GameStore.endingRound=="" && stackCard.value=="end"){
                   endGameButton =<TooltipButton clickFunction ={GameStore.setEndGame} text="Spiel in einer Runde beenden" icon="end"/>
             }
 
 
       }
-      }else if(!this.props.end){
+      }else if(!GameStore.end){
         let disabled = true;
         if(CardStore.showCard == undefined){
          disabled = false;
         }
         actionButton =<TooltipButton disabled={disabled}
-        clickFunction ={GameStore.showCardModal.bind(this,this.props.gameBoard.players[this.props.activePlayerIndex].playerCards[0], this.props.gameBoard.players[this.props.activePlayerIndex].playerCards[this.props.gameBoard.players[this.props.activePlayerIndex].playerCards.length-1])}
+        clickFunction ={GameStore.showCardModal.bind(this,GameStore.gameBoard.players[GameStore.activePlayerIndex].playerCards[0], GameStore.gameBoard.players[GameStore.activePlayerIndex].playerCards[GameStore.gameBoard.players[GameStore.activePlayerIndex].playerCards.length-1])}
         text="Anfangskarten anzeigen" icon="show"/>
 
       }

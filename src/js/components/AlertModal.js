@@ -12,7 +12,10 @@ import ModalFooter from 'react-bootstrap/ModalFooter'
 import PlayerCards from "../components/PlayerCards"
 import StackCards from "../components/StackCards"
 import CardStore from "../stores/cardStore"
+import GameStore from "../stores/gameStore"
 import { observable, action } from 'mobx';
+
+import TooltipButton from "../components/TooltipButton"
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
@@ -31,22 +34,18 @@ export default class AlertModal extends React.Component {
   }
     render() {
       let dismiss;
-      if(this.props.dismiss!=""){
+      if(GameStore.dismiss!=""){
         dismiss =
-          <Button variant="purple" onClick={this.props.dismiss}>
-            Lieber nicht
-          </Button>
+        <TooltipButton clickFunction ={GameStore.dismiss} text="Lieber nicht" icon="no"/>;
       }
         return (
-          <Modal show={this.props.show} onHide={this.props.onHide}>
+          <Modal show={GameStore.warningshow} onHide={GameStore.modalClose}>
             <Modal.Header closeButton>
             </Modal.Header>
-            <Modal.Body>{this.props.alert}</Modal.Body>
+            <Modal.Body>{GameStore.alert}</Modal.Body>
             <Modal.Footer>
             {dismiss}
-              <Button variant="purple" onClick={this.props.onHide}>
-                Alright
-              </Button>
+            <TooltipButton clickFunction ={GameStore.modalClose} text="Alright" icon="new"/>
             </Modal.Footer>
           </Modal>
         );

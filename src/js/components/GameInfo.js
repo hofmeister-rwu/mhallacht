@@ -22,7 +22,7 @@ export default class GameInfo extends React.Component {
   }
     render() {
       //Only Show Info once Game has really started
-      let gameInfo = <div class="game-info">Schau deine Karten an, {this.props.gameBoard.players[this.props.activePlayerIndex].playerName}
+      let gameInfo = <div class="game-info">Schau deine Karten an, {GameStore.gameBoard.players[GameStore.activePlayerIndex].playerName}
                       <div class="top-buttons">
                         <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
                         <TooltipButton clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>
@@ -60,7 +60,7 @@ export default class GameInfo extends React.Component {
           }
         }
 
-        gameInfo=<div class="game-info">Runde {this.props.round}
+        gameInfo=<div class="game-info">Runde {GameStore.round}
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
                       <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>

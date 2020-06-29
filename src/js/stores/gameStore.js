@@ -2,6 +2,7 @@ import { observable, action } from 'mobx';
 import config from "../../config/main.config";
 import { observer } from "mobx-react";
 import CardStore from "../stores/cardStore"
+import React from "react"
 
 
 
@@ -218,6 +219,15 @@ class GameStore {
     @observable ruleshow= false;
     @action.bound setRuleShow(show){
       this.ruleshow = show;
+    }
+
+
+    @action.bound mixCards(){
+      this.gameBoard.cardsInMiddle = this.gameBoard.usedCards;
+      this.gameBoard.usedCards = [];
+      this.gameBoard.cardsInMiddle.shuffleDeck();
+      console.log("GameBoard shuffled");
+      console.log(this.gameBoard);
     }
 
       //Draw the first Card of the Stack
@@ -524,6 +534,7 @@ class GameStore {
 
       //if the defined point when the game ends has come, the results are posted
       @action.bound checkEndGame(){
+        console.log("EndRound: "+ this.endingRound);
         if(this.round >= this.endingRound && this.activePlayerIndex >= this.endPlayer){
           for(let i=0; i<this.gameBoard.players.length; i++){
               this.gameBoard.players[i].playerValue=0;
@@ -553,10 +564,10 @@ class GameStore {
             endPlayers.sort((a, b) => a.playerValue - b.playerValue);
           }
           let counter = 0;
-          const endList = endPlayers.map((player, key) =>{
-              counter++;
-              return(<div key={player.playerName}><Alert>#{counter}: {player.playerName} with {player.playerValue} </Alert></div>);
-          });
+           const endList = endPlayers.map((player, key) =>{
+               counter++;
+               return(<div key={player.playerName}>#{counter}: {player.playerName} with {player.playerValue} </div>);
+           });
           this.setAlert(endList);
           this.setWarningShow(true);
           this.setEnd(true);
@@ -597,6 +608,7 @@ class GameStore {
       }
 
       @action.bound closeModal(){
+        console.log("What is happening");
         this.setWarningShow(false);
         this.setDismiss("");
       }

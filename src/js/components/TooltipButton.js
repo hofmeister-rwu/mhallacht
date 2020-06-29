@@ -49,9 +49,17 @@ class TooltipButton extends React.Component{
         case "end-turn":
           img = <img src={require("../public/static/end-turn.png")}/>;
           break;
+        case "no":
+          img = <img src={require("../public/static/no.png")}/>;
+          break;
         default:
           img = <img/>;
           break;
+      }
+
+      let btnClass;
+      if(this.props.jumping == true){
+        btnClass = "jumping";
       }
 
         return (
@@ -65,7 +73,7 @@ class TooltipButton extends React.Component{
                             </Tooltip>
                           )}
                         >
-                          <Button variant="purple" onClick={this.props.clickFunction} disabled={this.props.disabled}>
+                          <Button class={btnClass} variant="purple" onClick={this.props.clickFunction} disabled={this.props.disabled} type={this.props.type}>
                           {img}
                           </Button>
           </OverlayTrigger>

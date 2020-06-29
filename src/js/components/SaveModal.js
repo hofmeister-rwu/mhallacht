@@ -12,6 +12,7 @@ import ModalFooter from 'react-bootstrap/ModalFooter'
 import PlayerCards from "../components/PlayerCards"
 import StackCards from "../components/StackCards"
 import CardStore from "../stores/cardStore"
+import GameStore from "../stores/gameStore"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -43,7 +44,7 @@ export default class SaveModal extends React.Component {
        middleArray = [...middleFromServer];
      }
 
-     var {usedFromServer} = CardStore;
+     var {usedFromServer} = CardStore; 
      var usedArray;
      if(usedFromServer!=undefined){
        usedArray = [...usedFromServer];
@@ -54,8 +55,9 @@ export default class SaveModal extends React.Component {
      if(round!=undefined){
        roundFromServer=round.value;
      }
+
      var alert = [];
-     if(this.props.playerLength==playerArray.length && this.props.middleLength==middleArray.length && this.props.usedLength==usedArray.length && this.props.round==roundFromServer){
+     if(GameStore.gameBoard.players.length==playerArray.length && GameStore.gameBoard.cardsInMiddle.length==middleArray.length && GameStore.gameBoard.usedCards.length==usedArray.length && GameStore.round==roundFromServer){
        alert.push(<h2 key="Player-Heading"> Saved Players </h2>);
        const savedPlayers = playerArray.map((player, key) =>{
            return(<div key={player.idPlayer}><p>{player.playerName}</p></div>);
@@ -68,7 +70,7 @@ export default class SaveModal extends React.Component {
        alert.push("loading...")
      }
         return (
-            <Modal show={this.props.saveshow} onHide={this.props.onHide}>
+            <Modal show={GameStore.saveshow} onHide={GameStore.setSaveShow.bind(false)}>
                 <Modal.Header closeButton>
                 </Modal.Header>
                 <Modal.Body>{alert}</Modal.Body>

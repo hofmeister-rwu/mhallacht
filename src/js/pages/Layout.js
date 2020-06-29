@@ -5,8 +5,10 @@ import Game from "../components/Game"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import CardStore from "../stores/cardStore"
+import GameStore from "../stores/gameStore"
 import AlertModal from "../components/AlertModal"
 import RuleModal from "../components/RuleModal"
+import TooltipButton from "../components/TooltipButton"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -52,15 +54,15 @@ function submit(){
   if(noDoubles==true){
     this.setState({submit:"new"});
   }else{
-    this.setState({warningshow:true});
+    GameStore.setAlert("Jeder Name darf nur einmal vorkommen");
+    GameStore.setWarningShow(true);
+    GameStore.setModalClose(GameStore.closeModal);
   }
 }
 function load(){
   this.setState({submit:"load"});
 }
-function closeModal(){
-  this.setState({warningshow:false});
-}
+
 @observer
 export default class Layout extends React.Component {
   constructor(){
@@ -133,30 +135,18 @@ export default class Layout extends React.Component {
         }
         console.log(this.state.players.length);
         if(this.state.players.length>1){
-          form.push(<Button key="New" variant="purple" type="submit" onClick={submit.bind(this)}>
-          Neues Spiel
-          </Button>)
+          form.push(<TooltipButton key="new" clickFunction ={submit.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
         }
         if(playerArray.length>0){
-          form.push(<Button key="load" variant="purple" type="submit" onClick={load.bind(this)}>
-          Spiel laden
-          </Button>);
+          form.push(<TooltipButton key="load" type="submit" clickFunction ={load.bind(this)} text="Spiel laden" icon="load"/>);
         }
-        form.push(<Button variant="purple" className="z-index-100" onClick={() => {this.setState({ruleshow:true})}}>Regeln</Button>);
+        form.push(<TooltipButton key="rule" type="submit" clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>);
       }
 
         return (
           <div>
-          <AlertModal
-            show={this.state.warningshow}
-            onHide={closeModal.bind(this)}
-            alert="Jeder Name darf nur einmal vorkommen"
-            dismiss=""
-          />
-          <RuleModal
-            show={this.state.ruleshow}
-            onHide={()=>{this.setState({ruleshow:false})}}
-          />
+          <AlertModal/>
+          <RuleModal/>
           <div class="form-class">
             <div>
             {form}

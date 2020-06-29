@@ -13,6 +13,7 @@ import Button from 'react-bootstrap/Button'
 import PlayerCards from "../components/PlayerCards"
 import StackCards from "../components/StackCards"
 import CardStore from "../stores/cardStore"
+import GameStore from "../stores/gameStore"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -64,7 +65,7 @@ export default class PredigerModal extends React.Component {
       }
       let userAnswer = [...this.state.userAnswer];
         return (
-          <Modal show={this.props.show} onHide={this.props.onHide}>
+          <Modal show={GameStore.predigershow} onHide={GameStore.setPredigerShow.bind(false)}>
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
@@ -111,7 +112,7 @@ export default class PredigerModal extends React.Component {
                   </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={()=>{this.props.compare(rightAnswer,userAnswer);}}>
+              <Button variant="secondary" onClick={()=>{GameStore.predigerCheck(rightAnswer,userAnswer)}}>
                 Fertig
               </Button>
             </Modal.Footer>

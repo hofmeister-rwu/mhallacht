@@ -165,43 +165,18 @@ export default class Game extends React.Component {
 
       let endClass = "end-"+end;
 
+      if(gameBoard.cardsInMiddle.length <=0){
+        GameStore.mixCards();
+      }
+
 
         return (
             <div class={endClass}>
-                <GameInfo
-                  gameBoard = {gameBoard}
-                  activePlayerIndex = {activePlayerIndex}
-                  save = {GameStore.save}
-                  rule = {GameStore.setRuleShow.bind(true)}
-                  round = {round}
-                  end = {end}
-                  endPlayer = {endPlayer}
-                  gottheitRound = {gottheitRound}
-                />
-
-                <RuleModal
-                  show={ruleshow}
-                  onHide={GameStore.setRuleShow.bind(false)}
-                />
-                <AlertModal
-                  show={warningshow}
-                  onHide={modalClose}
-                  alert={alert}
-                  dismiss = {dismiss}
-                />
-                <SaveModal
-                  saveshow={saveshow}
-                  onHide={GameStore.setSaveShow.bind(false)}
-                  playerLength={gameBoard.players.length}
-                  middleLength={gameBoard.cardsInMiddle.length}
-                  usedLength={gameBoard.usedCards.length}
-                  round={round}/>
-
-                  <PredigerModal
-                  show={predigershow}
-                  onHide={GameStore.setPredigerShow.bind(false)}
-                  compare={GameStore.predigerCheck}
-                  />
+                <GameInfo/>
+                <RuleModal/>
+                <AlertModal/>
+                <SaveModal/>
+                <PredigerModal/>
               <div class="test">
               <div class="stacks">
                 <div class="row col-xl-4 col-6 mx-auto position-relative">
@@ -214,15 +189,6 @@ export default class Game extends React.Component {
               </div>
               </div>
               <GameButtons
-                gameBoard = {gameBoard}
-                playerCardClick = {playerCardClick}
-                koboldSelect = {koboldSelect}
-                bindThis = {this}
-                end = {end}
-                drawn = {drawn}
-                activePlayerIndex = {activePlayerIndex}
-                endRound = {endingRound}
-                round = {round}
               />
             </div>
         );

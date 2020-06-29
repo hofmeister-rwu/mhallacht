@@ -12,6 +12,7 @@ import ModalFooter from 'react-bootstrap/ModalFooter'
 import PlayerCards from "../components/PlayerCards"
 import StackCards from "../components/StackCards"
 import CardStore from "../stores/cardStore"
+import GameStore from "../stores/gameStore"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
@@ -31,7 +32,7 @@ export default class RuleModal extends React.Component {
   }
     render() {
         return (
-          <Modal show={this.props.show} onHide={this.props.onHide} class="ruleModal">
+          <Modal show={GameStore.ruleshow} onHide={GameStore.setRuleShow.bind(false)} class="ruleModal">
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
@@ -95,7 +96,7 @@ export default class RuleModal extends React.Component {
             </ol>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={this.props.onHide}>
+              <Button variant="secondary" onClick={GameStore.setRuleShow.bind(false)}>
                 Got It
               </Button>
             </Modal.Footer>
