@@ -1,4 +1,4 @@
-@cardWidth:3em;
+@cardWidth:2.59em;
 @cardHeight:4em;
 @cardMargin:0.5em;
 
@@ -200,8 +200,9 @@ img{
 
 .active .roleCard.card, .end-true .roleCard.card{
   height:calc(@cardHeight*2);
-  width:calc(@cardHeight*2);
+  width:calc(@cardHeight*2 *(7/12));
   top:10%;
+  background-color:red;
 
 }
 .card-down{
@@ -563,7 +564,8 @@ img{
 
   &.roleCard{
     height:calc(@cardHeight/2);
-    width:calc(@cardHeight/2);
+    width:calc(@cardHeight/2 *(7/12));
+    background-color:red;
   }
 }
 
