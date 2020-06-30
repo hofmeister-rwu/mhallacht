@@ -96,7 +96,7 @@ export default class RuleModal extends React.Component {
             </ol>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={GameStore.setRuleShow.bind(false)}>
+              <Button variant="secondary" onClick={()=>{GameStore.setRuleShow(false)}}>
                 Got It
               </Button>
             </Modal.Footer>
