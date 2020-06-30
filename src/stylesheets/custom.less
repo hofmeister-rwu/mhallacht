@@ -34,6 +34,8 @@ img{
   opacity:1;
   background-image:radial-gradient(circle, #fff 20%, transparent 200%);
   background-color:transparent;
+  width:100vw;
+  height:100vh;
 }
 .ruleModal.fade.modal.show, .ruleModal .modal-content{
   text-align:justify;
@@ -268,6 +270,9 @@ img{
     & when (mod(@n,2)=1) and not (@i = 1){
       & when (@i = ((@n + 1) / 2 )), (@i = ((@n + 1) / 2 + 1) ){
         top:25%;
+        @media(max-width:991px){
+          top:40%;
+        }
         & when (@i <= ((@n + 1) / 2 ) ){
           left:5%;
           @media(max-width:991px){

@@ -70,8 +70,7 @@ export default class GameButtons extends React.Component {
         if(GameStore.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
           useRoleButton = <TooltipButton jumping={true} clickFunction ={GameStore.setKoboldVictim.bind(this,GameStore.koboldSelect)} text="Karten des ausgewählten Spielers umdrehen" icon="new"/>
         }
-
-        if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && GameStore.playerClick!=""){
+        if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && GameStore.playerClick!="" && !GameStore.predigershow){
           useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{GameStore.setPredigerShow(true)}} text="Spieler und Karten auswählen" icon="new"/>
         }
 

@@ -52,7 +52,7 @@ export default class GameInfo extends React.Component {
             }
           }
           if(gottheitIndex != GameStore.activePlayerIndex){
-            let tilGottheit = gottheitIndex - GameStore.props.activePlayerIndex;
+            let tilGottheit = gottheitIndex - GameStore.activePlayerIndex;
             if(tilGottheit <= 0){
                 tilGottheit = GameStore.activePlayerIndex + tilGottheit;
             }

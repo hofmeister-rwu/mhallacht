@@ -173,7 +173,6 @@ export default class Game extends React.Component {
         return (
             <div class={endClass}>
                 <GameInfo/>
-                <RuleModal/>
                 <AlertModal/>
                 <SaveModal/>
                 <PredigerModal/>

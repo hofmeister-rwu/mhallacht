@@ -18,13 +18,43 @@ class Card {
         this.roleCards = [];
     }
     createDeck() {
-        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9, "show", "swap", "show", "swap", "show", "swap","end","skip","double"];
+        let values = [0,1, 2, 3, 4, 5, 6, 7, 8, 9];
         let id =0;
         for (let j = 0; j < values.length; j++) {
-          for (let i=0; i < 4; i++){
-              this.cards.push(new Card(values[j],id));
+          let number;
+          switch(Math.abs(values[j]-(values.length-1)/2)){
+            case 4.5: case 3.5:
+              number = 3;
+              break;
+            case 2.5: case 1.5:
+              number = 6;
+              break;
+            case 0.5:
+              number = 9;
+              break;
+
+          }
+          for (let i=0; i < number ; i++){
+              console.log(values[j]);
+              this.cards.push(new Card(values[j],values[j]+"-"+id));
               id++;
           }
+        }
+        console.log(this.cards.length);
+        for (let i=0; i < 12; i++){
+            this.cards.push(new Card("show","show-"+id));
+            this.cards.push(new Card("double","double-"+id));
+            id++;
+        }
+        for (let i=0; i < 9; i++){
+            this.cards.push(new Card("swap","swap-"+id));
+            this.cards.push(new Card("end","end-"+id));
+            id++;
+        }
+        for (let i=0; i < 6; i++){
+            this.cards.push(new Card("skip","skip-"+id));
+            this.cards.push(new Card("role-swap","role-swap-"+id));
+            id++;
         }
         let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "fremdling", "jaeger", "oberhaupt"];
         //let roles =["kobold","kobold","kobold","kobold","kobold","kobold","kobold"];
@@ -104,6 +134,20 @@ class Card {
       for (let i = 0; i < usedDB.length; i++) {
          this.usedCards.push(new Card (usedDB[i].value,usedDB[i].idCard));
       }
+    }
+    reuseCards(){
+        this.cardsInMiddle = this.usedCards;
+        this.usedCards = [];
+        let location1, location2, tmp;
+        for (let i = 0; i < 3000; i++) {
+        location1 = Math.floor((Math.random() * this.cardsInMiddle.length));
+        location2 = Math.floor((Math.random() * this.cardsInMiddle.length));
+        tmp = this.cardsInMiddle[location1];
+        this.cardsInMiddle[location1] = this.cardsInMiddle[location2];
+        this.cardsInMiddle[location2] = tmp;
+        }
+        console.log("GameBoard shuffled");
+        console.log(this.cardsInMiddle);
     }
 }
 
@@ -222,13 +266,13 @@ class GameStore {
     }
 
 
-    @action.bound mixCards(){
-      this.gameBoard.cardsInMiddle = this.gameBoard.usedCards;
-      this.gameBoard.usedCards = [];
-      this.gameBoard.cardsInMiddle.shuffleDeck();
-      console.log("GameBoard shuffled");
-      console.log(this.gameBoard);
-    }
+      @action.bound mixCards(){
+        this.setAlert("Oh nein! Das war die letzte Karte vom Kartenstapel. Die Karten vom Ablagestapel werden neu gemischt und kommen auf den Kartenstapel.")
+        this.setModalClose(this.closeModal);
+        this.setWarningShow(true);
+
+        this.gameBoard.reuseCards();
+      }
 
       //Draw the first Card of the Stack
       @action.bound draw(){
@@ -671,9 +715,9 @@ class GameStore {
               }
               break;
             case "prediger":
-            if(!this.predigerused && CardStore.stackCard == undefined){
+            if(!this.predigerUsed && CardStore.stackCard == undefined){
               this.prediger();
-            }else if(this.predigerused){
+            }else if(this.predigerUsed){
 
                   this.setAlert("Deine Rolle kann nur einmal im Zug verwendet werden");
                   this.setWarningShow(true);
