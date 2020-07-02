@@ -73,14 +73,24 @@ export default class GameButtons extends React.Component {
         if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && GameStore.playerClick!="" && !GameStore.predigershow){
           useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{GameStore.setPredigerShow(true)}} text="Spieler und Karten auswählen" icon="new"/>
         }
+        if(GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole == "mitlaeufer" && GameStore.mitlaeuferChosen != undefined){
+            useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{ GameStore.setMitlaeuferUsed(true); GameStore.useRole(GameStore.mitlaeuferChosen.playerRole); GameStore.setMitlaeuferChosen(undefined)}} text="Diese Rolle einsetzen" icon="new"/>
+        }
 
           //Only Show DrawButton if there is no card already drawn and Game isn't over
           if(!GameStore.end){
-            if(stackCard==undefined && GameStore.drawn==0 && GameStore.playerCardClick==""){
-              //drawButton= <Button variant="purple" onClick={draw}>Ziehen</Button>;
-              drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
 
-              if(GameStore.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value,10))){
+            if(stackCard==undefined && GameStore.drawn==0 && GameStore.playerCardClick==""){
+
+              //drawButton= <Button variant="purple" onClick={draw}>Ziehen</Button>;
+              if(GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole!="scharlatan"){
+                drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
+              }else{
+
+                  drawButton =<TooltipButton clickFunction ={GameStore.covertDraw} text="Ziehe eine Karte" icon="draw"/>
+              }
+
+              if(GameStore.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value))){
                 let jumping = false;
                 if(chosenCard!=undefined && GameStore.round <= 3){
                   jumping = true;
@@ -96,6 +106,13 @@ export default class GameButtons extends React.Component {
 
               throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
             }
+            if(GameStore.gameBoard.usedCards[0]!=undefined && GameStore.gameBoard.usedCards[0]==CardStore.stackCard && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value))){
+              let jumping = false;
+              if(chosenCard!=undefined && GameStore.round <= 3){
+                jumping = true;
+              }
+              usedButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.swapUsedCard.bind(this,chosenCard)} text="Tausche mit der ersten Karte vom Ablagestapel" icon="used"/>
+            }
           }
 
           if(stackCard!=undefined && !GameStore.end){
@@ -108,7 +125,7 @@ export default class GameButtons extends React.Component {
             }
 
             //Only show SwapStackButton if the Card you've drawn is not an ActionCard
-            if(!isNaN(parseInt(stackCard.value))){
+            if(!isNaN(parseInt(stackCard.value)) && GameStore.gameBoard.cardsInMiddle[0]==stackCard){
               let jumping = false;
               if(chosenCard!=undefined && GameStore.round <= 3 ){
                 jumping = true;
@@ -142,6 +159,9 @@ export default class GameButtons extends React.Component {
             if(stackCard.value=="double"){
               actionButton =<TooltipButton clickFunction ={GameStore.drawDouble} text="Doppelt ziehen" icon="double"/>
             }
+            if(stackCard.value=="role-swap"){
+              actionButton =<TooltipButton clickFunction ={GameStore.drawRole} text="Ziehe eine neue Rolle" icon="role-swap"/>
+            }
             //Only show EndGameButton if it hasn't already been pressed
             if (GameStore.endingRound=="" && stackCard.value=="end"){
                   endGameButton =<TooltipButton clickFunction ={GameStore.setEndGame} text="Spiel in einer Runde beenden" icon="end"/>
@@ -164,8 +184,8 @@ export default class GameButtons extends React.Component {
         return (
               <div class="button-row mx-auto">
                 {drawButton}
-                {usedButton}
                 {throwButton}
+                {usedButton}
                 {actionButton}
                 {endGameButton}
                 {useRoleButton}

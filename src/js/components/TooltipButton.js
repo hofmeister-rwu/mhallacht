@@ -52,6 +52,9 @@ class TooltipButton extends React.Component{
         case "no":
           img = <img src={require("../public/static/no.png")}/>;
           break;
+        case "role-swap":
+          img = <img src={require("../public/static/role-swap.png")}/>;
+          break;
         default:
           img = <img/>;
           break;

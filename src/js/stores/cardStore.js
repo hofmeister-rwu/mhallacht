@@ -95,10 +95,41 @@ class CardStore {
     @observable round = {value:undefined};
 
     @action.bound fetchSavings(){
-      this.fetchPlayers();
-      this.fetchMiddle();
-      this.fetchUsed();
-      this.fetchRound();
+      //this.fetchPlayers();
+      //this.fetchMiddle();
+      //this.fetchUsed();
+      //this.fetchRound();
+      this.fetchAll();
+    }
+
+    @action.bound fetchAll() {
+        return fetch('http://localhost:3000/save/all', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+        })
+            .then(response => {
+                if (response.status >= 200 && response.status < 300) {
+                    response.json().then(json => {
+                        this.playersFromServer = json.players;
+                        this.middleFromServer = json.cardsInMiddle;
+                        this.usedFromServer = json.usedCards;
+                        this.round = json.round[0];
+                    });
+
+                } else {
+                    this.error = "Error on fetching";
+                }
+            })
+            .catch(
+                error => {
+                    this.error = "Error on fetching";
+                    throw error;
+                }
+            );
     }
 
     @action.bound fetchPlayers() {
@@ -208,6 +239,37 @@ class CardStore {
                     throw error;
                 }
             );
+    }
+
+    @action.bound addPlayers(players) {
+        return fetch('http://localhost:3000/save/save-all', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            body: JSON.stringify({
+                players:players,
+            })
+          })
+          .then(response => {
+              if (response.status >= 200 && response.status < 300) {
+                  response.json().then(json => {
+                      console.log("player added");
+                       this.fetchSavings();
+                  });
+
+              } else {
+                  this.error = "Error on fetching";
+              }
+          })
+          .catch(
+              error => {
+                  this.error = "Error on fetching";
+                  throw error;
+              }
+          );
     }
 
     @action.bound addNewPlayer(newPlayer,active) {

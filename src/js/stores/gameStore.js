@@ -56,7 +56,7 @@ class Card {
             this.cards.push(new Card("role-swap","role-swap-"+id));
             id++;
         }
-        let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "fremdling", "jaeger", "oberhaupt"];
+        let roles = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "bettler", "scharlatan", "mitlaeufer"];
         //let roles =["kobold","kobold","kobold","kobold","kobold","kobold","kobold"];
         for (let i = 0; i < roles.length; i++) {
               this.roleCards.push(roles[i]);
@@ -93,6 +93,7 @@ class Card {
         this.cardsInMiddle = [];
         this.usedCards = [];
         this.players = [];
+        this.rolesInMiddle =[];
     }
     start(playerNames) {
         let d = new Deck();
@@ -108,6 +109,7 @@ class Card {
           }
         }
         this.cardsInMiddle=d.cards;
+        this.rolesInMiddle=d.roleCards;
     }
     load(playersDB, middleDB, usedDB) {
       console.log(playersDB);
@@ -133,6 +135,13 @@ class Card {
       this.usedCards.length =0;
       for (let i = 0; i < usedDB.length; i++) {
          this.usedCards.push(new Card (usedDB[i].value,usedDB[i].idCard));
+      }
+      this.rolesInMiddle = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "bettler"];
+      for(let i = 0; i < this.players.length; i++){
+        if(this.rolesInMiddle.includes(this.players[i].playerRole)){
+          var index = this.rolesInMiddle.indexOf(this.players[i].playerRole);
+          if (index !== -1) this.rolesInMiddle.splice(index, 1);
+        }
       }
     }
     reuseCards(){
@@ -210,6 +219,16 @@ class GameStore {
       this.koboldSelect = select;
     }
 
+    @observable mitlaeuferChosen;
+    @action.bound setMitlaeuferChosen(select){
+      this.mitlaeuferChosen = select;
+    }
+
+    @observable mitlaeuferUsed = false;
+    @action.bound setMitlaeuferUsed(used){
+      this.mitlaeuferUsed = used;
+    }
+
     @observable gottheitRound="";
     @action.bound setGottheitRound (round){
       this.gottheitRound = round;
@@ -274,10 +293,23 @@ class GameStore {
         this.gameBoard.reuseCards();
       }
 
+      @action.bound covertDraw(){
+        var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.activePlayerIndex].playerName + " zieht";
+        this.setAlert(warning);
+        this.setWarningShow(true);
+        this.setModalClose(() => {this.closeModal(); this.draw();})
+      }
       //Draw the first Card of the Stack
       @action.bound draw(){
-          CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
-          this.setDrawn(this.drawn+1);
+
+            CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
+            this.setDrawn(this.drawn+1);
+      }
+      @action.bound drawRole(){
+
+        let newRole = this.gameBoard.rolesInMiddle.splice(0,1);
+        this.gameBoard.players[this.activePlayerIndex].playerRole=newRole;
+        this.throwCards();
       }
 
       //Throw a Card that the Player doesnt want on the used Cards Stack
@@ -333,6 +365,7 @@ class GameStore {
       //Swap a Card from the current player with the first Card from the Used Stack
       @action.bound swapUsedCard(chosenCard){
           //if a Card has been chosen, swap the first Card in the Stack with the chosenCard
+
           if(chosenCard!=undefined){
             this.setDrawn(this.drawn +1);
               var chosenCardIndex;
@@ -344,6 +377,7 @@ class GameStore {
               let playerCard = this.gameBoard.players[this.activePlayerIndex].playerCards.splice(chosenCardIndex,1);
               let stackCard = this.gameBoard.usedCards.splice(0,1);
               this.gameBoard.usedCards.splice(0,0,playerCard[0]);
+
               this.gameBoard.players[this.activePlayerIndex].playerCards.splice(chosenCardIndex,0,stackCard[0]);
               if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
                 CardStore.selectStackCard(this.gameBoard.usedCards[0]);
@@ -594,17 +628,17 @@ class GameStore {
           }
           var endPlayers=[...this.gameBoard.players];
           endPlayers.sort((a, b) => a.playerValue - b.playerValue);
-          if(endPlayers[this.gameBoard.players.length-1].playerRole == "fremdling"){
+          if(endPlayers[this.gameBoard.players.length-1].playerRole == "bettler"){
             for(let s = 0; s < endPlayers.length; s++){
-              if(endPlayers[s].playerRole == "fremdling"){
+              if(endPlayers[s].playerRole == "bettler"){
                 endPlayers[s].playerValue *= 0.5;
-                console.log("Fremdling Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
+                console.log("Bettler Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
               }else{
                 endPlayers[s].playerValue *= 2;
-                console.log("Non Fremdling Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
+                console.log("Non Bettler Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
               }
             }
-            this.deactivateRole("fremdling");
+            this.deactivateRole("bettler");
             endPlayers.sort((a, b) => a.playerValue - b.playerValue);
           }
           let counter = 0;
@@ -638,6 +672,7 @@ class GameStore {
               }
             }
           }
+          //CardStore.addPlayers(this.gameBoard.players);
           for(let i = 0; i < this.gameBoard.cardsInMiddle.length; i++){
               CardStore.addMiddleCard(this.gameBoard.cardsInMiddle[i]);
           }
@@ -652,7 +687,6 @@ class GameStore {
       }
 
       @action.bound closeModal(){
-        console.log("What is happening");
         this.setWarningShow(false);
         this.setDismiss("");
       }
@@ -738,19 +772,25 @@ class GameStore {
               }
               break;
 
-            case "fremdling":
+            case "bettler":
             this.setAlert("Du kannst diese Rolle nicht vor der Wertung einsetzen. Möchtest du diese Rolle jetzt ablegen?");
             this.setWarningShow(true);
             this.setModalClose(()=>{this.closeModal(); this.deactivateRole(role);});
             this.setDismiss(this.closeModal);
               break;
 
-            case "jaeger":
-              console.log("jaeger");
+            case "scharlatan":
+            this.setAlert("Möchtest du diese Rolle jetzt ablegen?");
+            this.setWarningShow(true);
+            this.setModalClose(()=>{this.closeModal(); this.deactivateRole(role);});
+            this.setDismiss(this.closeModal);
               break;
 
-            case "oberhaupt":
-              console.log("oberhaupt");
+            case "mitlaeufer":
+            this.setAlert("Such dir einen Spieler aus, dessen Rolle du verwenden möchtest");
+            this.setWarningShow(true);
+            this.setModalClose(()=>{this.closeModal();});
+            this.setPlayerClick(this.setMitlaeuferChosen);
               break;
 
             default:
@@ -764,29 +804,31 @@ class GameStore {
         //DEACTIVATE ROLE // ABENTEURER
 
           @action.bound deactivateRole(playerRole){
-            for (let i = 0; i < this.gameBoard.players.length; i++) {
-              if(this.gameBoard.players[i].playerRole == playerRole){
-                if(playerRole == "abenteurer"){
-                  if(CardStore.chosenCard!=undefined){
-                      var chosenCardIndex;
-                        for(let j = 0; j < this.gameBoard.players[i].playerCards.length; j++){
-                          if(this.gameBoard.players[i].playerCards[j]==CardStore.chosenCard){
-                            chosenCardIndex=j;
+            if(!this.mitlaeuferUsed){
+              for (let i = 0; i < this.gameBoard.players.length; i++) {
+                if(this.gameBoard.players[i].playerRole == playerRole){
+                  if(playerRole == "abenteurer"){
+                    if(CardStore.chosenCard!=undefined){
+                        var chosenCardIndex;
+                          for(let j = 0; j < this.gameBoard.players[i].playerCards.length; j++){
+                            if(this.gameBoard.players[i].playerCards[j]==CardStore.chosenCard){
+                              chosenCardIndex=j;
+                            }
                           }
-                        }
-                      let playerCard = this.gameBoard.players[i].playerCards.splice(chosenCardIndex,1);
-                      this.gameBoard.usedCards.splice(0,0,playerCard[0]);
-                          this.gameBoard.players[i].playerRole = " ";
-                  }else{
-                    this.setAlert("Such dir eine deiner Karten aus, die abgelegt werden soll, um die Rolle abzulegen.");
-                    this.setWarningShow(true);
-                    this.setModalClose(this.closeModal);
+                        let playerCard = this.gameBoard.players[i].playerCards.splice(chosenCardIndex,1);
+                        this.gameBoard.usedCards.splice(0,0,playerCard[0]);
+                            this.gameBoard.players[i].playerRole = " ";
+                    }else{
+                      this.setAlert("Such dir eine deiner Karten aus, die abgelegt werden soll, um die Rolle abzulegen.");
+                      this.setWarningShow(true);
+                      this.setModalClose(this.closeModal);
 
+                    }
+                  }else{
+                      this.gameBoard.players[i].playerRole = " ";
                   }
-                }else{
-                    this.gameBoard.players[i].playerRole = " ";
+                  CardStore.unselectCards();
                 }
-                CardStore.unselectCards();
               }
             }
           }
@@ -835,6 +877,7 @@ class GameStore {
             this.setDrawn(this.drawn+1)
             CardStore.selectCircleUsedCard(this.gameBoard.usedCards[0]);
             CardStore.selectStackCard(this.gameBoard.usedCards[0]);
+            console.log(CardStore.stackCard);
           }
 
           @action.bound circleBack(){
@@ -916,28 +959,69 @@ class GameStore {
           //GOTTTHEIT
 
           @action.bound gottheit(){
-            this.setAlert("In einer Runde werden alle Karten nach rechts weitergegeben.");
+            this.setAlert("Beim nächsten Zug der Gottheit werden alle Karten nach rechts weitergegeben.");
             this.setWarningShow(true);
             this.setModalClose(this.closeModal);
-            this.setGottheitRound(this.round+1);
+            switch(this.direction){
+              case "left":
+                if(this.activePlayerIndex-1 >= 0 ){
+                  this.setGottheitRound(this.round+1);
+                }else{
+                  this.setGottheitRound(this.round);
+                }
+                break;
+              case "right":
+                if(this.activePlayerIndex+1 < this.gameBoard.players.length ){
+                  this.setGottheitRound(this.round+1);
+                }else{
+                  this.setGottheitRound(this.round);
+                }
+                break;
+              default:
+                this.setGottheitRound(this.round+1);
+                break;
+            }
           }
 
           @action.bound checkGottheit(){
-            if(this.round == this.gottheitRound && this.gameBoard.players[this.activePlayerIndex+1].playerRole == "gottheit"){
-              this.setAlert("Karten werden nach rechts weitergegeben");
+            let nextPlayer;
+            switch (this.direction){
+              case "left":
+                if(this.activePlayerIndex+1 < this.gameBoard.players.length){
+                  nextPlayer = this.gameBoard.players[this.activePlayerIndex+1];
+                }else{
+                  nextPlayer = this.gameBoard.players[0];
+                }
+                break;
+              case "right":
+                if(this.activePlayerIndex-1 >= 0){
+                  nextPlayer = this.gameBoard.players[this.activePlayerIndex-1];
+                }else{
+                  nextPlayer = this.gameBoard.players[this.gameBoard.players.length-1];
+                }
+                break;
+            }
+            if(this.round == this.gottheitRound && nextPlayer.playerRole == "gottheit"){
+              this.setAlert("Die ersten vier Karten von links werden nach rechts weitergegeben");
               this.setWarningShow(true);
               this.setModalClose(this.closeModal);
               this.setGottheitRound("");
               console.log(this.gameBoard);
 
-              let first = this.gameBoard.players[0].playerCards;
+              let first = [...this.gameBoard.players[0].playerCards];
 
               for (let i = 0; i < this.gameBoard.players.length; i++) {
-                console.log("I KNOW YOU GO HERE YOU BITCH!!!");
                 if(this.gameBoard.players[i+1]!=undefined){
-                  this.gameBoard.players[i].playerCards=this.gameBoard.players[i+1].playerCards;
+                  for (let j = 0; j < 4; j++) {
+
+                    console.log(this.gameBoard.players[i].playerCards[j]);
+                    console.log(this.gameBoard.players[i+1].playerCards[j]);
+                    this.gameBoard.players[i].playerCards[j]=this.gameBoard.players[i+1].playerCards[j];
+                  }
                 }else{
-                  this.gameBoard.players[i].playerCards=first;
+                  for (let j = 0; j < 4; j++) {
+                  this.gameBoard.players[i].playerCards[j]=first[j];
+                  }
                 }
                 console.log("GameBoard after Player " + i);
                 console.log(this.gameBoard);

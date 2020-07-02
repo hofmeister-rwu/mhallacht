@@ -18,8 +18,10 @@ class RoleCard extends React.Component{
             <Card className={roleClass} onClick={this.props.roleFunction}>
               <Card.Body>
                 <div class="card-front">
+                  <p> {this.props.player.playerRole}</p>
                 </div>
                 <div class="card-back">
+                  <p> Back </p>
                 </div>
               </Card.Body>
             </Card>
