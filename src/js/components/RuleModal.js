@@ -45,6 +45,7 @@ export default class RuleModal extends React.Component {
                 In diesem Spiel gibt es Monster- und Aktionskarten; diese haben einen Wert. Außerdem gibt es Charakterkarten, die auf einem anderen Stapel liegen und keinen Wert haben.
                 Am Anfang des Spieles bekommt jeder Spieler 4 Karten vom Monster- und Aktionskartenstapel und eine Charakterkarte.
                 Ziel des Spiels ist es, am Ende des Spiels so wenig Punkte wie möglich im eigenen Deck zu haben.
+                Am Anfang kannst du deine 2 äußeren Karten anschauen. Deine Charakterkarte kannst du anschauen indem du  einmal darauf klickst.
              </p>
              <h3>Grundregeln</h3>
             <p>Es wird im Uhrzeiger gespielt. Jeder  Zug beginnt damit, dass der Spieler, der an der Reihe ist, die oberste Karte offen​ zieht, entweder vom verdeckten Stapel oder vom offenen Ablagestapel.

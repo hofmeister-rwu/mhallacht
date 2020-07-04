@@ -113,9 +113,9 @@ img{
   justify-content: center;
   position: absolute;
   bottom:0px;
-  width:100%;
+  width:50%;
   height:5em;
-  left:0px;
+  left:25%;
   @media(min-width:991px){
     //overflow:hidden;
   }
@@ -204,14 +204,27 @@ img{
   position:absolute;
   left:100%;
 }
+.roleCard.card.modalRoleCard{
+  position:relative;
+    height:calc(@cardHeight*3);
+    width:calc(@cardHeight*3 *(7/12));
+  left:0%;
+  align-self: center;
+  background-color:red;
+}
 
-.active .roleCard.card, .end-true .roleCard.card{
+.active .roleCard.card{
   height:calc(@cardHeight*2);
   width:calc(@cardHeight*2 *(7/12));
   top:10%;
   background-color:red;
-
 }
+.end-true .roleCard.card{
+  height:calc(@cardHeight);
+  width:calc(@cardHeight *(7/12));
+  background-color:red;
+}
+
 .card-down{
     color:transparent;
 }
@@ -334,6 +347,7 @@ img{
           left:0%;
           bottom:55%;
           transform:rotate(90deg);
+
 
         }
         @media(min-width:1200px){
@@ -550,12 +564,13 @@ img{
 .roleCard.value-bettler .card-front{
     background-image:url(../js/public/static/value-bettler.png);
 }
-.roleCard.value-jaeger .card-front{
-    background-image:url(../js/public/static/value-jaeger.png);
+.roleCard.value-mitlaeufer .card-front{
+    background-image:url(../js/public/static/value-mitlaeufer.png);
 }
-.roleCard.value-oberhaupt .card-front{
-    background-image:url(../js/public/static/value-oberhaupt.png);
+.roleCard.value-scharlatan .card-front{
+    background-image:url(../js/public/static/value-scharlatan.png);
 }
+
 /* Style the back side */
 .card-back {
   background-image:url(../js/public/static/backcard.jpg);
@@ -568,13 +583,24 @@ img{
   transform: rotateY(180deg);
 }
 
-.end-false .deckContainer:not(.active) .playerCards .card{
+.deckContainer:not(.active) .playerCards .card{
   width:calc(@cardWidth/2);
   height: calc(@cardHeight/2);
 
   &.roleCard{
     height:calc(@cardHeight/2);
     width:calc(@cardHeight/2 *(7/12));
+    background-color:red;
+  }
+}
+
+.end-true .deckContainer:not(.active) .playerCards .card{
+  width:calc(@cardWidth*0.75);
+  height: calc(@cardHeight*0.75);
+
+  &.roleCard{
+    height:calc(@cardHeight*0.75);
+    width:calc(@cardHeight*0.75 *(7/12));
     background-color:red;
   }
 }

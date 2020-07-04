@@ -241,7 +241,7 @@ class CardStore {
             );
     }
 
-    @action.bound addPlayers(players) {
+    @action.bound addPlayers(newPlayer) {
         return fetch('http://localhost:3000/save/save-all', {
             method: 'POST',
             headers: {
@@ -250,7 +250,12 @@ class CardStore {
                 'Access-Control-Allow-Origin': '*',
             },
             body: JSON.stringify({
-                players:players,
+              playerName : newPlayer.playerName,
+              playerCardOne : newPlayer.playerCards[0].value.toString(),
+              playerCardTwo : newPlayer.playerCards[1].value.toString(),
+              playerCardThree : newPlayer.playerCards[2].value.toString(),
+              playerCardFour : newPlayer.playerCards[3].value.toString(),
+              playerRole : newPlayer.playerRole,
             })
           })
           .then(response => {

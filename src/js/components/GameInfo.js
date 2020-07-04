@@ -36,7 +36,7 @@ export default class GameInfo extends React.Component {
             let tilEnd = GameStore.endPlayer - GameStore.activePlayerIndex +1;
             console.log("EndPlayerIndex: " + GameStore.endPlayer);
             console.log("Endplayer-ActivePlayer:" +tilEnd);
-            console.log("ActivePlayr: " + GameStore.activePlayerIndex);
+            console.log("ActivePlayer: " + GameStore.activePlayerIndex);
             if(tilEnd <= 0){
                 tilEnd = GameStore.activePlayerIndex + tilEnd +1;
             }
@@ -53,8 +53,14 @@ export default class GameInfo extends React.Component {
           }
           if(gottheitIndex != GameStore.activePlayerIndex){
             let tilGottheit = gottheitIndex - GameStore.activePlayerIndex;
+            console.log("Gottheit: " + gottheitIndex);
+            console.log("ActivePlayer: " + GameStore.activePlayerIndex);
+            console.log("TilGottheit: " + tilGottheit);
             if(tilGottheit <= 0){
-                tilGottheit = GameStore.activePlayerIndex + tilGottheit;
+                tilGottheit = GameStore.gameBoard.players.length + tilGottheit;
+                console.log("Gottheit: " + gottheitIndex);
+                console.log("ActivePlayer: " + GameStore.activePlayerIndex);
+                console.log("TilGottheit: " + tilGottheit);
             }
             gottheitAlert = " Noch " + tilGottheit + " Züge bis zum Kartentausch";
           }

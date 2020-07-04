@@ -136,7 +136,7 @@ export default class Game extends React.Component {
                 cardClick=CardStore.selectEnemyCard;
               }
               //console.log(GameStore.koboldSelect);
-              if(item == koboldSelect || item == CardStore.predigerVictim){
+              if(item == koboldSelect || item == CardStore.predigerVictim || item == GameStore.mitlaeuferChosen){
                 deckClass += " bg-primary";
               }
           }

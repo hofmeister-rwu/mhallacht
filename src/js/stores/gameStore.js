@@ -284,7 +284,6 @@ class GameStore {
       this.ruleshow = show;
     }
 
-
       @action.bound mixCards(){
         this.setAlert("Oh nein! Das war die letzte Karte vom Kartenstapel. Die Karten vom Ablagestapel werden neu gemischt und kommen auf den Kartenstapel.")
         this.setModalClose(this.closeModal);
@@ -672,7 +671,7 @@ class GameStore {
               }
             }
           }
-          //CardStore.addPlayers(this.gameBoard.players);
+          //CardStore.addPlayers(this.gameBoard.players[0]);
           for(let i = 0; i < this.gameBoard.cardsInMiddle.length; i++){
               CardStore.addMiddleCard(this.gameBoard.cardsInMiddle[i]);
           }
@@ -787,10 +786,17 @@ class GameStore {
               break;
 
             case "mitlaeufer":
-            this.setAlert("Such dir einen Spieler aus, dessen Rolle du verwenden möchtest");
-            this.setWarningShow(true);
-            this.setModalClose(()=>{this.closeModal();});
-            this.setPlayerClick(this.setMitlaeuferChosen);
+            if(this.drawn<=0){
+              this.setDrawn(this.drawn+1);
+              this.setAlert("Such dir einen Spieler aus, dessen Rolle du verwenden möchtest");
+              this.setWarningShow(true);
+              this.setModalClose(()=>{this.closeModal();});
+              this.setPlayerClick(this.setMitlaeuferChosen);
+            }else{
+                this.setAlert("Du kannst diese Rolle nur statt deinem normalen Zug einsetzen");
+                this.setWarningShow(true);
+                this.setModalClose(()=>{this.closeModal();});
+            }
               break;
 
             default:
