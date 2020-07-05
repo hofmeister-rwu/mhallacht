@@ -88,6 +88,17 @@ class CardStore {
 
     };
 
+    @action.bound unselectExceptPredigerCards() {
+        this.chosenCard = undefined;
+        this.enemyCard=undefined;
+        this.showCard=undefined;
+        this.stackCard=undefined;
+        this.circleUsedCard=undefined;
+        this.doubleCards=[];
+        this.wanderCards={};
+
+    };
+
     @observable error = '';
     @observable playersFromServer = [];
     @observable middleFromServer = [];

@@ -239,11 +239,6 @@ class GameStore {
       this.direction=dir;
     }
 
-    @observable predigerUsed=false;
-    @action.bound setPredigerUsed(used){
-      this.predigerUsed = used;
-    }
-
     @observable warningshow=false;
     @action.bound setWarningShow(warning){
       this.warningshow = warning;
@@ -307,8 +302,10 @@ class GameStore {
       @action.bound drawRole(){
 
         let newRole = this.gameBoard.rolesInMiddle.splice(0,1);
-        this.gameBoard.players[this.activePlayerIndex].playerRole=newRole;
-        this.throwCards();
+        this.gameBoard.players[this.activePlayerIndex].playerRole=newRole[0];
+        if(CardStore.stackCard == this.gameBoard.cardsInMiddle[0]){
+          this.throwCards();
+        }
       }
 
       //Throw a Card that the Player doesnt want on the used Cards Stack
@@ -544,7 +541,6 @@ class GameStore {
       //After the activePlayer has performed an action his Turn is over
       @action.bound endTurn(){
         this.setActionDrawn(false);
-        this.setPredigerUsed(false);
         this.setPlayerCardClick("");
         this.setPlayerClick(()=>{});
         this.setDrawn(0);
@@ -640,10 +636,16 @@ class GameStore {
             this.deactivateRole("bettler");
             endPlayers.sort((a, b) => a.playerValue - b.playerValue);
           }
-          let counter = 0;
+          let realCounter = 0;
+          let showCounter;
+          let lastValue = -1;
            const endList = endPlayers.map((player, key) =>{
-               counter++;
-               return(<div key={player.playerName}>#{counter}: {player.playerName} with {player.playerValue} </div>);
+             realCounter++;
+             if(player.playerValue != lastValue ){
+               showCounter = realCounter;
+             }
+             lastValue = player.playerValue;
+               return(<div key={player.playerName}>#{showCounter}: {player.playerName} with {player.playerValue} </div>);
            });
           this.setAlert(endList);
           this.setWarningShow(true);
@@ -748,13 +750,8 @@ class GameStore {
               }
               break;
             case "prediger":
-            if(!this.predigerUsed && CardStore.stackCard == undefined){
+            if(CardStore.stackCard == undefined){
               this.prediger();
-            }else if(this.predigerUsed){
-
-                  this.setAlert("Deine Rolle kann nur einmal im Zug verwendet werden");
-                  this.setWarningShow(true);
-                  this.setModalClose(this.closeModal);
             }else{
                 this.setAlert("Beende zuerst deinen Zug, bevor du diese Rolle einsetzt");
                 this.setWarningShow(true);
@@ -833,7 +830,7 @@ class GameStore {
                   }else{
                       this.gameBoard.players[i].playerRole = " ";
                   }
-                  CardStore.unselectCards();
+                  CardStore.unselectExceptPredigerCards();
                 }
               }
             }
@@ -1064,7 +1061,6 @@ class GameStore {
           //PREDIGER
 
           @action.bound prediger(){
-            this.setPredigerUsed(true);
             this.setAlert("Such dir nun einen Gegner und zwei seiner Karten aus, die du richtig benennen kannst");
             this.setWarningShow(true);
             this.setModalClose(this.closeModal);
@@ -1082,21 +1078,22 @@ class GameStore {
                 same=false;
               }
             }
-              let stackCard = new Card("swap","util");
-              CardStore.selectStackCard(stackCard);
             if(same){
-              this.setPredigerShow(false);
               this.setAlert("Dein Tipp war richtig! Du darfst nun eine der beiden Karten mit deinen eigenen tauschen");
+            }else{+
+                this.setAlert("Dein Tipp war falsch. Lass deinen Gegner auswählen welche Karten getauscht werden");
+            }
+
+              this.setPredigerShow(false);
+
               this.setWarningShow(true);
               this.setPlayerClick("");
               this.setPlayerCardClick("");
-            }else{
-                this.setPredigerShow(false);
-                this.setAlert("Dein Tipp war falsch. Lass deinen Gegner auswählen welche Karten getauscht werden");
-                this.setWarningShow(true);
-                this.setPlayerClick("");
-                this.setPlayerCardClick("");
-            }
+
+              this.deactivateRole("prediger");
+
+                let stackCard = new Card("swap","util");
+                CardStore.selectStackCard(stackCard);
           }
 
 

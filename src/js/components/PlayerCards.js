@@ -38,7 +38,7 @@ class PlayerCards extends React.Component{
         }
 
         if(CardStore.predigerCards.includes(card)){
-          cardClass+=" chosenCard";
+          cardClass+=" predigerCard";
         }
 
         if(CardStore.predigerVictim.playerCards!=undefined && this.props.predigerSwap){

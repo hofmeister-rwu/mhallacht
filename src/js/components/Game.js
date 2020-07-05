@@ -68,7 +68,6 @@ export default class Game extends React.Component {
       const {koboldSelect} = GameStore;
       const {gottheitRound} = GameStore;
       const {direction} = GameStore;
-      const {predigerUsed} = GameStore;
       const {warningshow} = GameStore;
       const {saveshow} = GameStore;
       const {modalClose} = GameStore;
