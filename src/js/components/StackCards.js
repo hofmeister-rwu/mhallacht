@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import CardDeck from 'react-bootstrap/CardDeck';
 import CardColumns from 'react-bootstrap/CardColumns';
 import CardStore from "../stores/cardStore";
+import GameStore from "../stores/gameStore";
 import Game from "../components/Game"
 
 
@@ -28,9 +29,33 @@ class StackCards extends React.Component{
           stackClass+=" z-index-100";
           switch(card.value){
             case 0: case "0": case 1: case "1": case 2: case "2": case 3: case "3": case 4: case "4": case 5: case "5": case 6: case "6": case 7: case "7": case 8: case "8": case 9: case "9":
-              clickFunction= GameStore.swapStackCard.bind(CardStore.chosenCard);
+              clickFunction= GameStore.swapStackCard.bind(this,CardStore.chosenCard);
+              break;
             case "swap":
               clickFunction =  GameStore.swapPlayerCard.bind(CardStore.chosenCard,CardStore.enemyCard);
+              break;
+            case "show":
+              clickFunction = GameStore.showCardModal.bind(this,CardStore.chosenCard);
+              break;
+            case "skip":
+              clickFunction = GameStore.skipNext;
+              break;
+            case "double":
+              clickFunction = GameStore.drawDouble;
+              break;
+            case "role-swap":
+              clickFunction = GameStore.drawRole;
+              break;
+            case "end":
+              if(GameStore.endingRound == ""){
+                clickFunction = GameStore.setEndGame;
+              }else{
+                clickFunction = () => {
+                  GameStore.setAlert("Die Runde wurde schon beendet!");
+                  GameStore.setModalClose(GameStore.closeModal);
+                  GameStore.setWarningShow(true);
+                };
+              }
               break;
           }
 

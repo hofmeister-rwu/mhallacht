@@ -673,7 +673,7 @@ class GameStore {
                       var integer = parseInt(this.gameBoard.players[i].playerCards[j].value, 10);
                       this.gameBoard.players[i].playerValue += integer;
                   }else{
-                    this.gameBoard.players[i].playerValue += 15;
+                    this.gameBoard.players[i].playerValue += 10;
                   }
                   console.log(this.gameBoard.players[i].playerName + ": " + this.gameBoard.players[i].playerValue)
                 }
