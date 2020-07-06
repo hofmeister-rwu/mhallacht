@@ -33,15 +33,24 @@ export default class GameInfo extends React.Component {
         let endAlert="";
         let gottheitAlert="";
         if(GameStore.endPlayer != ""){
-            let tilEnd = GameStore.endPlayer - GameStore.activePlayerIndex +1;
-            console.log("EndPlayerIndex: " + GameStore.endPlayer);
-            console.log("Endplayer-ActivePlayer:" +tilEnd);
-            console.log("ActivePlayer: " + GameStore.activePlayerIndex);
-            if(tilEnd <= 0){
-                tilEnd = GameStore.activePlayerIndex + tilEnd +1;
-            }
-            console.log("ActivePlayer+TilEnd: " + tilEnd);
-            endAlert = " Noch " + tilEnd + " Züge bis zur Wertung";
+          let tilEnd;
+          switch(GameStore.direction){
+            case "left":
+              tilEnd = GameStore.endPlayer - GameStore.activePlayerIndex +1;
+              if(tilEnd <= 0){
+                  //tilEnd = GameStore.activePlayerIndex + tilEnd +1;
+                  tilEnd = GameStore.gameBoard.players.length + tilEnd;
+              }
+              break;
+            case "right":
+              tilEnd = GameStore.activePlayerIndex - GameStore.endPlayer +1;
+              if(tilEnd <= 0){
+                  tilEnd = GameStore.gameBoard.players.length + tilEnd;
+              }
+              break;
+          }
+
+          endAlert = " Noch " + tilEnd + " Züge bis zur Wertung";
         }
 
         if(GameStore.gottheitRound !=""){
@@ -52,15 +61,20 @@ export default class GameInfo extends React.Component {
             }
           }
           if(gottheitIndex != GameStore.activePlayerIndex){
-            let tilGottheit = gottheitIndex - GameStore.activePlayerIndex;
-            console.log("Gottheit: " + gottheitIndex);
-            console.log("ActivePlayer: " + GameStore.activePlayerIndex);
-            console.log("TilGottheit: " + tilGottheit);
-            if(tilGottheit <= 0){
-                tilGottheit = GameStore.gameBoard.players.length + tilGottheit;
-                console.log("Gottheit: " + gottheitIndex);
-                console.log("ActivePlayer: " + GameStore.activePlayerIndex);
-                console.log("TilGottheit: " + tilGottheit);
+            let tilGottheit;
+            switch(GameStore.direction){
+              case "left":
+                tilGottheit = gottheitIndex - GameStore.activePlayerIndex;
+                if(tilGottheit <= 0){
+                    tilGottheit = GameStore.gameBoard.players.length + tilGottheit;
+                }
+                break;
+              case "right":
+                tilGottheit = GameStore.activePlayerIndex - gottheitIndex;
+                if(tilGottheit <= 0){
+                    tilGottheit = GameStore.gameBoard.players.length + tilGottheit;
+                }
+                break;
             }
             gottheitAlert = " Noch " + tilGottheit + " Züge bis zum Kartentausch";
           }
@@ -74,6 +88,13 @@ export default class GameInfo extends React.Component {
                     </div>
                   </div>
 
+          }else if(GameStore.end){
+            gameInfo=<div class="game-info">
+                        Noch eine Runde spielen?
+                        <div class="top-buttons">
+                          <TooltipButton clickFunction ={GameStore.newGame} text="Neues Spiel" icon="load"/>
+                        </div>
+                      </div>
           }
 
         return (

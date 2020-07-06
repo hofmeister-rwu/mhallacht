@@ -143,6 +143,14 @@ class Card {
           if (index !== -1) this.rolesInMiddle.splice(index, 1);
         }
       }
+      let location1, location2, tmp;
+      for (let i = 0; i < 3000; i++) {
+      location1 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      location2 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      tmp = this.rolesInMiddle[location1];
+      this.rolesInMiddle[location1] = this.rolesInMiddle[location2];
+      this.rolesInMiddle[location2] = tmp;
+      }
     }
     reuseCards(){
         this.cardsInMiddle = this.usedCards;
@@ -278,6 +286,21 @@ class GameStore {
     @action.bound setRuleShow(show){
       this.ruleshow = show;
     }
+
+      @action.bound newGame(){
+        let playerNames =[];
+        for (let i = 0; i < this.gameBoard.players.length; i++) {
+          playerNames[i]= this.gameBoard.players[i].playerName;
+        }
+        this.gameBoard = new Board();
+        this.gameBoard.start(playerNames);
+        this.setEnd(false);
+        this.setRound(0);
+        this.setActive(0);
+        this.setEndRound("");
+        this.setEndPlayer("");
+        this.setGottheitRound("");
+      }
 
       @action.bound mixCards(){
         this.setAlert("Oh nein! Das war die letzte Karte vom Kartenstapel. Die Karten vom Ablagestapel werden neu gemischt und kommen auf den Kartenstapel.")
@@ -587,19 +610,40 @@ class GameStore {
 
       //if a player presses the EndGame Button, the point in time when the Game will end (one Round after the player pressed) is defined
       @action.bound setEndGame(){
-        if(this.endingRound=="" && this.endPlayer==""){
-          if(this.activePlayerIndex-1>=0){
-            this.setEndPlayer(this.activePlayerIndex-1);
-            this.setEndRound(this.round+1);
-          }else{
+        switch(this.direction){
+          case "left":
+            if(this.endingRound=="" && this.endPlayer==""){
+              if(this.activePlayerIndex-1>=0){
+                this.setEndPlayer(this.activePlayerIndex-1);
+                this.setEndRound(this.round+1);
+              }else{
 
-              this.setEndPlayer(this.gameBoard.players.length-1);
-              this.setEndRound(this.round);
-          }
-        }
-        if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
-          let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
-          this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+                  this.setEndPlayer(this.gameBoard.players.length-1);
+                  this.setEndRound(this.round);
+              }
+            }
+            if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
+              let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
+              this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+            }
+            break;
+          case "right":
+            if(this.endingRound=="" && this.endPlayer==""){
+              if(this.activePlayerIndex+1<this.gameBoard.players.length){
+                this.setEndPlayer(this.activePlayerIndex+1);
+                this.setEndRound(this.round+1);
+              }else{
+
+                  this.setEndPlayer(0);
+                  this.setEndRound(this.round);
+              }
+            }
+            console.log(this.endPlayer);
+            if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
+              let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
+              this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+            }
+            break;
         }
         //this.endTurn();
       }
@@ -608,7 +652,20 @@ class GameStore {
       //if the defined point when the game ends has come, the results are posted
       @action.bound checkEndGame(){
         console.log("EndRound: "+ this.endingRound);
-        if(this.round >= this.endingRound && this.activePlayerIndex >= this.endPlayer){
+        let endingTrue = false;
+        switch(this.direction){
+          case "left":
+            if(this.round >= this.endingRound && this.activePlayerIndex >= this.endPlayer){
+              endingTrue = true;
+            }
+            break;
+          case "right":
+            if(this.round >= this.endingRound && this.activePlayerIndex <= this.endPlayer){
+              endingTrue = true;
+            }
+            break;
+        }
+        if(endingTrue){
           for(let i=0; i<this.gameBoard.players.length; i++){
               this.gameBoard.players[i].playerValue=0;
                 for (let j = 0; j < this.gameBoard.players[i].playerCards.length; j++) {

@@ -26,6 +26,11 @@ class StackCards extends React.Component{
         if(card==CardStore.stackCard){
           cardClass+=" front-card";
           stackClass+=" z-index-100";
+          switch(card.value){
+            case "swap":
+              clickFunction =  ;
+              break;
+          }
 
         }
         //DoubleCards
