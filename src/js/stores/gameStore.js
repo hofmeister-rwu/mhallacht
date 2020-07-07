@@ -323,11 +323,24 @@ class GameStore {
             this.setDrawn(this.drawn+1);
       }
       @action.bound drawRole(){
-
-        let newRole = this.gameBoard.rolesInMiddle.splice(0,1);
-        this.gameBoard.players[this.activePlayerIndex].playerRole=newRole[0];
-        if(CardStore.stackCard == this.gameBoard.cardsInMiddle[0]){
-          this.throwCards();
+        if(this.gameBoard.players[this.activePlayerIndex].playerRole == "abenteurer" && CardStore.chosenCard == undefined){
+          this.setAlert("Wähle eine Karte aus, die du ablegen möchtest, um diese Rolle abzulegen und setze die Karte erneut ein");
+          this.setWarningShow(true);
+          this.setModalClose(this.closeModal);
+        }else{
+          let newRole = this.gameBoard.rolesInMiddle.splice(0,1);
+          if(this.gameBoard.players[this.activePlayerIndex].playerRole == "abenteurer"){
+            for (let i = this.gameBoard.players[this.activePlayerIndex].playerCards.length -1; i >= 0; i--) {
+              if(this.gameBoard.players[this.activePlayerIndex].playerCards[i] == CardStore.chosenCard){
+                let thrownCard = this.gameBoard.players[this.activePlayerIndex].playerCards.splice(i,1);
+                this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+              }
+            }
+          }
+          this.gameBoard.players[this.activePlayerIndex].playerRole=newRole[0];
+          if(CardStore.stackCard == this.gameBoard.cardsInMiddle[0]){
+            this.throwCards();
+          }
         }
       }
 

@@ -80,7 +80,7 @@ export default class GameInfo extends React.Component {
           }
         }
 
-        gameInfo=<div class="game-info">Runde {GameStore.round}
+        gameInfo=<div class="game-info">Runde {GameStore.round} <br/>
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
                       <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>

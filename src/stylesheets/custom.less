@@ -20,7 +20,7 @@ body{
   background-color:#c0c5d2;
   //background-color: #636680;
   color:rgba(41, 4, 45,1);
-  font-family: Alte Haas Grotesk;
+  font-family: Alte Haas Grotesk, Open Sans, sans-serif;
 }
 
 body::after {
@@ -37,7 +37,7 @@ body::after {
 }
 
 .player h2{
-  font-family: Rooters, Roboto;
+  font-family: Rooters, Roboto, sans-serif;
 }
 .stacks h2{
   font-size:1.3em;
@@ -80,6 +80,24 @@ img{
   }
   font-family: Alte Haas Grotesk;
 }
+.prediger-modal{
+
+  align-items: flex-start;
+  & .modal-body{
+    & form {
+      text-align: left;
+
+      & label{
+        font-size: 0.95rem;
+      }
+    }
+    & h3{
+      font-size: 1.4rem;
+      padding-top:2em;
+    }
+  }
+
+}
 .form-class{
   position: absolute;
   align-items: center;
@@ -90,21 +108,27 @@ img{
     margin-left: 20%;
     margin-right: 20%;
     width: 60%;
-  & .form-control{
-    border-color:#C9FFEF;
+  }
+
+  .form-control{
+    //border-color:#C9FFEF;
+    border-color: rgba(41, 4, 45,0.2);
     &:focus{
       box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
     }
   }
-  & .custom-control-input{
+  .custom-control-input{
     &:checked~.custom-control-label::before {
+      border-color: #29042d;
+      background-color: #29042d;
+    }
+    & .custom-control-label::before {
       border-color: #29042d;
       background-color: #29042d;
     }
     &:focus~.custom-control-label::before {
       box-shadow: 0 0 1rem rgba(201, 255, 239, 0.5)
     }
-  }
   }
 
 .game-info{
@@ -116,6 +140,7 @@ img{
   font-size:1.25rem;
   max-width:33%;
   color:white;
+  font-size: 1.1em;
 }
 
 .playerCards div.card, .double-card, .front-card{
@@ -207,7 +232,7 @@ img{
 }
 
 .bg-primary{
-  background-color: rgba(201, 255, 239,0.2) !important;
+  background-color: rgba(102, 132, 212, 0.33) !important;
     border-radius: 20px;
 }
 
@@ -219,6 +244,9 @@ img{
   border-radius:50px;
   padding:2%;
   color:white;
+  & .card .card-front, .card .card-back{
+    border:none;
+  }
 }
 .deckHeading{
   text-align: center;
@@ -242,7 +270,7 @@ img{
 .roleCard.card.modalRoleCard{
   position:relative;
     height:calc(@cardHeight*3);
-    width:calc(@cardHeight*3 *(7/12));
+    width:calc(@cardHeight*3 *(5/9));
   left:0%;
   align-self: center;
   //background-color:red;
@@ -250,13 +278,13 @@ img{
 
 .active .roleCard.card{
   height:calc(@cardHeight*2);
-  width:calc(@cardHeight*2 *(7/12));
+  width:calc(@cardHeight*2 *(5/9));
   top:10%;
   //background-color:red;
 }
 .end-true .roleCard.card{
   height:calc(@cardHeight);
-  width:calc(@cardHeight *(7/12));
+  width:calc(@cardHeight *(5/9));
   //background-color:red;
 }
 
@@ -330,8 +358,10 @@ img{
     & when (mod(@n,2)=1) and not (@i = 1){
       & when (@i = ((@n + 1) / 2 )), (@i = ((@n + 1) / 2 + 1) ){
         top:25%;
-        @media(max-width:991px){
-          top:40%;
+        & when (3 = @n){
+         @media(max-width:991px){
+           top:40%;
+        }
         }
         & when (@i <= ((@n + 1) / 2 ) ){
           left:5%;
@@ -476,6 +506,7 @@ img{
   height: 100%;
   top:0px;
   left:0px;
+  background-color: rgb(41,4,45);
   -webkit-backface-visibility: hidden; /* Safari */
   backface-visibility: hidden;
   background-size:contain;
@@ -498,8 +529,8 @@ img{
 
 .predigerCard .card-front, .predigerCard .card-back{
   box-shadow:
-        0 0 10px 4px white,  /* inner white */
-        0 0 10px 4px green;
+        0 0 10px 2px rgba(255,255,255,0.7),  /* inner white */
+        0 0 14px 4px #007bff;
 }
 
 .enemyCard .card-front, .enemyCard .card-back{
@@ -625,7 +656,7 @@ img{
 
 /* Style the back side */
 .card-back {
-  background-image:url(../js/public/static/backcard.jpg);
+  background-image:url(../js/public/static/backcard.png);
   transform: rotateY(180deg);
 }
 .roleCard .card-back {
@@ -641,7 +672,7 @@ img{
 
   &.roleCard{
     height:calc(@cardHeight/2);
-    width:calc(@cardHeight/2 *(7/12));
+    width:calc(@cardHeight/2 *(5/9));
     //background-color:red;
   }
 }
@@ -652,7 +683,7 @@ img{
 
   &.roleCard{
     height:calc(@cardHeight*0.75);
-    width:calc(@cardHeight*0.75 *(7/12));
+    width:calc(@cardHeight*0.75 *(5/9));
     //background-color:red;
   }
 }
