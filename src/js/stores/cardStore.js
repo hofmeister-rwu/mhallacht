@@ -114,7 +114,7 @@ class CardStore {
     }
 
     @action.bound fetchAll() {
-        return fetch('http://localhost:3000/save/all', {
+        return fetch('http://localhost:3000/save-games', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -144,7 +144,7 @@ class CardStore {
     }
 
     @action.bound fetchPlayers() {
-        return fetch('http://localhost:3000/save/players', {
+        return fetch('http://localhost:3000/players', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -171,7 +171,7 @@ class CardStore {
     }
 
     @action.bound fetchMiddle() {
-        return fetch('http://localhost:3000/save/middle', {
+        return fetch('http://localhost:3000/middle-cards', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -199,7 +199,7 @@ class CardStore {
 
 
     @action.bound fetchUsed() {
-        return fetch('http://localhost:3000/save/used', {
+        return fetch('http://localhost:3000/used-cards', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -226,7 +226,7 @@ class CardStore {
     }
 
     @action.bound fetchRound() {
-        return fetch('http://localhost:3000/save/round', {
+        return fetch('http://localhost:3000/rounds', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -253,7 +253,7 @@ class CardStore {
     }
 
     @action.bound addPlayers(newPlayer) {
-        return fetch('http://localhost:3000/save/save-all', {
+        return fetch('http://localhost:3000/save-games', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -289,7 +289,7 @@ class CardStore {
     }
 
     @action.bound addNewPlayer(newPlayer,active) {
-        return fetch('http://localhost:3000/save/new', {
+        return fetch('http://localhost:3000/players', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -326,7 +326,7 @@ class CardStore {
     }
 
     @action.bound addNewAbenteurer(newPlayer,active) {
-        return fetch('http://localhost:3000/save/new', {
+        return fetch('http://localhost:3000/players', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -364,7 +364,7 @@ class CardStore {
     }
 
     @action.bound addMiddleCard(newCard) {
-        return fetch('http://localhost:3000/save/newMiddle', {
+        return fetch('http://localhost:3000/middle-cards', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -396,7 +396,7 @@ class CardStore {
 
 
     @action.bound addUsedCard(newCard) {
-        return fetch('http://localhost:3000/save/newUsed', {
+        return fetch('http://localhost:3000/used-cards', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -427,7 +427,7 @@ class CardStore {
     }
 
     @action.bound addRound(round) {
-        return fetch('http://localhost:3000/save/newRound', {
+        return fetch('http://localhost:3000/rounds', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -458,7 +458,7 @@ class CardStore {
     }
 
     @action.bound deleteAll() {
-        return fetch('http://localhost:3000/save/delete/', {
+        return fetch('http://localhost:3000/save-games', {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
