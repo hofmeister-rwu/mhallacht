@@ -10,6 +10,21 @@
   font-family: 'Alte Haas Grotesk';
   src: url(../js/res/AlteHaasGroteskRegular.ttf) format("truetype");
 }
+@font-face {
+  font-family: 'Poppins';
+  src: url(../js/res/Poppins-Regular.ttf) format("truetype");
+  font-weight:400;
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url(../js/res/Poppins-Medium.ttf) format("truetype");
+  font-weight:600;
+}
+@font-face {
+  font-family: 'Poppins';
+  src: url(../js/res/Poppins-Light.ttf) format("truetype");
+  font-weight:300;
+}
 
 body{
   min-height:100vh;
@@ -20,7 +35,7 @@ body{
   background-color:#c0c5d2;
   //background-color: #636680;
   color:rgba(41, 4, 45,1);
-  font-family: Alte Haas Grotesk, Open Sans, sans-serif;
+  font-family: Poppins, Open Sans, sans-serif;
 }
 
 body::after {
@@ -37,11 +52,12 @@ body::after {
 }
 
 .player h2{
-  font-family: Rooters, Roboto, sans-serif;
+  font-family: Rooters, Poppins, sans-serif;
 }
 .stacks h2{
   font-size:1.3em;
-  opacity:0.6;
+  opacity:0.8;
+  font-weight:300;
 }
 
 img{
@@ -78,7 +94,10 @@ img{
   @media(max-width:991px){
     padding: auto 1em;
   }
-  font-family: Alte Haas Grotesk;
+  font-family: Poppins, sans-serif;
+  & h1, h2, h3, h4, h5, h6{
+    font-weight:600;
+  }
 }
 .prediger-modal{
 
@@ -246,7 +265,11 @@ img{
   color:white;
   & .card .card-front, .card .card-back{
     border:none;
+    box-shadow: 0 0 1rem rgba(192, 197, 210,0.4);
   }
+}
+.deckContainer:not(.active) .playerCards .card .card-front,.deckContainer:not(.active) .playerCards .card .card-back{
+    box-shadow: 0 0 1rem rgba(41, 4, 45, 0.5);
 }
 .deckHeading{
   text-align: center;
@@ -524,19 +547,19 @@ img{
 
 .chosenCard .card-front, .chosenCard .card-back{
   box-shadow: 0 0 14px 4px rgba(255, 255, 255, 0.7),
-  0 0 14px 4px rgb(82, 16, 191);
+  0 0 14px 4px rgb(82, 16, 191) !important;
 }
 
 .predigerCard .card-front, .predigerCard .card-back{
   box-shadow:
         0 0 10px 2px rgba(255,255,255,0.7),  /* inner white */
-        0 0 14px 4px #007bff;
+        0 0 14px 4px #007bff !important;
 }
 
 .enemyCard .card-front, .enemyCard .card-back{
   box-shadow:
         0 0 10px 2px rgba(255,255,255,0.7),
-        0 0 14px 4px rgb(219, 255, 4);
+        0 0 14px 4px rgb(219, 255, 4) !important;
 }
 
 /* Style the front side*/

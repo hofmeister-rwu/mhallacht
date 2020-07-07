@@ -31,9 +31,11 @@ export default class RoleModal extends React.Component {
     render() {
       let use;
       let text;
-      if(this.props.roleFunction!=undefined){
+      let toolText = "Schließen";
+      if(this.props.roleFunction!=undefined && this.props.playerRole != " "){
         use = <TooltipButton clickFunction ={()=>{this.props.dismiss(); this.props.roleFunction();}} text="Alright" icon="new"/>;
         text = "Rolle einsetzen?";
+        toolText = "Lieber nicht";
       }
         return (
           <Modal show={this.props.show} onHide={this.props.dismiss}>
@@ -51,7 +53,7 @@ export default class RoleModal extends React.Component {
             </Card>
             <Modal.Body>{text}</Modal.Body>
             <Modal.Footer>
-            <TooltipButton clickFunction ={this.props.dismiss} text="Lieber nicht" icon="no"/>
+            <TooltipButton clickFunction ={this.props.dismiss} text={toolText} icon="no"/>
             {use}
             </Modal.Footer>
           </Modal>

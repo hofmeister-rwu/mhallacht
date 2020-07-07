@@ -9,9 +9,8 @@ import ModalTitle from 'react-bootstrap/ModalTitle'
 import ModalBody from 'react-bootstrap/ModalBody'
 import ModalFooter from 'react-bootstrap/ModalFooter'
 
-import PlayerCards from "../components/PlayerCards"
-import StackCards from "../components/StackCards"
-import CardStore from "../stores/cardStore"
+
+import TooltipButton from "../components/TooltipButton"
 import GameStore from "../stores/gameStore"
 import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
@@ -97,9 +96,7 @@ export default class RuleModal extends React.Component {
             </ol>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={()=>{GameStore.setRuleShow(false)}}>
-                Got It
-              </Button>
+              <TooltipButton clickFunction ={()=>{GameStore.setRuleShow(false)}} text="Verstanden" icon="new"/>
             </Modal.Footer>
           </Modal>
         );
