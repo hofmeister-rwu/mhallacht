@@ -32,6 +32,9 @@ class PlayerCards extends React.Component{
         if(card != showCard && this.props.end==false && this.props.player != CardStore.koboldVictim){
           cardClass+=" card-down";
         }
+        if(card == showCard){
+          cardClass += " show-card";
+        }
         //console.log(Object.values(CardStore.wanderCards));
         if(Object.values(CardStore.wanderCards).includes(card)){
           cardClass+=" chosenCard";

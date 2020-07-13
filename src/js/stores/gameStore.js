@@ -287,6 +287,11 @@ class GameStore {
       this.ruleshow = show;
     }
 
+    @observable tutorialShow= false;
+    @action.bound setTutorialShow(show){
+      this.tutorialShow = show;
+    }
+
       @action.bound newGame(){
         let playerNames =[];
         for (let i = 0; i < this.gameBoard.players.length; i++) {
@@ -718,7 +723,7 @@ class GameStore {
                return(<div key={player.playerName}>#{showCounter}: {player.playerName} with {player.playerValue} </div>);
            });
           this.setAlert(endList);
-          this.setWarningShow(true);
+          //this.setWarningShow(true);
           this.setEnd(true);
           this.setModalClose(this.closeModal);
         }

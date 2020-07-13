@@ -59,6 +59,10 @@ class StackCards extends React.Component{
               break;
           }
 
+        }else if(CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 0){
+          clickFunction = GameStore.draw;
+        }else if(CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 1 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole =="abenteurer"){
+            clickFunction = GameStore.draw;
         }
         //DoubleCards
         if(CardStore.doubleCards.includes(card)){

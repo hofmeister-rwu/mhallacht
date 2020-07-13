@@ -15,6 +15,7 @@ import RuleModal from "../components/RuleModal"
 import StackCards from "../components/StackCards"
 import SaveModal from "../components/SaveModal"
 import AlertModal from "../components/AlertModal"
+import TutorialModal from "../components/TutorialModal"
 import CardStore from "../stores/cardStore"
 import GameStore from "../stores/gameStore"
 import TooltipButton from "../components/TooltipButton"
@@ -49,6 +50,9 @@ export default class Game extends React.Component {
       }
         GameStore.setRound(this.props.round);
         GameStore.setActive(this.props.activePlayerIndex);
+      if(this.props.firstTime == true){
+        GameStore.setTutorialShow(true);
+      }
 
     CardStore.fetchSavings();
   }
@@ -174,6 +178,7 @@ export default class Game extends React.Component {
                 <GameInfo/>
                 <AlertModal/>
                 <SaveModal/>
+                <TutorialModal/>
                 <PredigerModal/>
               <div class="test">
               <div class="stacks">

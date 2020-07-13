@@ -39,7 +39,14 @@ function addPlayerName(e){
       });
   }
 }
-function submit(){
+
+function firstTime(){
+  GameStore.setAlert("Brauchst du ein kurzes Tutorial?");
+  GameStore.setModalClose(()=>{GameStore.closeModal();this.submit(true);});
+  GameStore.setDismiss(()=>{ GameStore.closeModal();this.submit(false);});
+  GameStore.setWarningShow(true);
+}
+function submit(first){
   let noDoubles = true;
   for (let i = 0; i < this.state.players.length; i++) {
     for (let j = 0; j < this.state.players.length; j++) {
@@ -52,7 +59,7 @@ function submit(){
   }
   console.log(noDoubles);
   if(noDoubles==true){
-    this.setState({submit:"new"});
+    this.setState({submit:"new", firstTime:first});
   }else{
     GameStore.setAlert("Jeder Name darf nur einmal vorkommen");
     GameStore.setWarningShow(true);
@@ -73,8 +80,10 @@ export default class Layout extends React.Component {
       submit: false,
       warningshow:false,
       ruleshow:false,
+      firstTime:true,
     }
       CardStore.fetchSavings();
+      this.submit = submit.bind(this);
   }
     render() {
       //console.log(this.state.players);
@@ -102,7 +111,7 @@ export default class Layout extends React.Component {
 
       let game;
       if (this.state.submit=="new"){
-        game=<Game players={this.state.players} submit={this.state.submit} round={0} activePlayerIndex={0}/>;
+        game=<Game players={this.state.players} submit={this.state.submit} round={0} activePlayerIndex={0} firstTime={this.state.firstTime}/>;
       }else if(this.state.submit =="load"){
         var activePlayer =0;
         for (var i = 0; i < playerArray.length; i++) {
@@ -135,7 +144,8 @@ export default class Layout extends React.Component {
         }
         console.log(this.state.players.length);
         if(this.state.players.length>1){
-          form.push(<TooltipButton key="new" clickFunction ={submit.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
+          //form.push(<TooltipButton key="new" clickFunction ={submit.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
+          form.push(<TooltipButton key="new" clickFunction ={firstTime.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
         }
         if(playerArray.length>0){
           form.push(<TooltipButton key="load" type="submit" clickFunction ={load.bind(this)} text="Spiel laden" icon="load"/>);
