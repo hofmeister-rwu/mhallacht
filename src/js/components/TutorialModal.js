@@ -73,7 +73,7 @@ export default class TutorialModal extends React.Component {
                 </Carousel.Item>
 
                 <Carousel.Item>
-                <img src={require("../public/static/card-compilation.png")}/>
+                <img src={require("../public/static/rollen-karten.png")}/>
                 <h3>Rollenkarten</h3>
                 <p>
                 Rollenkarten werden nicht gewertet. Jeder Spieler hat eine andere Rollen, die ihm eine Aktion ermöglicht, aber immer an eine Bedingung geknüpft ist.

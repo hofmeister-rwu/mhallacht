@@ -541,7 +541,7 @@ class GameStore {
         console.log(card);
         console.log(secondCard.value);
           this.setActionDrawn(true);
-          var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.activePlayerIndex].playerName + " seine Karten anschaut";
+          var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.activePlayerIndex].playerName + " Karten anschaut";
           this.setAlert(warning);
           this.setWarningShow(true);
         if(card!=undefined && secondCard.value !=undefined){
