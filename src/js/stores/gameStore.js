@@ -723,7 +723,7 @@ class GameStore {
                return(<div key={player.playerName}>#{showCounter}: {player.playerName} with {player.playerValue} </div>);
            });
           this.setAlert(endList);
-          //this.setWarningShow(true);
+          this.setWarningShow(true);
           this.setEnd(true);
           this.setModalClose(this.closeModal);
         }
