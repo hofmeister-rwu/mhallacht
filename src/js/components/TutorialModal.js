@@ -42,7 +42,7 @@ export default class TutorialModal extends React.Component {
                 </video>
                 <h3>Aufbau</h3>
                 <p>
-                  Jeder Spieler erhält 4 Karten, von denen die beiden Äußeren zu Beginn des Spiels angeschaut werden dürfen. Das sind die Wertkarten.
+                  Jeder Spieler erhält 4 Wertkarten. Die beiden Äußeren werden zu Beginn des Spiels angeschaut.
                   Außerdem erhält jeder Spieler eine Rollenkarte.
                 </p>
                 </Carousel.Item>

@@ -34,12 +34,14 @@ export default class AlertModal extends React.Component {
   }
     render() {
       let dismiss;
+      let hide = GameStore.modalClose;
       if(GameStore.dismiss!=""){
         dismiss =
         <TooltipButton clickFunction ={GameStore.dismiss} text="Lieber nicht" icon="no"/>;
+        hide = GameStore.dismiss;
       }
         return (
-          <Modal show={GameStore.warningshow} onHide={GameStore.modalClose}>
+          <Modal show={GameStore.warningshow} onHide={hide}>
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>{GameStore.alert}</Modal.Body>
