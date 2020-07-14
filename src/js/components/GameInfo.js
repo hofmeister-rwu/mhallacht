@@ -21,8 +21,15 @@ export default class GameInfo extends React.Component {
     super(props);
   }
     render() {
+      let infoClass = "game-info";
+      if(GameStore.gameBoard.players.length == 5){
+        infoClass += " center-info";
+      }
+      if(GameStore.gameBoard.players.length == 6){
+        infoClass += " small-info";
+      }
       //Only Show Info once Game has really started
-      let gameInfo = <div class="game-info">Schau deine Karten an, {GameStore.gameBoard.players[GameStore.activePlayerIndex].playerName}
+      let gameInfo = <div class={infoClass}>Schau deine Karten an, {GameStore.gameBoard.players[GameStore.activePlayerIndex].playerName}
                       <div class="top-buttons">
                         <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
                         <TooltipButton clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>
@@ -80,7 +87,7 @@ export default class GameInfo extends React.Component {
           }
         }
 
-        gameInfo=<div class="game-info">Runde {GameStore.round} <br/>
+        gameInfo=<div class={infoClass}>Runde {GameStore.round} <br/>
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
                       <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
@@ -89,7 +96,7 @@ export default class GameInfo extends React.Component {
                   </div>
 
           }else if(GameStore.end){
-            gameInfo=<div class="game-info">
+            gameInfo=<div class={infoClass}>
                         Noch eine Runde spielen?
                         <div class="top-buttons">
                           <TooltipButton clickFunction ={GameStore.newGame} text="Neues Spiel" icon="load"/>
@@ -100,7 +107,7 @@ export default class GameInfo extends React.Component {
         return (
           <div>
             {gameInfo}
-            </div>
+          </div>
         );
     }
 }

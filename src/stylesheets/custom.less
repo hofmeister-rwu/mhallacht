@@ -27,8 +27,9 @@
 }
 
 body{
-  min-height:100vh;
   min-width:767px;
+  min-height:629px;
+  height:100vh;
   width:100vw;
   position:relative;
   overflow-x:hidden;
@@ -190,7 +191,18 @@ img{
   max-width:33%;
   color:white;
   font-size: 1.1em;
+  &.center-info{
+    border-bottom-left-radius:50px;
+    left:33%;
+    & .top-buttons{
+      text-align:center;
+    }
+  }
+  &.small-info{
+
+  }
 }
+
 
 .playerCards div.card, .double-card, .stackCards .card:first-child{
     cursor:pointer;
