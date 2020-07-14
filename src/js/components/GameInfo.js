@@ -29,9 +29,10 @@ export default class GameInfo extends React.Component {
         infoClass += " small-info";
       }
       //Only Show Info once Game has really started
+
+        //<TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
       let gameInfo = <div class={infoClass}>Schau deine Karten an, {GameStore.gameBoard.players[GameStore.activePlayerIndex].playerName}
                       <div class="top-buttons">
-                        <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
                         <TooltipButton clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>
                         </div>
                     </div>;
@@ -87,10 +88,10 @@ export default class GameInfo extends React.Component {
           }
         }
 
+          //<TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
         gameInfo=<div class={infoClass}>Runde {GameStore.round} <br/>
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
-                      <TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
                       <TooltipButton clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>
                     </div>
                   </div>
