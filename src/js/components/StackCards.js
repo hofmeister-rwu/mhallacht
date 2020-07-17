@@ -59,10 +59,12 @@ class StackCards extends React.Component{
               break;
           }
 
-        }else if(CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 0){
+        }else if(this.props.stack == true && CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 0){
           clickFunction = GameStore.draw;
-        }else if(CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 1 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole =="abenteurer"){
+        }else if( this.props.stack == true && CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 1 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole =="abenteurer"){
             clickFunction = GameStore.draw;
+        }else if(this.props.stack == false && counter == 1 &&  !isNaN(parseInt(card.value))){
+            clickFunction = GameStore.swapUsedCard.bind(this,CardStore.chosenCard);
         }
         //DoubleCards
         if(CardStore.doubleCards.includes(card)){

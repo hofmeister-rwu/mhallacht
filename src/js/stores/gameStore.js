@@ -844,7 +844,7 @@ class GameStore {
               break;
 
             case "bettler":
-            this.setAlert("Du kannst diese Rolle nicht vor der Wertung einsetzen. Möchtest du diese Rolle jetzt ablegen?");
+            this.setAlert("Diese Rolle wird immer automatisch bei der Wertung eingesetzt. Möchtest du diese Rolle jetzt ablegen?");
             this.setWarningShow(true);
             this.setModalClose(()=>{this.closeModal(); this.deactivateRole(role);});
             this.setDismiss(this.closeModal);
