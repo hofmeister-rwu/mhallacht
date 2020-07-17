@@ -22,7 +22,9 @@ export default class GameInfo extends React.Component {
   }
     render() {
       let infoClass = "game-info";
+      let container = "";
       if(GameStore.gameBoard.players.length == 5){
+        container="center";
         infoClass += " center-info";
       }
       if(GameStore.gameBoard.players.length == 6){
@@ -106,7 +108,7 @@ export default class GameInfo extends React.Component {
           }
 
         return (
-          <div>
+          <div class={container}>
             {gameInfo}
           </div>
         );
