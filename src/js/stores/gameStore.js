@@ -35,12 +35,10 @@ class Card {
 
           }
           for (let i=0; i < number ; i++){
-              console.log(values[j]);
               this.cards.push(new Card(values[j],values[j]+"-"+id));
               id++;
           }
         }
-        console.log(this.cards.length);
         for (let i=0; i < 12; i++){
             this.cards.push(new Card("show","show-"+id));
             this.cards.push(new Card("double","double-"+id));
@@ -112,7 +110,6 @@ class Card {
         this.rolesInMiddle=d.roleCards;
     }
     load(playersDB, middleDB, usedDB) {
-      console.log(playersDB);
       this.players.length=0;
       for (let i = 0; i < playersDB.length; i++) {
           this.players.push(new Player(playersDB[i].playerName));
@@ -143,14 +140,14 @@ class Card {
           if (index != -1) this.rolesInMiddle.splice(index, 1);
         }
       }
-      // let location1, location2, tmp;
-      // for (let i = 0; i < 3000; i++) {
-      // location1 = Math.floor((Math.random() * this.rolesInMiddle.length));
-      // location2 = Math.floor((Math.random() * this.rolesInMiddle.length));
-      // tmp = this.rolesInMiddle[location1];
-      // this.rolesInMiddle[location1] = this.rolesInMiddle[location2];
-      // this.rolesInMiddle[location2] = tmp;
-      // }
+      let location1, location2, tmp;
+      for (let i = 0; i < 3000; i++) {
+      location1 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      location2 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      tmp = this.rolesInMiddle[location1];
+      this.rolesInMiddle[location1] = this.rolesInMiddle[location2];
+      this.rolesInMiddle[location2] = tmp;
+      }
     }
     reuseCards(){
         this.cardsInMiddle = this.usedCards;
@@ -163,12 +160,12 @@ class Card {
         this.cardsInMiddle[location1] = this.cardsInMiddle[location2];
         this.cardsInMiddle[location2] = tmp;
         }
-        console.log("GameBoard shuffled");
-        console.log(this.cardsInMiddle);
     }
 }
 
 class GameStore {
+
+    //Global Variables, that will be set in other Functions
 
     @observable gameBoard = new Board();
 
@@ -292,6 +289,7 @@ class GameStore {
       this.tutorialShow = show;
     }
 
+      //new Game after Finish: Reset all Variables and create a new gameBoard with the current PlayerNames
       @action.bound newGame(){
         let playerNames =[];
         for (let i = 0; i < this.gameBoard.players.length; i++) {
@@ -307,6 +305,7 @@ class GameStore {
         this.setGottheitRound("");
       }
 
+      //reuse Cards from the used stack, when the middle Stack is empty
       @action.bound mixCards(){
         this.setAlert("Oh nein! Das war die letzte Karte vom Kartenstapel. Die Karten vom Ablagestapel werden neu gemischt und kommen auf den Kartenstapel.")
         this.setModalClose(this.closeModal);
@@ -315,18 +314,22 @@ class GameStore {
         this.gameBoard.reuseCards();
       }
 
+
+      //Role Scharlatan doesn't show his cards, so there's a Modal shown, before he can draw
       @action.bound covertDraw(){
         var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.activePlayerIndex].playerName + " zieht";
         this.setAlert(warning);
         this.setWarningShow(true);
         this.setModalClose(() => {this.closeModal(); this.draw();})
       }
+
       //Draw the first Card of the Stack
       @action.bound draw(){
-
             CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
             this.setDrawn(this.drawn+1);
       }
+
+      //draw a new Role for the card role-swap
       @action.bound drawRole(){
         if(this.gameBoard.players[this.activePlayerIndex].playerRole == "abenteurer" && CardStore.chosenCard == undefined){
           this.setAlert("Wähle eine Karte aus, die du ablegen möchtest, um diese Rolle abzulegen und setze die Karte erneut ein");
@@ -351,13 +354,12 @@ class GameStore {
 
       //Throw a Card that the Player doesnt want on the used Cards Stack
       @action.bound throwCards(){
-        //if you dont want to use the StackCard throw it on the usedCards Stack
           let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
           this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
           CardStore.unselectCards();
-          //this.endTurn();
       }
 
+      //Throw a specific Card from the middle Stack to the used Stack (used for Double Cards)
       @action.bound throwCardbyObject(card){
         var cardIndex = 0;
         for (let i = 0; i < this.gameBoard.cardsInMiddle.length; i++) {
@@ -386,7 +388,6 @@ class GameStore {
               if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
                 CardStore.selectStackCard(this.gameBoard.usedCards[0]);
               }else{
-                //this.endTurn();
 
                 CardStore.unselectCards();
               }
@@ -419,7 +420,6 @@ class GameStore {
               if(isNaN(parseInt(this.gameBoard.usedCards[0].value))){
                 CardStore.selectStackCard(this.gameBoard.usedCards[0]);
               }else{
-                //this.endTurn();
 
                 CardStore.unselectCards();
               }
@@ -498,7 +498,8 @@ class GameStore {
         }
       }
 
-      //After the activePlayer has performed an action his Turn is over
+
+      //Skip over the next player and go direclty to the player after that
       @action.bound skipNext(){
         this.setActionDrawn(true);
         // put the StackCard on the UsedCard Staple
@@ -506,7 +507,7 @@ class GameStore {
           let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
           this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
         }
-        //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
+        //if theres 2 more players in the array it's their turn, so we unselect all Cards and count up the activePlayerIndex by Two
           if(this.activePlayerIndex+2<this.gameBoard.players.length){
             this.setActive(this.activePlayerIndex+2);
             this.setDrawn(0);
@@ -514,7 +515,6 @@ class GameStore {
             CardStore.unselectCards();
           }else{
         //if theres no next player in the array a new Round begins and we start with the first player again
-            console.log(this.activePlayerIndex+2-this.gameBoard.players.length);
             this.endRound(this.activePlayerIndex+2-this.gameBoard.players.length);
             this.setDrawn(0);
             this.setActionDrawn(false);
@@ -523,6 +523,7 @@ class GameStore {
 
       }
 
+      //Draw two Cards and choose one of them
       @action.bound drawDouble(){
           this.setActionDrawn(true);
         if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
@@ -530,24 +531,24 @@ class GameStore {
           this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
         }
           CardStore.unselectCards();
-          console.log(this.gameBoard.cardsInMiddle[0]);
-          console.log(this.gameBoard.cardsInMiddle[1]);
           CardStore.selectDoubleCards(this.gameBoard.cardsInMiddle[0],this.gameBoard.cardsInMiddle[1]);
-          //CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
       }
 
-
+      //Modal for cards to be shown
       @action.bound showCardModal(card, secondCard){
-        console.log(card);
-        console.log(secondCard.value);
+          // warning for others to look away
           this.setActionDrawn(true);
           var warning = "Bitte Schau weg solange " + this.gameBoard.players[this.activePlayerIndex].playerName + " Karten anschaut";
           this.setAlert(warning);
           this.setWarningShow(true);
+        // if two cards need to be showm, call the ShowFirst function that shows the outer cards
         if(card!=undefined && secondCard.value !=undefined){
           this.setModalClose(() => {this.closeModal(); this.showFirst(card,secondCard);})
+
+        // if one card needs to be shown, call show(card) function
         }else if(card!=undefined && secondCard.value==undefined){
           this.setModalClose(() => {this.closeModal(); this.show(card);})
+
         //if no card is chosen give out a warning
         }else{
           this.setAlert("Such dir ein Karte aus, die angezeigt werden soll");
@@ -560,10 +561,9 @@ class GameStore {
       @action.bound show(card){
           this.setActionDrawn(true);
         if(card!=undefined){
-            //if the Card to Show is defined, show the Card Value for 2 seconds
+            //if the Card to Show is defined, show the Card Value for 3 seconds
             CardStore.selectShowCard(card);
             setTimeout(() => {CardStore.unselectCards();}, 3000);
-            //setTimeout(() => {this.endTurn();}, 2000);
             if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
               let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
               this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
@@ -572,6 +572,7 @@ class GameStore {
           }
       }
 
+      //Show the outer Cards of the players at the beginning of the Game
       @action.bound showFirst(leftCard,rightCard){
           CardStore.selectShowCard(leftCard)
           setTimeout(() => {CardStore.selectShowCard(rightCard)}, 3000);
@@ -581,10 +582,13 @@ class GameStore {
 
       //After the activePlayer has performed an action his Turn is over
       @action.bound endTurn(){
+        //reset variables
         this.setActionDrawn(false);
         this.setPlayerCardClick("");
         this.setPlayerClick(()=>{});
         this.setDrawn(0);
+
+        //check for Role Events that end after exactly one turn
         if(this.koboldEndRound!=""){
           this.checkKoboldEnd();
         }
@@ -607,12 +611,12 @@ class GameStore {
               }
               break;
             case "right":this.closeModal
-            //if theres a next player in the array it's his turn, so we unselect all Cards and count up the activePlayerIndex
+            //if theres a before player in the array it's his turn, so we unselect all Cards and count down the activePlayerIndex
               if(this.activePlayerIndex-1>=0){
                 this.setActive(this.activePlayerIndex-1);
                 CardStore.unselectCards();
               }else{
-            //if theres no next player in the array a new Round begins and we start with the first player again
+            //if theres no before  player in the array a new Round begins and we start with the last player again
                 this.endRound(this.gameBoard.players.length-1);
               }
               break;
@@ -631,6 +635,7 @@ class GameStore {
         switch(this.direction){
           case "left":
             if(this.endingRound=="" && this.endPlayer==""){
+              //the endPlayer is one before the activePlayer who pressed the button, so the players who ended doesnt get another turn
               if(this.activePlayerIndex-1>=0){
                 this.setEndPlayer(this.activePlayerIndex-1);
                 this.setEndRound(this.round+1);
@@ -640,13 +645,10 @@ class GameStore {
                   this.setEndRound(this.round);
               }
             }
-            if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
-              let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
-              this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
-            }
             break;
           case "right":
             if(this.endingRound=="" && this.endPlayer==""){
+                //the endPlayer is one after the activePlayer who pressed the button, so the players who ended doesnt get another turn
               if(this.activePlayerIndex+1<this.gameBoard.players.length){
                 this.setEndPlayer(this.activePlayerIndex+1);
                 this.setEndRound(this.round+1);
@@ -656,20 +658,18 @@ class GameStore {
                   this.setEndRound(this.round);
               }
             }
-            console.log(this.endPlayer);
-            if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
-              let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
-              this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
-            }
             break;
         }
-        //this.endTurn();
+
+        if(this.gameBoard.cardsInMiddle[0]==CardStore.stackCard){
+          let thrownCard = this.gameBoard.cardsInMiddle.splice(0,1);
+          this.gameBoard.usedCards.splice(0,0,thrownCard[0]);
+        }
       }
 
 
       //if the defined point when the game ends has come, the results are posted
       @action.bound checkEndGame(){
-        console.log("EndRound: "+ this.endingRound);
         let endingTrue = false;
         switch(this.direction){
           case "left":
@@ -683,6 +683,7 @@ class GameStore {
             }
             break;
         }
+        //if end is true, add up values of the players
         if(endingTrue){
           for(let i=0; i<this.gameBoard.players.length; i++){
               this.gameBoard.players[i].playerValue=0;
@@ -693,24 +694,25 @@ class GameStore {
                   }else{
                     this.gameBoard.players[i].playerValue += 10;
                   }
-                  console.log(this.gameBoard.players[i].playerName + ": " + this.gameBoard.players[i].playerValue)
                 }
           }
           var endPlayers=[...this.gameBoard.players];
           endPlayers.sort((a, b) => a.playerValue - b.playerValue);
+
+          //if the player with the Role "Bettler" has the most points (end of list after sorting), his points get cut in half and the others' get doubled
           if(endPlayers[this.gameBoard.players.length-1].playerRole == "bettler"){
             for(let s = 0; s < endPlayers.length; s++){
               if(endPlayers[s].playerRole == "bettler"){
                 endPlayers[s].playerValue *= 0.5;
-                console.log("Bettler Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
               }else{
                 endPlayers[s].playerValue *= 2;
-                console.log("Non Bettler Value: " + this.gameBoard.players[s].playerName + ": " + this.gameBoard.players[s].playerValue)
               }
             }
             this.deactivateRole("bettler");
             endPlayers.sort((a, b) => a.playerValue - b.playerValue);
           }
+
+          //two Counters, so we know where in the list we actually are, but the places are accurately displayed if several people have the same points
           let realCounter = 0;
           let showCounter;
           let lastValue = -1;
@@ -729,7 +731,7 @@ class GameStore {
         }
       }
 
-
+      //Save all Date (not optimized)
       @action.bound save(){
           CardStore.deleteAll();
           for(let i = 0; i < this.gameBoard.players.length; i++){
@@ -755,17 +757,18 @@ class GameStore {
           for(let i = 0; i < this.gameBoard.usedCards.length; i++){
               CardStore.addUsedCard(this.gameBoard.usedCards[i]);
           }
-          console.log(this.round);
           CardStore.addRound(this.round);
           CardStore.fetchSavings();
           this.setSaveShow(true);
 
       }
 
+      //Close AlertModal
       @action.bound closeModal(){
         this.setWarningShow(false);
         this.setDismiss("");
       }
+
 
 
 
@@ -911,6 +914,7 @@ class GameStore {
             }
           }
 
+
           //HAENDLER
 
           @action.bound haendler(){
@@ -921,7 +925,6 @@ class GameStore {
                   for(let j = this.gameBoard.players[i].playerCards.length-1; j >= 0 ; j--){
 
                      setTimeout(() => {
-                     console.log("Block 1, Karte " + j);
                      let playerCard = this.gameBoard.players[i].playerCards.splice(j,1);
                      this.gameBoard.usedCards.splice(0,0,playerCard[0]);
                      CardStore.selectStackCard(this.gameBoard.cardsInMiddle[0]);
@@ -929,7 +932,6 @@ class GameStore {
 
                     setTimeout(() => {
 
-                      console.log("Block 2, Karte " + j)
 
                     let stackCard = this.gameBoard.cardsInMiddle.splice(0,1);
                     this.gameBoard.players[i].playerCards.splice(0,0,stackCard[0]);
@@ -955,7 +957,6 @@ class GameStore {
             this.setDrawn(this.drawn+1)
             CardStore.selectCircleUsedCard(this.gameBoard.usedCards[0]);
             CardStore.selectStackCard(this.gameBoard.usedCards[0]);
-            console.log(CardStore.stackCard);
           }
 
           @action.bound circleBack(){
@@ -1019,8 +1020,6 @@ class GameStore {
                 }
               }
             }
-            console.log(playerIndex);
-            console.log(this.round);
             this.setKoboldEnd(playerIndex);
             this.setKoboldRound(this.round+1);
             this.setKoboldSelect({});
@@ -1084,16 +1083,12 @@ class GameStore {
               this.setWarningShow(true);
               this.setModalClose(this.closeModal);
               this.setGottheitRound("");
-              console.log(this.gameBoard);
 
               let first = [...this.gameBoard.players[0].playerCards];
 
               for (let i = 0; i < this.gameBoard.players.length; i++) {
                 if(this.gameBoard.players[i+1]!=undefined){
                   for (let j = 0; j < 4; j++) {
-
-                    console.log(this.gameBoard.players[i].playerCards[j]);
-                    console.log(this.gameBoard.players[i+1].playerCards[j]);
                     this.gameBoard.players[i].playerCards[j]=this.gameBoard.players[i+1].playerCards[j];
                   }
                 }else{
@@ -1101,8 +1096,6 @@ class GameStore {
                   this.gameBoard.players[i].playerCards[j]=first[j];
                   }
                 }
-                console.log("GameBoard after Player " + i);
-                console.log(this.gameBoard);
               }
               this.deactivateRole("gottheit");
             }
@@ -1145,8 +1138,6 @@ class GameStore {
           }
 
           @action.bound predigerCheck(rightAnswer,userAnswer){
-            console.log(userAnswer);
-            console.log(rightAnswer);
             let same = true;
             for (let i = 0; i < rightAnswer.length; i++) {
               if(rightAnswer[i]!=userAnswer[i]){

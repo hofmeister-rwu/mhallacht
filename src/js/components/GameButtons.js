@@ -57,8 +57,11 @@ export default class GameButtons extends React.Component {
       let actionButton;
       let endGameButton;
       let useRoleButton;
+
+      //only show GameButtons after the unofficial 0 Round
       if(GameStore.round > 0){
 
+        // Role WANDERER
         if(GameStore.playerCardClick == CardStore.selectWanderCard){
           let disabl = true;
           if(Object.values(CardStore.wanderCards).length == GameStore.gameBoard.players.length){
@@ -67,29 +70,35 @@ export default class GameButtons extends React.Component {
           useRoleButton = <TooltipButton jumping={!disabl} clickFunction ={GameStore.cardsToLeft} text="Karten nach Links geben" icon="swap"/>
         }
 
+        //Role KOBOLD
         if(GameStore.koboldSelect.playerName != undefined && CardStore.koboldVictim.playerName == undefined ){
           useRoleButton = <TooltipButton jumping={true} clickFunction ={GameStore.setKoboldVictim.bind(this,GameStore.koboldSelect)} text="Karten des ausgewählten Spielers umdrehen" icon="new"/>
         }
+
+        //Role PREDIGER
         if(CardStore.predigerVictim != {} && CardStore.predigerCards.length>=2 && GameStore.playerClick!="" && !GameStore.predigershow){
           useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{GameStore.setPredigerShow(true)}} text="Spieler und Karten auswählen" icon="new"/>
         }
+
+        //Role MITLÄUFER
         if(GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole == "mitlaeufer" && GameStore.mitlaeuferChosen != undefined){
             useRoleButton = <TooltipButton jumping={true} clickFunction ={()=>{ GameStore.setMitlaeuferUsed(true); GameStore.useRole(GameStore.mitlaeuferChosen.playerRole); GameStore.setMitlaeuferChosen(undefined)}} text="Diese Rolle einsetzen" icon="new"/>
         }
 
-          //Only Show DrawButton if there is no card already drawn and Game isn't over
+          //Only Show GameButtons if Game isn't over yet
           if(!GameStore.end){
 
+            //if there's no card already drawn and there hasn't been a draw in this turn yet and there is no role active, show Draw Button and maybe UsedButton
             if(stackCard==undefined && GameStore.drawn==0 && GameStore.playerCardClick==""){
 
-              //drawButton= <Button variant="purple" onClick={draw}>Ziehen</Button>;
+              //if the active Player has the role SCHARLATAN, the drawButton needs to call covertDraw instead of draw
               if(GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole!="scharlatan"){
                 drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
               }else{
 
                   drawButton =<TooltipButton clickFunction ={GameStore.covertDraw} text="Ziehe eine Karte" icon="draw"/>
               }
-
+              //if there is a card on the used Stack and the card is not an action card, show UsedButton
               if(GameStore.gameBoard.usedCards[0]!=undefined && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value))){
                 let jumping = false;
                 if(chosenCard!=undefined && GameStore.round <= 3){
@@ -98,14 +107,17 @@ export default class GameButtons extends React.Component {
                 usedButton =<TooltipButton jumping={jumping} clickFunction ={GameStore.swapUsedCard.bind(this,chosenCard)} text="Tausche mit der ersten Karte vom Ablagestapel" icon="used"/>
               }
 
+            //if the active Player has the role Abenteurer he can draw a second time
             }else if(stackCard == undefined && GameStore.drawn < 2 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole=="abenteurer"){
 
                 drawButton =<TooltipButton clickFunction ={GameStore.draw} text="Ziehe eine Karte" icon="draw"/>
 
+            //show Endturn button if draw has been made
             }else{
-
               throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
             }
+
+            //if the first Used Card is the current Stackcard, the usedButton is active too (needed for role ALTER MANN)
             if(GameStore.gameBoard.usedCards[0]!=undefined && GameStore.gameBoard.usedCards[0]==CardStore.stackCard && !isNaN(parseInt(GameStore.gameBoard.usedCards[0].value))){
               let jumping = false;
               if(chosenCard!=undefined && GameStore.round <= 3){
@@ -115,12 +127,18 @@ export default class GameButtons extends React.Component {
             }
           }
 
+          //if the stackCard IS defined and the game isn't over yet, show throw and action buttons
           if(stackCard!=undefined && !GameStore.end){
+
+            //if the current StackCard is the first card from middle stack, throw that away on ThrowButton
             if(GameStore.gameBoard.cardsInMiddle[0]==stackCard){
               throwButton =<TooltipButton clickFunction ={GameStore.throwCards} text="Gezogene Karte wegwerfen" icon="throw"/>
-            }else if(GameStore.gameBoard.usedCards[0]==stackCard && GameStore.gameBoard.usedCards[0]==circleUsedCard){
+            }
+              //if the current StackCard is the first card from usedCards, and its the circleUsedCard, the role ALTER MANN is active, so the throw Button lets you circle through the used Cards
+            else if(GameStore.gameBoard.usedCards[0]==stackCard && GameStore.gameBoard.usedCards[0]==circleUsedCard){
               throwButton =<TooltipButton clickFunction ={GameStore.circleBack} text="Gezogene Karte wegwerfen" icon="throw"/>
             }else{
+              //if none of these conditions are correct, the throw button should simply always end the turn
               throwButton =<TooltipButton clickFunction ={GameStore.endTurn} text="Beende deinen Zug" icon="end-turn"/>
             }
 
@@ -169,8 +187,11 @@ export default class GameButtons extends React.Component {
 
 
       }
-      }else if(!GameStore.end){
+      }
+      //if round is not 0 and the game hasnt ended yet, show the Button to show the first Cards
+      else if(!GameStore.end){
         let disabled = true;
+        //disable the button if there are currently cards that are shown
         if(CardStore.showCard == undefined){
          disabled = false;
         }

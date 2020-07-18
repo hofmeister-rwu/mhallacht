@@ -40,7 +40,6 @@ class CardStore {
     @action.bound selectDoubleCards(cardOne,cardTwo) {
         this.doubleCards.push(cardOne);
         this.doubleCards.push(cardTwo);
-        console.log(this.doubleCards);
     };
     @observable wanderCards={};
     @action.bound selectWanderCard(card,player) {
@@ -52,7 +51,6 @@ class CardStore {
     @observable koboldVictim={};
     @action.bound selectKoboldVictim(player){
       this.koboldVictim = player;
-      console.log(this.koboldVictim);
     }
     @action.bound unselectKoboldVictim(){
       this.koboldVictim = {};

@@ -21,7 +21,6 @@ require('../../stylesheets/initial.less');
 
 function changePlayerNumber(value){
   this.setState({numberofPlayers:value});
-  console.log(this.state.numberofPlayers);
 }
 function addPlayerName(e){
   let name = e.target.value;
@@ -57,7 +56,6 @@ function submit(first){
       }
     }
   }
-  console.log(noDoubles);
   if(noDoubles==true){
     this.setState({submit:"new", firstTime:first});
   }else{
@@ -86,7 +84,6 @@ export default class Layout extends React.Component {
       this.submit = submit.bind(this);
   }
     render() {
-      //console.log(this.state.players);
       //import saved Game from Store/Database
       var {playersFromServer} = CardStore;
       var {middleFromServer} = CardStore;
@@ -142,9 +139,7 @@ export default class Layout extends React.Component {
           <Form.Control type="text" name={i} placeholder={"Spieler "+(i+1)} onBlur={addPlayerName.bind(this)}/>
           </Form.Group>);
         }
-        console.log(this.state.players.length);
         if(this.state.players.length>1){
-          //form.push(<TooltipButton key="new" clickFunction ={submit.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
           form.push(<TooltipButton key="new" clickFunction ={firstTime.bind(this)} type="submit" text="Neues Spiel starten" icon="new"/>)
         }
         if(playerArray.length>0){

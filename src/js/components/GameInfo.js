@@ -23,7 +23,7 @@ export default class GameInfo extends React.Component {
     render() {
       let infoClass = "game-info";
       let container = "";
-      const {endPlayer} = GameStore;
+      //different Styling for different number of players
       if(GameStore.gameBoard.players.length == 5){
         container="center";
         infoClass += " center-info";
@@ -31,21 +31,22 @@ export default class GameInfo extends React.Component {
       if(GameStore.gameBoard.players.length == 6){
         infoClass += " small-info";
       }
-      //Only Show Info once Game has really started
 
-        //<TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
+      //in the first round, show who's turn it is to look at cards
       let gameInfo = <div class={infoClass}>Schau deine Karten an, {GameStore.gameBoard.players[GameStore.activePlayerIndex].playerName}
                       <div class="top-buttons">
                         <TooltipButton clickFunction ={GameStore.setRuleShow.bind(true)} text="Regeln" icon="rule"/>
                         </div>
                     </div>;
 
+
+      //Show Round Info once Game has really started and the Game isnt over yet
       if(GameStore.round>0 && !GameStore.end){
         let endAlert="";
         let gottheitAlert="";
-        console.log("GameStore EndPlayer: " + GameStore.endPlayer);
-        if(endPlayer){
-          console.log("You go here???");
+
+        //if the end of Game has been defined, count how many turns until the End and set an Alert for that.
+        if(GameStore.endingRound != ""){
           let tilEnd;
           switch(GameStore.direction){
             case "left":
@@ -73,6 +74,8 @@ export default class GameInfo extends React.Component {
           endAlert = " Noch " + tilEnd + " Züge bis zur Wertung";
         }
 
+
+        //if the role GOTTHEIT has been used, count how many turns until all cards will be swapped and show an alert
         if(GameStore.gottheitRound !=""){
           let gottheitIndex;
           for (let i = 0; i < GameStore.gameBoard.players.length; i++) {
@@ -100,7 +103,7 @@ export default class GameInfo extends React.Component {
           }
         }
 
-          //<TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
+        //<TooltipButton clickFunction ={GameStore.save} text="Speichern" icon="save"/>
         gameInfo=<div class={infoClass}>Runde {GameStore.round} <br/>
                     {endAlert} {gottheitAlert}
                     <div class="top-buttons">
@@ -109,6 +112,7 @@ export default class GameInfo extends React.Component {
                   </div>
 
           }else if(GameStore.end){
+            //if Game has ended only show new Game Button 
             gameInfo=<div class={infoClass}>
                         Noch eine Runde spielen?
                         <div class="top-buttons">

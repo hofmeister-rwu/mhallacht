@@ -50,6 +50,7 @@ export default class Game extends React.Component {
       }
         GameStore.setRound(this.props.round);
         GameStore.setActive(this.props.activePlayerIndex);
+        
       if(this.props.firstTime == true){
         GameStore.setTutorialShow(true);
       }
@@ -58,6 +59,7 @@ export default class Game extends React.Component {
   }
     render() {
 
+      // Get all Info from GameStore, so every Change triggers Rerender
       const {gameBoard} = GameStore;
       const {round} = GameStore;
       const {activePlayerIndex} = GameStore;
@@ -81,7 +83,6 @@ export default class Game extends React.Component {
       const {predigershow} = GameStore;
       const {ruleshow} = GameStore;
 
-     //console.log(gameBoard);
      var {playersFromServer} = CardStore;
      var savedPlayers;
      if(playersFromServer!=undefined){
@@ -111,12 +112,14 @@ export default class Game extends React.Component {
      let {predigerCards} = CardStore;
      const predigerCardsFromStore = [...predigerCards];
      const {predigerVictim} = CardStore;
-     //Load PlayerCards into {items}
+
+
      console.log(gameBoard);
+
+     //Call PlayerCards Component for every player
       const playerCards = gameBoard.players.map((item, key) =>{
 
-          let cardClick;
-          let roleFunction;
+          // Get Position of Player Relative to active Player (active player needs class player-1, the next player player-2 and so on)
           let counter = 0;
           for (let i = 0; i < gameBoard.players.length; i++) {
             if(gameBoard.players[i]==item){
@@ -128,30 +131,43 @@ export default class Game extends React.Component {
             }
           }
           let deckClass ="deckContainer player-"+counter;
+
+
+          let cardClick;
+          let roleFunction;
+
           //OnClick of Cards is only defined if Game ins't over yet
           if(!end){
+
             //onClick stores the card either in chosenCard or enemyCard depending if the Card belongs to the active Player or not
               if(item==gameBoard.players[activePlayerIndex]){
                 cardClick= CardStore.selectCard;
                 deckClass+= " active"
+
+                //role can only be used if player is active in the moment
                 roleFunction = GameStore.useRole.bind(this,item.playerRole);
               }else{
                 cardClick=CardStore.selectEnemyCard;
               }
-              //console.log(GameStore.koboldSelect);
+
+              //Style Players that were selected by a Role
               if(item == koboldSelect || item == CardStore.predigerVictim || item == GameStore.mitlaeuferChosen){
                 deckClass += " bg-primary";
               }
           }
+
+          //If GameStore.playerCardClick is defined it overwrites the ususal cardClick (if a role disrupts the usual GameFlow)
           if(playerCardClick!=""){
             cardClick=playerCardClick;
           }
 
+          //If GameStore.playerClick is defined, something happens if you click on the player, else the attribute stays empty
           let playerOnClick ="";
           if(playerClick!=""){
             playerOnClick = playerClick.bind(this,item);
           }
 
+          // If the second Phase of Preidger is active (predigerCards are still defined, but cards can't be chosen anymore) enemyClick is constrained to only PredigerCards
           let predigerSwap = false;
           if(CardStore.predigerVictim.playerCards != undefined && playerCardClick == "" && item != gameBoard.players[activePlayerIndex]){
             cardClick=()=>{};
@@ -166,8 +182,10 @@ export default class Game extends React.Component {
             </div>);
       });
 
+      //styling changes whether end is true or false
       let endClass = "end-"+end;
 
+      //if the stack of new cards is empty, the cards from the used stack are reused
       if(gameBoard.cardsInMiddle.length <=0){
         GameStore.mixCards();
       }
