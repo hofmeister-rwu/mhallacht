@@ -720,7 +720,7 @@ class GameStore {
                showCounter = realCounter;
              }
              lastValue = player.playerValue;
-               return(<div key={player.playerName}>#{showCounter}: {player.playerName} with {player.playerValue} </div>);
+               return(<div key={player.playerName}>#{showCounter}: {player.playerName} mit {player.playerValue} Punkten </div>);
            });
           this.setAlert(endList);
           this.setWarningShow(true);

@@ -23,6 +23,7 @@ export default class GameInfo extends React.Component {
     render() {
       let infoClass = "game-info";
       let container = "";
+      const {endPlayer} = GameStore;
       if(GameStore.gameBoard.players.length == 5){
         container="center";
         infoClass += " center-info";
@@ -42,7 +43,8 @@ export default class GameInfo extends React.Component {
       if(GameStore.round>0 && !GameStore.end){
         let endAlert="";
         let gottheitAlert="";
-        if(GameStore.endPlayer != ""){
+        console.log("GameStore EndPlayer: " + GameStore.endPlayer);
+        if(endPlayer){
           console.log("You go here???");
           let tilEnd;
           switch(GameStore.direction){
@@ -56,6 +58,13 @@ export default class GameInfo extends React.Component {
             case "right":
               tilEnd = GameStore.activePlayerIndex - GameStore.endPlayer +1;
               if(tilEnd <= 0){
+                  tilEnd = GameStore.gameBoard.players.length + tilEnd;
+              }
+              break;
+            default:
+              tilEnd = GameStore.endPlayer - GameStore.activePlayerIndex +1;
+              if(tilEnd <= 0){
+                  //tilEnd = GameStore.activePlayerIndex + tilEnd +1;
                   tilEnd = GameStore.gameBoard.players.length + tilEnd;
               }
               break;
