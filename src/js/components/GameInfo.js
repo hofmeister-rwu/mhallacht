@@ -43,6 +43,7 @@ export default class GameInfo extends React.Component {
         let endAlert="";
         let gottheitAlert="";
         if(GameStore.endPlayer != ""){
+          console.log("You go here???");
           let tilEnd;
           switch(GameStore.direction){
             case "left":

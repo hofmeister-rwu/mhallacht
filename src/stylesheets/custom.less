@@ -1,4 +1,4 @@
-@cardWidth:2.59em;
+@cardWidth:2.46em;
 @cardHeight:4em;
 @cardMargin:0.5em;
 
@@ -212,11 +212,20 @@ img{
 }
 
 
-.playerCards div.card, .double-card, .stackCards .card:first-child{
+.playerCards div.card, .double-card, .stack-true .stackCards .card:first-child{
     cursor:pointer;
     &:hover{
       margin-top:-3px;
     }
+}
+
+.stack-false .stackCards {
+  & .card-1.value-0, .card-1.value-1, .card-1.value-2, .card-1.value-3, .card-1.value-4, .card-1.value-5, .card-1.value-6, .card-1.value-7, .card-1.value-8, .card-1.value-9{
+      cursor:pointer;
+      &:hover{
+        margin-top:-3px;
+      }
+  }
 }
 
 

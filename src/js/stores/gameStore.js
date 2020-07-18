@@ -136,21 +136,21 @@ class Card {
       for (let i = 0; i < usedDB.length; i++) {
          this.usedCards.push(new Card (usedDB[i].value,usedDB[i].idCard));
       }
-      this.rolesInMiddle = ["abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "gottheit", "buerokrat", "koenig", "bettler"];
+      this.rolesInMiddle = ["gottheit","abenteurer", "haendler", "alter-mann", "wanderer", "kobold", "prediger", "buerokrat", "koenig", "bettler"];
       for(let i = 0; i < this.players.length; i++){
         if(this.rolesInMiddle.includes(this.players[i].playerRole)){
           var index = this.rolesInMiddle.indexOf(this.players[i].playerRole);
-          if (index !== -1) this.rolesInMiddle.splice(index, 1);
+          if (index != -1) this.rolesInMiddle.splice(index, 1);
         }
       }
-      let location1, location2, tmp;
-      for (let i = 0; i < 3000; i++) {
-      location1 = Math.floor((Math.random() * this.rolesInMiddle.length));
-      location2 = Math.floor((Math.random() * this.rolesInMiddle.length));
-      tmp = this.rolesInMiddle[location1];
-      this.rolesInMiddle[location1] = this.rolesInMiddle[location2];
-      this.rolesInMiddle[location2] = tmp;
-      }
+      // let location1, location2, tmp;
+      // for (let i = 0; i < 3000; i++) {
+      // location1 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      // location2 = Math.floor((Math.random() * this.rolesInMiddle.length));
+      // tmp = this.rolesInMiddle[location1];
+      // this.rolesInMiddle[location1] = this.rolesInMiddle[location2];
+      // this.rolesInMiddle[location2] = tmp;
+      // }
     }
     reuseCards(){
         this.cardsInMiddle = this.usedCards;

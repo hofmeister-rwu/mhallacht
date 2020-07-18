@@ -11,7 +11,7 @@ class StackCards extends React.Component{
     render() {
       let clickFunction;
 
-      let stackClass = "col-md-6";
+      let stackClass = "col-md-6 stack-"+this.props.stack;
 
       let counter = 1;
       //Load Parts of Deck in {cards}
@@ -63,7 +63,7 @@ class StackCards extends React.Component{
           clickFunction = GameStore.draw;
         }else if( this.props.stack == true && CardStore.stackCard == undefined &&GameStore.round>0 &&GameStore.drawn == 1 && GameStore.gameBoard.players[GameStore.activePlayerIndex].playerRole =="abenteurer"){
             clickFunction = GameStore.draw;
-        }else if(this.props.stack == false && counter == 1 &&  !isNaN(parseInt(card.value))){
+        }else if(GameStore.drawn==0 && this.props.stack == false && counter == 1 &&  !isNaN(parseInt(card.value))){
             clickFunction = GameStore.swapUsedCard.bind(this,CardStore.chosenCard);
         }
         //DoubleCards
