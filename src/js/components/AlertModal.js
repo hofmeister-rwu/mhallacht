@@ -19,12 +19,6 @@ import TooltipButton from "../components/TooltipButton"
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
 
 @observer
 export default class AlertModal extends React.Component {

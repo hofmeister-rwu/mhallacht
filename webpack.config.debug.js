@@ -1,5 +1,6 @@
 let webpack = require('webpack');
 let path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 module.exports = {
@@ -56,7 +57,7 @@ module.exports = {
         ]
     },
     output: {
-        path: path.join(__dirname, "src"),
+        path: path.join(__dirname, "./dist"),
         filename: "client.min.js"
     },
     plugins: [

@@ -15,12 +15,6 @@ import Carousel from 'react-bootstrap/Carousel'
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
 
 @observer
 export default class TutorialModal extends React.Component {

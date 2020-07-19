@@ -6,14 +6,6 @@ import GameStore from "../stores/gameStore"
 import TooltipButton from "../components/TooltipButton"
 // import MobxInteraction from "../pages/MobxInteraction"
 
-
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
-
 @observer
 export default class GameInfo extends React.Component {
 
@@ -112,7 +104,7 @@ export default class GameInfo extends React.Component {
                   </div>
 
           }else if(GameStore.end){
-            //if Game has ended only show new Game Button 
+            //if Game has ended only show new Game Button
             gameInfo=<div class={infoClass}>
                         Noch eine Runde spielen?
                         <div class="top-buttons">

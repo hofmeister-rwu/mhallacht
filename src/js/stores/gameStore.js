@@ -1,5 +1,4 @@
 import { observable, action } from 'mobx';
-import config from "../../config/main.config";
 import { observer } from "mobx-react";
 import CardStore from "../stores/cardStore"
 import React from "react"

@@ -25,12 +25,6 @@ import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
 
 @observer
 export default class Game extends React.Component {
@@ -50,7 +44,7 @@ export default class Game extends React.Component {
       }
         GameStore.setRound(this.props.round);
         GameStore.setActive(this.props.activePlayerIndex);
-        
+
       if(this.props.firstTime == true){
         GameStore.setTutorialShow(true);
       }

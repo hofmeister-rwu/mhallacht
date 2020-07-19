@@ -17,13 +17,6 @@ import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
-
 @observer
 export default class SaveModal extends React.Component {
 
@@ -44,7 +37,7 @@ export default class SaveModal extends React.Component {
        middleArray = [...middleFromServer];
      }
 
-     var {usedFromServer} = CardStore; 
+     var {usedFromServer} = CardStore;
      var usedArray;
      if(usedFromServer!=undefined){
        usedArray = [...usedFromServer];

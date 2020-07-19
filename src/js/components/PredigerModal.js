@@ -19,12 +19,6 @@ import { observable, action } from 'mobx';
 // import MobxInteraction from "../pages/MobxInteraction"
 
 
-// Require scss files
-require('../../stylesheets/_all.scss');
-
-// require LESS files
-require('../../stylesheets/initial.less');
-
 function changeUserAnswer(index,value){
   if(this.state.userAnswer[index]!=undefined){
     const newAnswer = [...this.state.userAnswer];
